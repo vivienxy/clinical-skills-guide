@@ -9,7 +9,7 @@ const SESSION_DAYS = 60;
 
 export function configProblem() {
   if (!REDIS_URL || !REDIS_TOKEN) return 'The database is not connected. In Vercel, add Upstash Redis under Storage and connect it to this project, then redeploy.';
-  if (SECRET.length < 32) return 'SESSION_SECRET is missing or shorter than 32 characters. Add it under Settings → Environment Variables, then redeploy.';
+  if (SECRET.length < 8) return 'SESSION_SECRET is missing or shorter than 8 characters. Add it under Settings → Environment Variables, then redeploy.';
   return null;
 }
 
