@@ -1,4 +1,4 @@
-import { configProblem, redis, hashPassword, setSession, send, body, cleanName, validName } from './_lib.js';
+import { configProblem, redis, hashPassword, setSession, send, body, cleanName, validName, fixedAccount } from './_lib.js';
 
 // Accounts: if SIGNUP_CODE is set, anyone who knows it can make an account.
 // If it is not set, only the very first account can be created (yours).
@@ -7,6 +7,7 @@ export default async function handler(req, res) {
   const problem = configProblem();
   if (problem) return send(res, 500, { error: problem });
 
+  if (fixedAccount()) return send(res, 403, { error: 'Sign-up is turned off. Log in with the site’s username and password.' });
   const { username, password, code } = await body(req);
   const u = cleanName(username);
   if (!validName(u)) return send(res, 400, { error: 'Username must be 3–32 characters: letters, numbers, dots, dashes or underscores.' });

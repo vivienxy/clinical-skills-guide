@@ -1,4 +1,4 @@
-import { configProblem, redis, checkPassword, setSession, send, body, cleanName, tooManyAttempts, recordFailure } from './_lib.js';
+import { configProblem, redis, checkPassword, setSession, send, body, cleanName, tooManyAttempts, recordFailure, fixedAccount, checkFixed } from './_lib.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return send(res, 405, { error: 'Use POST.' });
@@ -10,8 +10,8 @@ export default async function handler(req, res) {
   if (!u || typeof password !== 'string') return send(res, 400, { error: 'Enter your username and password.' });
   if (await tooManyAttempts(u)) return send(res, 429, { error: 'Too many wrong tries. Wait 15 minutes and try again.' });
 
-  const stored = await redis('GET', `user:${u}`);
-  if (!stored || !checkPassword(password, stored)) {
+  const ok = fixedAccount() ? checkFixed(u, password) : checkPassword(password, await redis('GET', `user:${u}`));
+  if (!ok) {
     await recordFailure(u);
     return send(res, 401, { error: 'Username or password is wrong.' });
   }

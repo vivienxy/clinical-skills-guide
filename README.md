@@ -20,6 +20,17 @@ This is the same guide, with a login added. Your session notes are saved to your
 
 After that, log in on your phone with the same username and password. Notes sync when you stop typing, when you switch back to the tab, and every 30 seconds.
 
+## Setting or changing the password yourself
+
+If you'd rather nobody can create accounts or change the password from the site, set the login in Vercel instead:
+
+1. In **Settings → Environment Variables**, add `SITE_USERNAME` (for example, the username you already use, so your notes stay attached) and `SITE_PASSWORD`.
+2. Redeploy.
+
+While these are set, sign-up is turned off and the only login is that username and password. There's no way to change the password from the site itself.
+
+To change the password later, edit `SITE_PASSWORD` in Vercel and redeploy. Every device that logged in with the old password is logged out straight away and has to log in with the new one. Notes aren't affected.
+
 ## Good to know
 
 - If two devices edit the same note, the most recent edit wins.

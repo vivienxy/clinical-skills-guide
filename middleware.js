@@ -11,6 +11,9 @@ const b64u = (bytes) => btoa(String.fromCharCode(...new Uint8Array(bytes))).repl
 
 async function valid(token, secret) {
   if (!token || !secret) return false;
+  const pass = process.env.SITE_PASSWORD || '';
+  const user = String(process.env.SITE_USERNAME || '').trim().toLowerCase();
+  if (pass) secret = `${secret}|${pass}`;
   const [body, mac] = token.split('.');
   if (!body || !mac) return false;
   const key = await crypto.subtle.importKey('raw', enc.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
@@ -18,7 +21,9 @@ async function valid(token, secret) {
   if (want !== mac) return false;
   try {
     const json = atob(body.replace(/-/g, '+').replace(/_/g, '/'));
-    return JSON.parse(json).exp > Date.now();
+    const p = JSON.parse(json);
+    if (user && pass && p.u !== user) return false;
+    return p.exp > Date.now();
   } catch { return false; }
 }
 

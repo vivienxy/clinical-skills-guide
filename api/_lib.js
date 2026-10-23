@@ -4,13 +4,26 @@ import crypto from 'node:crypto';
 const REDIS_URL = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
 const REDIS_TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
 const SECRET = process.env.SESSION_SECRET || '';
+// Optional fixed account: set SITE_USERNAME and SITE_PASSWORD in Vercel to choose the login yourself.
+// Changing SITE_PASSWORD also logs out every device that used the old one, because it is part of the signing key.
+const SITE_USER = String(process.env.SITE_USERNAME || '').trim().toLowerCase();
+const SITE_PASS = process.env.SITE_PASSWORD || '';
+const KEY = SITE_PASS ? `${SECRET}|${SITE_PASS}` : SECRET;
+export const fixedAccount = () => !!(SITE_USER && SITE_PASS);
 export const COOKIE = 'csp_session';
 const SESSION_DAYS = 60;
 
 export function configProblem() {
   if (!REDIS_URL || !REDIS_TOKEN) return 'The database is not connected. In Vercel, add Upstash Redis under Storage and connect it to this project, then redeploy.';
   if (SECRET.length < 8) return 'SESSION_SECRET is missing or shorter than 8 characters. Add it under Settings → Environment Variables, then redeploy.';
+  if (!!SITE_USER !== !!SITE_PASS) return 'Set both SITE_USERNAME and SITE_PASSWORD (or neither) under Settings → Environment Variables, then redeploy.';
   return null;
+}
+
+// Checks a login against SITE_USERNAME / SITE_PASSWORD.
+export function checkFixed(username, password) {
+  const h = (x) => crypto.createHash('sha256').update(String(x)).digest();
+  return username === SITE_USER && crypto.timingSafeEqual(h(password), h(SITE_PASS));
 }
 
 // Upstash Redis REST API: POST the command as a JSON array.
@@ -40,17 +53,18 @@ export function checkPassword(password, stored) {
 const b64u = (buf) => Buffer.from(buf).toString('base64url');
 export function sign(payload) {
   const body = b64u(JSON.stringify(payload));
-  const mac = crypto.createHmac('sha256', SECRET).update(body).digest('base64url');
+  const mac = crypto.createHmac('sha256', KEY).update(body).digest('base64url');
   return `${body}.${mac}`;
 }
 export function verify(token) {
   if (!token || !SECRET) return null;
   const [body, mac] = String(token).split('.');
   if (!body || !mac) return null;
-  const want = crypto.createHmac('sha256', SECRET).update(body).digest('base64url');
+  const want = crypto.createHmac('sha256', KEY).update(body).digest('base64url');
   if (want.length !== mac.length || !crypto.timingSafeEqual(Buffer.from(want), Buffer.from(mac))) return null;
   try {
     const p = JSON.parse(Buffer.from(body, 'base64url').toString());
+    if (fixedAccount() && p.u !== SITE_USER) return null;
     return p.exp > Date.now() ? p : null;
   } catch { return null; }
 }
