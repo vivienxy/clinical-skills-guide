@@ -2,9 +2,15 @@
 
 This is the same guide, with a login added. Your session notes are saved to your account, so they show up on your phone and your computer. The whole site, guide included, sits behind the login.
 
+## What's on the site
+
+- **Physical exam** and **History**: the quick-reference exam steps and history questions.
+- **Guide**: the whole McMaster Clinical Skills Guide, 6e, chapter by chapter (all 41 chapters and the 5 appendices), plus every likelihood-ratio table gathered on one page. Each page break has an "original page" button that shows that page exactly as printed.
+- **Notes** with formatting, and a **highlighter**. Both sync to your account.
+
 ## What's in here
 
-- `index.html`, `assets/`: the guide itself.
+- `index.html`, `assets/`: the site itself (`assets/guide.js` is the full guide text, `assets/pages/` the original page images, `assets/gfig/` the guide's figures).
 - `login.html`: the login and sign-up page.
 - `middleware.js`: sends anyone who isn't logged in to the login page.
 - `api/`: small server functions for sign-up, log-in, log-out and notes.

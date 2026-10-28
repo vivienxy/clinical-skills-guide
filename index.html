@@ -174,8 +174,44 @@ td.k{font-family:var(--f-mono);white-space:nowrap}
 .note>summary{cursor:pointer;padding:10px 14px;font-weight:600;list-style:none;display:flex;gap:8px;align-items:center}
 .note>summary::-webkit-details-marker{display:none}
 .note .inner{padding:0 14px 12px}
-.note textarea,.snote textarea{width:100%;min-height:120px;resize:vertical;border:1px solid var(--line);border-radius:8px;background:var(--note-bg);color:var(--ink);padding:9px 11px;font:14px/1.5 var(--f-body)}
-.snote textarea{min-height:70px}
+.fmt{display:flex;flex-wrap:wrap;align-items:center;gap:2px;border:1px solid var(--line);border-bottom:0;border-radius:8px 8px 0 0;background:var(--panel);padding:3px}
+.fmt button{border:0;background:none;min-width:34px;height:32px;padding:0 6px;border-radius:6px;cursor:pointer;font-size:14px;line-height:1;color:var(--ink);display:inline-grid;place-items:center}
+.fmt button:hover{background:var(--soft)}
+.fmt button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent)}
+.fmt .fs2{font-size:11px}.fmt .fs5{font-size:18px;font-weight:600}
+.fmt .sep{width:1px;height:20px;background:var(--line);margin:0 3px}
+.rte{min-height:120px;border:1px solid var(--line);border-radius:0 0 8px 8px;background:var(--note-bg);color:var(--ink);padding:9px 11px;font:14px/1.5 var(--f-body);outline:none;overflow-wrap:anywhere;cursor:text}
+.rte:focus{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.snote .rte{min-height:70px}
+.rte:empty::before{content:attr(data-ph);color:var(--muted);pointer-events:none}
+.rte ul,.rte ol,.nview ul,.nview ol{list-style:disc!important;padding-left:22px!important;margin:4px 0!important}
+.rte ol,.nview ol{list-style:decimal!important}
+.rte ul ul,.nview ul ul{list-style:circle!important}
+.rte li,.nview li{padding-left:0!important;margin:2px 0!important;position:static!important}
+.rte li::before,.nview li::before{content:none!important}
+.rte p,.nview p{margin:0}
+.rte font[size="1"],.nview font[size="1"]{font-size:.75em}.rte font[size="2"],.nview font[size="2"]{font-size:.85em}.rte font[size="3"],.nview font[size="3"]{font-size:1em}
+.rte font[size="4"],.nview font[size="4"]{font-size:1.15em}.rte font[size="5"],.nview font[size="5"]{font-size:1.3em}.rte font[size="6"],.nview font[size="6"]{font-size:1.5em}.rte font[size="7"],.nview font[size="7"]{font-size:1.8em}
+.nview{font:14px/1.5 var(--f-body);margin:6px 0 0;overflow-wrap:anywhere}
+
+/* highlighter */
+mark.hl{color:inherit;border-radius:2px}
+mark.hl[data-c="0"]{background:rgba(255,210,0,.5)}mark.hl[data-c="1"]{background:rgba(60,200,110,.4)}mark.hl[data-c="2"]{background:rgba(255,100,170,.38)}mark.hl[data-c="3"]{background:rgba(70,150,255,.38)}mark.hl[data-c="4"]{background:rgba(255,140,30,.45)}
+.sw-0{background:#ffd400}.sw-1{background:#3cc86e}.sw-2{background:#ff64aa}.sw-3{background:#4696ff}.sw-4{background:#ff8c1e}
+body.hl-erase mark.hl{cursor:pointer;outline:1px dashed currentColor;outline-offset:1px}
+.hlfab{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:max(16px,env(safe-area-inset-bottom,0px));z-index:35;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.hlbtn{width:50px;height:50px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--ink);box-shadow:0 4px 16px rgba(0,0,0,.18);display:grid;place-items:center;cursor:pointer;position:relative}
+.hlbtn[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.hlbtn .dot{position:absolute;right:3px;bottom:3px;width:14px;height:14px;border-radius:50%;border:2px solid var(--panel)}
+.hlpanel{width:min(250px,calc(100vw - 32px));background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.2);padding:12px;display:grid;gap:10px}
+.hlpanel .hd{font:600 14px var(--f-head);display:flex;justify-content:space-between;align-items:center}
+.hlpanel .hd span{font:500 11px var(--f-mono);color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.hlpanel .sw{display:flex;gap:8px;flex-wrap:wrap}
+.hlpanel .sw button{width:34px;height:34px;border-radius:50%;border:2px solid var(--panel);box-shadow:0 0 0 1px var(--line);cursor:pointer;padding:0}
+.hlpanel .sw button[aria-pressed="true"]{box-shadow:0 0 0 2px var(--ink)}
+.hlpanel .sw .er{background:var(--soft);display:grid;place-items:center;color:var(--ink)}
+.hlpanel p{margin:0;font-size:13px;color:var(--muted)}
+.hlpanel .row{display:flex;gap:6px;flex-wrap:wrap}
 .nrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px;font-size:12px;color:var(--muted)}
 .sync{color:var(--accent);font-weight:500}
 .acct{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
@@ -185,11 +221,57 @@ td.k{font-family:var(--f-mono);white-space:nowrap}
 .nlist{display:grid;gap:10px}
 .nitem{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:10px 14px}
 .nitem a{font-weight:600;text-decoration:none}
-.nitem pre{white-space:pre-wrap;font:14px/1.5 var(--f-body);margin:6px 0 0}
 .nitem small{color:var(--muted);font:12px var(--f-mono)}
 .lb{position:fixed;inset:0;background:rgba(8,14,16,.86);z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));cursor:zoom-out}
 .lb img{max-width:100%;max-height:82vh;background:#fff;border-radius:6px}
 .lb p{color:#dfe7e9;font-size:13px;margin:10px 0 0;text-align:center}
+
+/* guide */
+.rail a[data-g]{justify-content:flex-start;gap:6px}
+.rail a .gl{flex:none;min-width:42px}
+.gpart{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);margin:0 0 10px;scroll-margin-top:90px}
+.gpart>summary{list-style:none;cursor:pointer;padding:12px 14px;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}
+.gpart>summary::-webkit-details-marker{display:none}
+.gpart>summary::after{content:"";width:9px;height:9px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);margin-left:auto;align-self:center;transition:transform .15s}
+.gpart[open]>summary::after{transform:rotate(225deg)}
+.gpart>summary h2{font-size:18px;flex:1 1 260px}
+.gpn{font:500 12px var(--f-mono);color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.gbody{padding:0 16px 16px;border-top:1px solid var(--line);max-width:100%;overflow-wrap:anywhere}
+.gbody h3{font:600 16px var(--f-head);margin:18px 0 6px}
+.gbody p{margin:8px 0}
+.gbody ul.gl{list-style:none;margin:6px 0;padding:0}
+.gbody ul.gl li{position:relative;padding-left:16px;margin:3px 0}
+.gbody ul.gl li::before{content:"";position:absolute;left:3px;top:.62em;width:5px;height:5px;border-radius:50%;background:var(--muted)}
+.gbody ul.gl li.lv1{margin-left:18px}.gbody ul.gl li.lv1::before{background:none;border:1px solid var(--muted)}
+.gbody ul.gl li.lv2{margin-left:36px}.gbody ul.gl li.lv2::before{border-radius:0;width:4px;height:4px}
+.gbody ul.gl li.lv3{margin-left:54px}
+.gt{margin:10px 0}
+.gt table{font-size:13.5px}
+.gt th{background:var(--soft);color:var(--ink);font:600 12px var(--f-body);text-transform:none;letter-spacing:0}
+.gt td,.gt th{border:1px solid var(--line);min-width:70px}
+.gt td.cc,.gt th.cc{background:color-mix(in srgb,var(--cc) 55%,var(--panel))}
+.gpg{display:flex;align-items:center;gap:10px;margin:16px 0 6px;color:var(--muted);font:12px var(--f-mono)}
+.gpg::before,.gpg::after{content:"";flex:1;height:1px;background:var(--line)}
+.gpg button{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:3px 10px;cursor:pointer;font:12px var(--f-mono);color:var(--muted)}
+.gpg button:hover{border-color:var(--accent);color:var(--ink)}
+.gfig{display:inline-block;border:1px solid var(--line);background:#fff;border-radius:8px;padding:4px;margin:6px 6px 6px 0;cursor:zoom-in;max-width:100%;vertical-align:top}
+.gfig img{display:block;max-width:100%;height:auto;max-height:340px;width:auto}
+.pager{display:flex;justify-content:space-between;gap:10px;margin-top:22px;flex-wrap:wrap}
+.pager a{text-decoration:none;border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:8px 12px;max-width:48%}
+.pager small{display:block;color:var(--muted);font:12px var(--f-mono)}
+.evq{flex:1;min-width:200px;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:8px 10px}
+.evch{margin:22px 0 8px;font-size:18px}
+.evitem{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);margin:0 0 8px}
+.evitem>summary{cursor:pointer;padding:10px 14px;font-weight:600;list-style:none}
+.evitem>summary::-webkit-details-marker{display:none}
+.evitem .in{padding:0 14px 12px}
+.evitem small{color:var(--muted);font:12px var(--f-mono);margin-right:6px}
+.legend{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px;font-size:12.5px}
+.legend span{padding:3px 8px;border-radius:4px;border:1px solid var(--line);background:color-mix(in srgb,var(--cc) 55%,var(--panel))}
+.lb.page{overflow:auto;justify-content:flex-start}
+.lb.page img{max-height:none;width:min(100%,980px);height:auto}
+.tabs-sm{display:none}
+@media (max-width:520px){.gt td,.gt th{min-width:120px}.gbody{padding:0 12px 14px}.tabs-lg{display:none}.tabs-sm{display:inline}.seg button{padding:6px 11px}}
 
 /* drawer for phones */
 .scrim{display:none}
@@ -215,18 +297,19 @@ td.k{font-family:var(--f-mono);white-space:nowrap}
 
 <header class="top">
   <div class="wrap">
-    <button class="menu-btn" id="menuBtn" aria-label="Open exam list">☰ Exams</button>
+    <button class="menu-btn" id="menuBtn" aria-label="Open the list of pages">☰ <span id="menuLab">Exams</span></button>
     <div class="brand">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 3v6a4 4 0 0 0 8 0V3"/><path d="M10 13v3a5 5 0 0 0 10 0v-2"/><circle cx="20" cy="12" r="2"/></svg>
       <span>Clinical Skills Pocket</span>
     </div>
     <div class="seg" role="group" aria-label="Section">
-      <button id="tabExam" aria-pressed="true">Physical exam</button>
+      <button id="tabExam" aria-pressed="true"><span class="tabs-lg">Physical exam</span><span class="tabs-sm">Exam</span></button>
       <button id="tabHist" aria-pressed="false">History</button>
+      <button id="tabGuide" aria-pressed="false">Guide</button>
     </div>
     <div class="search">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
-      <input id="q" type="search" placeholder="Find a test… (e.g. Lachman, JVP, Romberg)" autocomplete="off" aria-label="Search tests and history">
+      <input id="q" type="search" placeholder="Search tests, topics, guide… (e.g. Lachman, JVP, eczema)" autocomplete="off" aria-label="Search tests and history">
       <div class="results" id="results" hidden></div>
     </div>
   </div>
@@ -412,6 +495,157 @@ const notes = {
   set(k, text){ const a = this.all(); const old = a[k] ? a[k].text : ''; if (old === text) return; if (text.trim()) a[k] = {text, at: Date.now()}; else delete a[k]; store.set('notes', a); cloud.push(k); },
 };
 
+const isHl = k => k.startsWith('hl:');
+const noteKeys = () => Object.keys(notes.all()).filter(k => !isHl(k));
+
+/* ---------- rich-text notes: stored as a small, cleaned subset of HTML ---------- */
+const looksHtml = t => /<(div|p|br|b|i|u|ul|ol|li|span|strong|em|font)\b/i.test(t);
+function cleanHtml(html){
+  const tpl = document.createElement('template'); tpl.innerHTML = html;
+  const OK = {B:1, STRONG:1, I:1, EM:1, U:1, UL:1, OL:1, LI:1, BR:1, DIV:1, P:1, SPAN:1, FONT:1};
+  (function walk(el){
+    [...el.childNodes].forEach(n => {
+      if (n.nodeType === 3) return;
+      if (n.nodeType !== 1 || /^(script|style|iframe|object|embed|template|svg|math|img|video|audio)$/i.test(n.nodeName)) { n.remove(); return; }
+      walk(n);
+      if (!OK[n.nodeName]) { n.replaceWith(...n.childNodes); return; }
+      const keep = {};
+      if (n.nodeName === 'FONT' && /^[1-7]$/.test(n.getAttribute('size') || '')) keep.size = n.getAttribute('size');
+      if (n.nodeName === 'SPAN') {
+        const st = [], cs = n.style;
+        if (/bold|[6-9]00/.test(cs.fontWeight)) st.push('font-weight:bold');
+        if (cs.fontStyle === 'italic') st.push('font-style:italic');
+        if (/underline/.test(cs.textDecorationLine || cs.textDecoration || '')) st.push('text-decoration:underline');
+        if (st.length) keep.style = st.join(';');
+      }
+      [...n.attributes].forEach(a => n.removeAttribute(a.name));
+      Object.entries(keep).forEach(([k, v]) => n.setAttribute(k, v));
+      if ((n.nodeName === 'FONT' && !keep.size) || (n.nodeName === 'SPAN' && !keep.style)) n.replaceWith(...n.childNodes);
+    });
+  })(tpl.content);
+  return tpl.innerHTML;
+}
+// older notes were plain text; show them with their line breaks
+function noteHtml(text){ return looksHtml(text) ? cleanHtml(text) : esc(text).replace(/\n/g, '<br>'); }
+function edVal(ed){ return ed.textContent.trim() ? cleanHtml(ed.innerHTML) : ''; }
+// plain-text version for the .md export
+function noteText(text){
+  if (!looksHtml(text)) return text;
+  const tpl = document.createElement('template'); tpl.innerHTML = cleanHtml(text);
+  let out = '';
+  (function walk(n, depth){
+    for (const c of n.childNodes) {
+      if (c.nodeType === 3) { out += c.data.replace(/\s+/g, ' '); continue; }
+      const t = c.nodeName;
+      if (t === 'BR') { out += '\n'; continue; }
+      if (t === 'LI') { out += '\n' + '  '.repeat(depth) + '- '; walk(c, depth + 1); continue; }
+      const block = /^(DIV|P|UL|OL)$/.test(t);
+      if (block && out && !out.endsWith('\n')) out += '\n';
+      const w = (t === 'B' || t === 'STRONG') ? '**' : (t === 'I' || t === 'EM') ? '_' : '';
+      out += w; walk(c, depth); out += w;
+      if (block && !out.endsWith('\n')) out += '\n';
+    }
+  })(tpl.content, 0);
+  return out.replace(/\n{3,}/g, '\n\n').trim();
+}
+function editor(k, ph){
+  return `<div class="fmt" role="toolbar" aria-label="Formatting" data-for="${k}">
+    <button type="button" data-cmd="bold" title="Bold" aria-label="Bold"><b>B</b></button>
+    <button type="button" data-cmd="italic" title="Italic" aria-label="Italic"><i>I</i></button>
+    <button type="button" data-cmd="underline" title="Underline" aria-label="Underline"><u>U</u></button><span class="sep"></span>
+    <button type="button" data-size="2" class="fs2" title="Small text" aria-label="Small text">A</button>
+    <button type="button" data-size="3" title="Normal text" aria-label="Normal text">A</button>
+    <button type="button" data-size="5" class="fs5" title="Large text" aria-label="Large text">A</button><span class="sep"></span>
+    <button type="button" data-cmd="insertUnorderedList" title="Bullet list" aria-label="Bullet list"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="5" cy="6" r="1.3" fill="currentColor"/><circle cx="5" cy="12" r="1.3" fill="currentColor"/><circle cx="5" cy="18" r="1.3" fill="currentColor"/><path d="M10 6h10M10 12h10M10 18h10"/></svg></button>
+  </div><div class="rte" contenteditable="true" role="textbox" aria-multiline="true" aria-label="${esc(ph)}" data-note="${k}" data-ph="${esc(ph)}">${noteHtml(notes.get(k))}</div>`;
+}
+
+/* ---------- highlighter: ranges are character offsets within a page section, synced like notes under "hl:" keys ---------- */
+const HL_NAMES = ['Yellow', 'Green', 'Pink', 'Blue', 'Orange'];
+const NOHL = '.gpg,.gfig,.pager,.note,.snote,.tools,.nrow,.pen,.progress,.tag,[data-sync],[data-saved],button,input,textarea,svg,.fmt,.subtabs,.order,[contenteditable]';
+const hl = {
+  mode: null, // null = off, 0–4 = colour, 'erase'
+  color: (() => { const c = store.get('hlc'); return Number.isInteger(c) && c >= 0 && c < HL_NAMES.length ? c : 0; })(),
+  get(key){ try { const v = JSON.parse(notes.get(key) || '[]'); return Array.isArray(v) ? v : []; } catch(e){ return []; } },
+  put(key, list){ notes.set(key, list.length ? JSON.stringify(list) : ''); },
+  // the text nodes that belong to this section (not nested sections, notes, buttons or counters)
+  nodes(scope){
+    const out = [], w = document.createTreeWalker(scope, NodeFilter.SHOW_TEXT);
+    for (let n; (n = w.nextNode());) { const p = n.parentElement; if (p && p.closest('[data-hls]') === scope && !p.closest(NOHL)) out.push(n); }
+    return out;
+  },
+  paint(scope){
+    if (!scope || !scope.dataset.hls) return;
+    scope.querySelectorAll('mark.hl').forEach(m => { if (m.closest('[data-hls]') === scope) m.replaceWith(...m.childNodes); });
+    scope.normalize();
+    this.get(scope.dataset.hls).forEach(([s, e, c], idx) => {
+      let pos = 0; const segs = [];
+      for (const n of this.nodes(scope)) { const L = n.length, a = Math.max(s, pos), b = Math.min(e, pos + L); if (b > a && n.data.trim()) segs.push([n, a - pos, b - pos]); pos += L; if (pos >= e) break; }
+      segs.forEach(([n, a, b]) => { if (a > 0) n = n.splitText(a); if (b - a < n.length) n.splitText(b - a);
+        const m = document.createElement('mark'); m.className = 'hl'; m.dataset.c = c; m.dataset.r = idx; n.replaceWith(m); m.appendChild(n); });
+    });
+  },
+  paintAll(){ document.querySelectorAll('[data-hls]').forEach(sc => this.paint(sc)); },
+  merge(list, s, e, mode){
+    const out = [];
+    list.forEach(([a, b, c]) => { if (b <= s || a >= e) out.push([a, b, c]); else { if (a < s) out.push([a, s, c]); if (b > e) out.push([e, b, c]); } });
+    if (mode !== 'erase') out.push([s, e, mode]);
+    return out.sort((x, y) => x[0] - y[0]);
+  },
+  fromSelection(){
+    if (this.mode == null) return;
+    const sel = getSelection(); if (!sel.rangeCount || sel.isCollapsed) return;
+    const r = sel.getRangeAt(0), main = $('#main');
+    if (!main.contains(r.commonAncestorContainer)) return;
+    const anc = r.commonAncestorContainer.nodeType === 1 ? r.commonAncestorContainer : r.commonAncestorContainer.parentElement;
+    if (anc.closest('[contenteditable],input,textarea')) return;
+    let did = false;
+    [main, ...main.querySelectorAll('[data-hls]')].filter(sc => sc.dataset.hls && r.intersectsNode(sc)).forEach(sc => {
+      let pos = 0, s = -1, e = -1;
+      for (const n of this.nodes(sc)) { const L = n.length;
+        if (r.intersectsNode(n)) { const a = n === r.startContainer ? r.startOffset : 0, b = n === r.endContainer ? r.endOffset : L; if (b > a && n.data.slice(a, b).trim()) { if (s < 0) s = pos + a; e = pos + b; } }
+        pos += L; }
+      if (s < 0 || e <= s) return;
+      this.put(sc.dataset.hls, this.merge(this.get(sc.dataset.hls), s, e, this.mode)); this.paint(sc); did = true;
+    });
+    if (did) { sel.removeAllRanges(); this.panel(false); }
+  },
+  selT: 0, down: false,
+  onSelChange(){
+    // phones have no mouseup after adjusting the selection handles, so wait for the selection to settle
+    if (this.mode == null || this.down || !matchMedia('(pointer: coarse)').matches) return;
+    clearTimeout(this.selT); this.selT = setTimeout(() => this.fromSelection(), 900);
+  },
+  pageKeys(){
+    const pre = view === 'guide' ? ['hl:g:' + guideTok.slice(2) + ':'] : cur ? ['hl:x:' + cur, 'hl:s:' + cur + ':'] : ['hl:h:' + histTab];
+    return Object.keys(notes.all()).filter(k => pre.some(p => k === p || (p.endsWith(':') && k.startsWith(p))));
+  },
+  set(mode){
+    this.mode = mode;
+    if (mode != null && mode !== 'erase') { this.color = mode; store.set('hlc', mode); }
+    document.body.classList.toggle('hl-erase', mode === 'erase');
+    const b = $('#hlbtn'); b.setAttribute('aria-pressed', mode != null);
+    b.querySelector('.dot').className = 'dot sw-' + this.color; b.querySelector('.dot').hidden = mode == null;
+    document.querySelectorAll('#hlpanel [data-hlc]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.hlc) === String(mode)));
+    $('#hlstate').textContent = mode == null ? 'Off' : mode === 'erase' ? 'Eraser' : HL_NAMES[mode];
+    $('#hlhint').textContent = mode == null ? 'Pick a colour, then select words on the page to highlight them.'
+      : mode === 'erase' ? 'Tap a highlight, or select over it, to remove it.' : 'Select words on the page to highlight them. Highlights sync with your notes.';
+  },
+  panel(open){ $('#hlpanel').hidden = !open; $('#hlbtn').setAttribute('aria-expanded', open); },
+  ui(){
+    document.body.insertAdjacentHTML('beforeend', `<div class="hlfab" id="hlfab">
+      <div class="hlpanel" id="hlpanel" role="dialog" aria-label="Highlighter" hidden>
+        <div class="hd">Highlighter <span id="hlstate">Off</span></div>
+        <div class="sw">${HL_NAMES.map((n, i) => `<button type="button" class="sw-${i}" data-hlc="${i}" aria-label="${n}" title="${n}"></button>`).join('')}
+          <button type="button" class="er" data-hlc="erase" aria-label="Eraser" title="Eraser"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 21-4-4a2 2 0 0 1 0-2.8L13.2 4a2 2 0 0 1 2.8 0l4 4a2 2 0 0 1 0 2.8L11 20"/><path d="M7 21h14M9 10l5 5"/></svg></button></div>
+        <p id="hlhint"></p>
+        <div class="row"><button type="button" class="btn" data-hlact="off">Turn off</button><button type="button" class="btn" data-hlact="clear">Clear this page</button></div>
+      </div>
+      <button type="button" class="hlbtn" id="hlbtn" aria-pressed="false" aria-expanded="false" aria-label="Highlighter" title="Highlighter"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></svg><span class="dot" hidden></span></button></div>`);
+    this.set(null);
+  }
+};
+
 /* ---------- account sync (claude.ai only; the local folder version stays on-device) ---------- */
 const cloud = {
   col: null, mode: null, state: 'local', timers: {}, busy: {}, again: {}, seen: {}, user: null,
@@ -511,12 +745,14 @@ function syncBadge(){
   document.querySelectorAll('[data-sync]').forEach(el => { el.textContent = t; el.hidden = !t; });
 }
 function refreshNoteViews(){
-  document.querySelectorAll('textarea[data-note]').forEach(ta => { if (document.activeElement !== ta) { const v = notes.get(ta.dataset.note); if (ta.value !== v) ta.value = v; } });
-  if ((location.hash || '').slice(1) === 'notes' && !document.querySelector('.nlist textarea')) renderNotes();
+  document.querySelectorAll('.rte[data-note]').forEach(ed => { if (document.activeElement !== ed) { const v = noteHtml(notes.get(ed.dataset.note)); if (ed.innerHTML !== v) ed.innerHTML = v; } });
+  if ((location.hash || '').slice(1) === 'notes') renderNotes();
+  hl.paintAll();
   updateCount();
 }
 function noteLabel(k){
   const [kind, a, b] = k.split(':');
+  if (kind === 'guide') { const c = gch(a); return {title: 'Guide · ' + (c ? c.lab + ' ' + c.title : 'chapter'), href: 'g-' + a}; }
   if (kind === 'hist') return {title: 'History · ' + ({hpi:'OPQRST / HPI', ros:'Review of systems', big6:'Big 6'}[a] || a), href: a};
   const ex = D.exams[a]; if (!ex) return {title: k, href: ''};
   if (kind === 'exam') return {title: ex.title + ' · session notes', href: a};
@@ -525,9 +761,9 @@ function noteLabel(k){
 function fmtTime(t){ try { return new Date(t).toLocaleString(undefined, {dateStyle:'medium', timeStyle:'short'}); } catch(e){ return ''; } }
 function today(){ try { return new Date().toLocaleDateString(undefined, {weekday:'short', day:'numeric', month:'short', year:'numeric'}); } catch(e){ return ''; } }
 function noteBox(k, title){
-  const txt = notes.get(k); const a = notes.all()[k];
+  const a = notes.all()[k];
   return `<details class="note" open><summary><span class="pen">✎ notes</span> ${esc(title)}</summary><div class="inner">
-    <textarea data-note="${k}" placeholder="What did your preceptor say? Tips, corrections, things to practise…">${esc(txt)}</textarea>
+    ${editor(k, 'What did your preceptor say? Tips, corrections, things to practise…')}
     <div class="nrow"><button class="btn" data-date="${k}">Add today’s date</button><span data-saved="${k}">${a?'Saved '+fmtTime(a.at):'Saves automatically as you type'}</span><span class="sync" data-sync hidden></span></div></div></details>`;
 }
 async function download(name, text, type){
@@ -538,38 +774,140 @@ async function download(name, text, type){
   setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 500);
 }
 function notesMarkdown(){
-  const all = notes.all(); const keys = Object.keys(all);
+  const all = notes.all(); const keys = noteKeys();
   let md = `# Clinical skills notes\n\nExported ${fmtTime(Date.now())}\n`;
-  keys.sort().forEach(k => { const l = noteLabel(k); md += `\n## ${l.title}\n_Last edited ${fmtTime(all[k].at)}_\n\n${all[k].text}\n`; });
+  keys.sort().forEach(k => { const l = noteLabel(k); md += `\n## ${l.title}\n_Last edited ${fmtTime(all[k].at)}_\n\n${noteText(all[k].text)}\n`; });
   return md;
 }
 function renderNotes(){
-  cur = null; setTop(false);
+  cur = null; view = 'notes'; setTop(railMode === 'guide' ? 'guide' : 'exam');
   const all = notes.all();
-  const keys = Object.keys(all).sort((x,y)=>all[y].at-all[x].at);
+  const keys = noteKeys().sort((x,y)=>all[y].at-all[x].at);
   let h = `<div class="eyebrow">Saved on this computer, in this browser</div><h1>My notes</h1>
     <p class="lead">${cloud.mode ? 'Everything you’ve written under exams, steps and history, newest first. These sync to your account, so the same notes show on your phone and computer when you’re signed in.' : 'Everything you’ve written under exams, steps and history, newest first. Export a backup now and then: notes live in this browser only, so clearing browser data or switching browsers loses them.'}</p>
     <div class="tools"><button class="btn" data-act="exportmd">Export as text (.md)</button><button class="btn" data-act="exportjson">Back up (.json)</button>
     <label class="btn" style="cursor:pointer">Restore backup<input type="file" id="importNotes" accept=".json,application/json" hidden></label>
     <span class="sync" data-sync hidden></span><span class="progress">${keys.length} note${keys.length===1?'':'s'}</span></div>`;
   h += keys.length ? `<div class="nlist">` + keys.map(k => { const l = noteLabel(k);
-      return `<div class="nitem"><a href="#${l.href}" data-goto="${l.href}" ${l.step!=null?`data-step="${l.step}"`:''}>${esc(l.title)}</a> <small>${fmtTime(all[k].at)}</small><pre>${esc(all[k].text)}</pre></div>`; }).join('') + `</div>`
+      return `<div class="nitem"><a href="#${l.href}" data-goto="${l.href}" ${l.step!=null?`data-step="${l.step}"`:''}>${esc(l.title)}</a> <small>${fmtTime(all[k].at)}</small><div class="nview">${noteHtml(all[k].text)}</div></div>`; }).join('') + `</div>`
     : `<div class="intro">No notes yet. Open any exam or history tab and use the yellow <b>notes</b> box at the top, or the notes field inside each step.</div>`;
+  delete $('#main').dataset.hls;
   $('#main').innerHTML = h; syncBadge();
   document.querySelectorAll('.rail a').forEach(a => { if (a.dataset.h==='notes') a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current'); });
 }
 
-function renderRail(){
-  const r = $('#rail');
+/* ---------- the whole guide, chapter by chapter (guide.js is loaded on demand) ---------- */
+const ASSET = (() => { const sc = [...document.scripts].find(x => /(^|\/)data\.js(\?|$)/.test(x.getAttribute('src') || '')); return sc ? sc.getAttribute('src').replace(/data\.js.*$/, '') : ''; })();
+const EXAM2CH = {approach:'c4', vitals:'c4', resp:'c5', cardiac:'c6', headneck:'c7', pv:'c8', volume:'c9', renal:'c10', lymph:'c11', abdo:'c13', diabetes:'c14', thyroid:'c15', adrenal:'c16', breast:'c21', shoulder:'c23', elbow:'c24', hand:'c25', knee:'c26', hip:'c27', ankle:'c28', back:'c29', gals:'c30', neuro:'c31', mse:'c32', eye:'c40'};
+let G = null, gLoading = null, railMode = null, view = 'exam', guideTok = 'g-c1', evFilter = '';
+function loadGuide(){
+  if (G) return Promise.resolve(G);
+  if (!gLoading) gLoading = new Promise((ok, no) => {
+    const sc = document.createElement('script'); sc.src = ASSET + 'guide.js';
+    sc.onload = () => { G = window.CSG; indexGuide(); if (railMode === 'guide') renderRail('guide', true); if (view === 'notes') renderNotes(); ok(G); };
+    sc.onerror = () => { gLoading = null; sc.remove(); no(new Error('load')); };
+    document.head.appendChild(sc);
+  });
+  return gLoading;
+}
+const gch = id => G ? G.chapters.find(c => c.id === id) : null;
+const unesc = h => { const t = document.createElement('textarea'); t.innerHTML = h; return t.value; };
+function shortPart(t){ const x = t.split(/ – | \(|: /)[0]; return x.length > 44 ? x.slice(0, 42) + '…' : x; }
+function indexGuide(){
+  G.chapters.forEach(c => {
+    const sub = 'Guide · ' + c.lab + ' ' + c.title;
+    INDEX.push({t: c.lab + ': ' + c.title, sub: 'Guide chapter', g: 'g-' + c.id, hay: (c.lab + ' ' + c.title + ' chapter guide').toLowerCase()});
+    c.parts.forEach((p, k) => {
+      INDEX.push({t: p.t, sub, g: 'g-' + c.id, part: k, hay: (p.t + ' ' + c.title).toLowerCase()});
+      p.b.forEach(x => { if (x[0] === 'h') { const t = unesc(x[1]).replace(/:$/, ''); INDEX.push({t, sub, g: 'g-' + c.id, part: k, hay: (t + ' ' + c.title).toLowerCase()}); } });
+    });
+  });
+  G.evidence.forEach(e => { const c = gch(e.ch); INDEX.push({t: e.q, sub: 'LR table · ' + (c ? c.lab + ' ' + c.title : ''), g: 'g-evidence', evq: e.q, hay: (e.q + ' likelihood ratio lr ' + (c ? c.title : '')).toLowerCase()}); });
+}
+const okCol = c => /^#[0-9a-f]{6}$/i.test(c || '');
+function gtable(t){
+  const cell = (c, th) => { const [txt, col] = Array.isArray(c) ? c : [c, null]; const tag = th ? 'th' : 'td';
+    return `<${tag}${okCol(col) ? ` class="cc" style="--cc:${col}"` : ''}>${esc(txt).replace(/\n/g, '<br>')}</${tag}>`; };
+  return `<div class="tbl gt"><table>${t.rows.map((r, i) => `<tr>${r.map(c => cell(c, t.hdr && i === 0)).join('')}</tr>`).join('')}</table></div>`;
+}
+function gblocks(b){
+  return b.map(x => {
+    if (x[0] === 'pg') return `<div class="gpg"><button type="button" data-page="${+x[1]}" title="See this page as it appears in the PDF">Guide p. ${+x[1]} · original page</button></div>`;
+    if (x[0] === 'h') return `<h3>${x[1]}</h3>`;
+    if (x[0] === 'p') return `<p>${x[1]}</p>`;
+    if (x[0] === 'ul') return `<ul class="gl">${x[1].map(([lv, t]) => `<li class="lv${Math.min(+lv, 3)}">${t}</li>`).join('')}</ul>`;
+    if (x[0] === 't') return gtable(x[1]);
+    if (x[0] === 'f') return `<button type="button" class="gfig" data-gimg="${esc(x[1])}" aria-label="Enlarge figure"><img src="${ASSET}gfig/${esc(x[1])}" width="${+x[2]}" height="${+x[3]}" alt="Figure from the guide" loading="lazy"></button>`;
+    return '';
+  }).join('');
+}
+function renderGuide(tok, part){
+  view = 'guide'; cur = null; setTop('guide'); guideTok = tok; store.set('lastGuide', tok);
+  const main = $('#main'); delete main.dataset.hls;
+  if (!G) {
+    main.innerHTML = `<div class="eyebrow">Guide</div><h1>Loading the guide…</h1>`;
+    loadGuide().then(() => { if (view === 'guide' && guideTok === tok) renderGuide(tok, part); })
+      .catch(() => { if (view === 'guide') main.innerHTML = `<div class="eyebrow">Guide</div><h1>Couldn’t load the guide</h1><p class="lead">Check your connection, then open the Guide tab again.</p>`; });
+    return;
+  }
+  if (tok === 'g-evidence') { renderEvidence(); markRail(tok); return; }
+  const c = gch(tok.slice(2)) || G.chapters[0]; const ci = G.chapters.indexOf(c);
+  const quick = c.exam && (D.exams[c.exam] || HIST[c.exam]) ? c.exam : null;
+  let h = `<div class="eyebrow">Guide · ${esc(G.sections[c.sec] || '')} · pp. ${c.pg[0]}–${c.pg[1]}</div><h1>${esc(c.lab)}: ${esc(c.title)}</h1>`;
+  if (c.parts.length > 1) h += `<div class="order" aria-label="Parts of this chapter">` + c.parts.map((p, k) => `${k ? '<i>·</i>' : ''}<a href="#g-${c.id}" data-gpart="${k}">${esc(shortPart(p.t))}</a>`).join('') + `</div>`;
+  h += `<div class="tools"><button class="btn" data-act="gopen">Expand all</button><button class="btn" data-act="gclose">Collapse all</button>`
+    + (quick ? `<a class="btn" href="#${quick}" data-goto="${quick}">${D.exams[quick] ? 'Quick exam steps' : 'Quick history questions'} →</a>` : '') + `</div>`;
+  h += noteBox('guide:' + c.id, 'My notes – ' + c.lab + ' ' + c.title);
+  const openAll = c.parts.length <= 2;
+  h += c.parts.map((p, k) => `<details class="gpart" id="gp${k}"${openAll || k === part ? ' open' : ''}><summary>${p.n ? `<span class="gpn">Part ${esc(p.n)}</span>` : ''}<h2>${esc(p.t)}</h2></summary><div class="gbody" data-hls="hl:g:${c.id}:${k}">${gblocks(p.b)}</div></details>`).join('');
+  const prev = G.chapters[ci - 1], next = G.chapters[ci + 1];
+  h += `<div class="pager">${prev ? `<a href="#g-${prev.id}" data-goto="g-${prev.id}"><small>← Previous</small>${esc(prev.lab)}: ${esc(prev.title)}</a>` : '<span></span>'}${next ? `<a href="#g-${next.id}" data-goto="g-${next.id}" style="text-align:right"><small>Next →</small>${esc(next.lab)}: ${esc(next.title)}</a>` : ''}</div>`;
+  main.innerHTML = h; syncBadge(); hl.paintAll(); markRail(tok);
+  if (part != null) { const el = document.getElementById('gp' + part); if (el) { el.open = true; el.scrollIntoView({block: 'start'}); return; } }
+  window.scrollTo(0, 0);
+}
+function renderEvidence(){
+  const main = $('#main');
+  main.innerHTML = `<div class="eyebrow">Guide · Evidence-based diagnosis</div><h1>Likelihood-ratio tables</h1>
+    <p class="lead">Every “Clinical Question” table in the guide, by chapter (${G.evidence.length} questions). Colours follow the guide’s simplified method for pre-test probabilities of 10–90%: green raises and red lowers the chance of the diagnosis, and deeper shades mean a bigger change. Ch 2 explains how to use them.</p>
+    <div class="legend"><span style="--cc:#c0504d">LR ≤ 0.1 · about −45%</span><span style="--cc:#d99594">0.1–0.5 · about −30%</span><span style="--cc:#f2dbdb">0.5–1 · about −15%</span><span style="--cc:#ffffff">CI crosses 1 · no change</span><span style="--cc:#eaf1dd">1–5 · about +15%</span><span style="--cc:#c2d69b">5–10 · about +30%</span><span style="--cc:#9bbb59">≥ 10 · about +45%</span></div>
+    <div class="tools"><input id="evq" class="evq" type="search" placeholder="Filter questions… (e.g. pneumonia, DVT, ACL)" value="${esc(evFilter)}" aria-label="Filter likelihood-ratio questions"><span class="progress" id="evn"></span></div><div id="evl"></div>`;
+  renderEvList(); window.scrollTo(0, 0);
+}
+function renderEvList(){
+  const words = evFilter.toLowerCase().split(/\s+/).filter(Boolean);
+  const hits = G.evidence.filter(e => { const c = gch(e.ch); const hay = (e.q + ' ' + (c ? c.title : '')).toLowerCase(); return words.every(w => hay.includes(w)); });
+  let h = '', last = null;
+  hits.forEach(e => {
+    const c = gch(e.ch);
+    if (e.ch !== last) { h += `<h2 class="evch">${esc(c.lab)}: ${esc(c.title)}</h2>`; last = e.ch; }
+    h += `<details class="evitem"${words.length ? ' open' : ''}><summary><small>Q${e.n}</small>${esc(e.q)}</summary><div class="in">${e.t.map(gtable).join('')}<a href="#g-${c.id}" data-goto="g-${c.id}">Open ${esc(c.lab)}${e.pg ? ', p. ' + e.pg : ''} →</a></div></details>`;
+  });
+  $('#evl').innerHTML = h || `<div class="intro">No questions match “${esc(evFilter)}”.</div>`;
+  $('#evn').textContent = `${hits.length} of ${G.evidence.length}`;
+}
+function markRail(tok){ document.querySelectorAll('.rail a').forEach(a => { if ((a.dataset.id || a.dataset.h || a.dataset.g) === tok) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); }); }
+
+function renderRail(mode, force){
+  mode = mode || railMode || 'exam'; if (mode === railMode && !force) return; railMode = mode;
+  const r = $('#rail'); $('#menuLab').textContent = mode === 'guide' ? 'Chapters' : 'Exams';
+  if (mode === 'guide') {
+    r.innerHTML = (!G ? `<p class="tip">Loading the guide…</p>` : Object.entries(G.sections).map(([k, name]) => `<h4>${esc(name)}</h4>` + G.chapters.filter(c => c.sec === k).map(c => `<a href="#g-${c.id}" data-g="g-${c.id}"><span class="gl">${esc(c.lab)}</span>${esc(c.title)}</a>`).join('')).join('')
+      + `<h4>Evidence</h4><a href="#g-evidence" data-g="g-evidence">All likelihood-ratio tables <span>${G.evidence.length}</span></a>`)
+      + `<h4>Notes</h4><a href="#notes" data-h="notes">My notes <span id="ncount"></span></a>`
+      + `<p class="tip" style="margin-top:18px">The full McMaster Clinical Skills Guide, 6e (2026–27), chapter by chapter. Use “original page” to see any page exactly as printed.</p>`;
+    updateCount(); markRail(guideTok); return;
+  }
   r.innerHTML = D.groups.map(g => `<h4>${esc(g.name)}</h4>` + g.ids.map(id =>
     `<a href="#${id}" data-id="${id}">${esc(D.exams[id].title)}<span>${D.exams[id].steps.length}</span></a>`).join('')).join('')
     + `<h4>History</h4><a href="#hpi" data-h="hpi">OPQRST / HPI</a><a href="#ros" data-h="ros">Review of systems</a><a href="#big6" data-h="big6">Big 6</a>`
     + `<h4>Notes</h4><a href="#notes" data-h="notes">My notes <span id="ncount"></span></a>`
     + `<p class="tip" style="margin-top:18px">Built from the McMaster Clinical Skills Guide, 6e (2026–27). Figures are the guide’s; original image sources are cited there.</p>`;
+  updateCount();
 }
 
 function renderExam(id){
-  const ex = D.exams[id]; cur = id;
+  const ex = D.exams[id]; cur = id; view = 'exam';
   const ticks = store.get('t:'+id) || {};
   const secs = [];
   ex.steps.forEach((s,i) => { if (!secs.length || secs[secs.length-1].name !== s.sec) secs.push({name:s.sec, items:[]}); secs[secs.length-1].items.push(i); });
@@ -578,6 +916,7 @@ function renderExam(id){
   h += `<div class="order" aria-label="Exam order">` + secs.map((s,k) => `${k?'<i>→</i>':''}<a href="#${id}" data-jump="s${k}">${esc(s.name)}</a>`).join('') + `</div>`;
   h += `<div class="tools"><button class="btn" data-act="open">Expand all</button><button class="btn" data-act="close">Collapse all</button><button class="btn" data-act="reset">Clear ticks</button>`;
   if (extraCount) h += `<label class="toggle"><input type="checkbox" id="xtra" ${showExtra?'checked':''}> Show non-routine tests (${extraCount})</label>`;
+  if (EXAM2CH[id]) h += `<a class="btn" href="#g-${EXAM2CH[id]}" data-goto="g-${EXAM2CH[id]}">Full chapter in the guide →</a>`;
   h += `<span class="progress" id="prog"></span></div>`;
   h += noteBox('exam:'+id, 'My session notes – '+ex.title);
   if (REFS[id]) h += `<div class="refs">${REFS[id]}</div>`;
@@ -601,7 +940,8 @@ function renderExam(id){
     h += `</div>`;
   });
   h += `<p class="tip" style="margin-top:28px">Source: McMaster Clinical Skills Guide, 6e (2026–27). Check the guide for full likelihood ratios and references.</p>`;
-  $('#main').innerHTML = h; syncBadge();
+  $('#main').dataset.hls = 'hl:x:' + id;
+  $('#main').innerHTML = h; syncBadge(); hl.paint($('#main'));
   updateProg();
   document.querySelectorAll('.rail a').forEach(a => { if (a.dataset.id===id) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current'); });
 }
@@ -621,9 +961,10 @@ function fillStep(el){
   if (s.more) h += `<details class="more"><summary>Notes</summary><div class="in">${list(s.more)}</div></details>`;
   if (s.gloss && s.gloss.length) h += `<details class="more"><summary>Terms (${s.gloss.length})</summary><div class="in">${list(s.gloss.map(g=>'• '+g))}</div></details>`;
   const sk = 'step:'+cur+':'+el.dataset.i, st = notes.all()[sk];
-  h += `<div class="snote"><div class="lab">My notes</div><textarea data-note="${sk}" placeholder="Preceptor tips for this step…">${esc(notes.get(sk))}</textarea><div class="nrow"><span data-saved="${sk}">${st?'Saved '+fmtTime(st.at):''}</span></div></div>`;
+  h += `<div class="snote"><div class="lab">My notes</div>${editor(sk, 'Preceptor tips for this step…')}<div class="nrow"><span data-saved="${sk}">${st?'Saved '+fmtTime(st.at):''}</span></div></div>`;
   h += `<div class="pg">Guide p. ${s.pg}</div>`;
   body.innerHTML = h; body.dataset.f = 1;
+  body.dataset.hls = 'hl:s:' + cur + ':' + el.dataset.i; hl.paint(body);
 }
 
 function updateProg(){
@@ -634,12 +975,12 @@ function updateProg(){
 
 /* ---------- history ---------- */
 function renderHist(tab){
-  histTab = tab; cur = null;
+  histTab = tab; cur = null; view = 'hist';
   const tabs = [['hpi','OPQRST / HPI'],['ros','Review of systems'],['big6','Big 6']];
   let h = `<div class="eyebrow">History · guide Ch 1, pp. 9–14</div><h1>History taking</h1>
     <div class="subtabs" role="tablist">${tabs.map(([k,l])=>`<button role="tab" aria-selected="${k===tab}" data-h="${k}">${l}</button>`).join('')}</div>`;
   const H = HIST[tab];
-  h += `<p class="lead">${esc(H.lead)}</p>` + noteBox('hist:'+tab, 'My session notes – '+tabs.find(x=>x[0]===tab)[1]) + (H.intro||'');
+  h += `<p class="lead">${esc(H.lead)} <a href="#g-c1" data-goto="g-c1">Full Ch 1 in the guide →</a></p>` + noteBox('hist:'+tab, 'My session notes – '+tabs.find(x=>x[0]===tab)[1]) + (H.intro||'');
   if (tab==='hpi'){
     h += `<div class="hgrid">` + H.cards.map(([b,t,qs,tip]) => `<div class="hcard"><div class="big">${b}</div><div><h3>${t}</h3><ul class="q">${qs.map(q=>`<li${/^(Targeted|Feelings|Ideas|Function|Expectations)/.test(q)?' class="n"':''}>${esc(q)}</li>`).join('')}</ul>${tip?`<p class="tip">${esc(tip)}</p>`:''}</div></div>`).join('') + `</div>`;
   } else if (tab==='ros'){
@@ -654,15 +995,21 @@ function renderHist(tab){
       return `<div class="hcard"><div class="big">${n}</div><div><h3>${t}</h3><ul class="q">${qs.map(([k,x])=>`<li${k==='n'?' class="n"':''}>${esc(x)}</li>`).join('')}</ul></div></div>`;
     }).join('') + `</div>`;
   }
-  $('#main').innerHTML = h; syncBadge();
+  $('#main').dataset.hls = 'hl:h:' + tab;
+  $('#main').innerHTML = h; syncBadge(); hl.paint($('#main'));
   document.querySelectorAll('.rail a').forEach(a => { if (a.dataset.h===tab) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current'); });
 }
 
 /* ---------- routing ---------- */
-function setTop(isHist){ $('#tabExam').setAttribute('aria-pressed', !isHist); $('#tabHist').setAttribute('aria-pressed', isHist); }
+function setTop(t){
+  t = t === true ? 'hist' : t === false ? 'exam' : t;
+  $('#tabExam').setAttribute('aria-pressed', t === 'exam'); $('#tabHist').setAttribute('aria-pressed', t === 'hist'); $('#tabGuide').setAttribute('aria-pressed', t === 'guide');
+  renderRail(t === 'guide' ? 'guide' : 'exam');
+}
 function go(token, stepIdx){
   closeDrawer();
   if (token === 'notes') { renderNotes(); window.scrollTo(0,0); return; }
+  if (/^g-[a-z0-9]+$/.test(token || '')) { renderGuide(token, stepIdx); store.set('last', token); return; }
   if (HIST[token]) { setTop(true); renderHist(token); window.scrollTo(0,0); store.set('last', token); return; }
   const id = D.exams[token] ? token : 'approach';
   setTop(false); renderExam(id); store.set('last', id);
@@ -694,17 +1041,35 @@ function search(q){
 /* ---------- events ---------- */
 document.addEventListener('click', e => {
   const t = e.target;
+  if (t.closest('#hlbtn')){ if (hl.mode == null) { hl.set(hl.color); hl.panel(true); } else hl.panel($('#hlpanel').hidden); return; }
+  const hc = t.closest('[data-hlc]');
+  if (hc){ hl.set(hc.dataset.hlc === 'erase' ? 'erase' : +hc.dataset.hlc); return; }
+  const ha = t.closest('[data-hlact]');
+  if (ha){
+    if (ha.dataset.hlact === 'off') { hl.set(null); hl.panel(false); }
+    if (ha.dataset.hlact === 'clear') { const ks = hl.pageKeys(); if (ks.length && confirm('Remove all highlights on this page?')) { ks.forEach(k => notes.set(k, '')); hl.paintAll(); } }
+    return;
+  }
+  if (!t.closest('#hlfab')) hl.panel(false);
+  if (hl.mode === 'erase'){ const m = t.closest('mark.hl'); if (m){ e.preventDefault(); const sc = m.closest('[data-hls]'); const list = hl.get(sc.dataset.hls); list.splice(+m.dataset.r, 1); hl.put(sc.dataset.hls, list); hl.paint(sc); return; } }
+  if (hl.mode != null && !getSelection().isCollapsed && t.closest('summary')) { e.preventDefault(); return; }
   const rr = t.closest('#results button[data-k]');
-  if (rr){ const x = INDEX[+rr.dataset.k]; $('#results').hidden = true; $('#q').value=''; if (x.h){ history.replaceState(null,'','#'+x.h); go(x.h);} else { history.replaceState(null,'','#'+x.id); go(x.id, x.i); } return; }
+  if (rr){ const x = INDEX[+rr.dataset.k]; $('#results').hidden = true; $('#q').value=''; if (x.g){ if (x.evq) evFilter = x.evq; history.replaceState(null,'','#'+x.g); go(x.g, x.part); return; } if (x.h){ history.replaceState(null,'','#'+x.h); go(x.h);} else { history.replaceState(null,'','#'+x.id); go(x.id, x.i); } return; }
   if (!t.closest('.search')) $('#results').hidden = true;
   const ra = t.closest('.rail a');
-  if (ra){ e.preventDefault(); const tok = ra.dataset.id || ra.dataset.h; history.replaceState(null,'','#'+tok); go(tok); return; }
+  if (ra){ e.preventDefault(); const tok = ra.dataset.id || ra.dataset.h || ra.dataset.g; if (ra.dataset.g === 'g-evidence') evFilter = ''; history.replaceState(null,'','#'+tok); go(tok); return; }
   const j = t.closest('[data-jump]');
   if (j){ e.preventDefault(); const el = document.getElementById(j.dataset.jump); if (el) el.scrollIntoView({block:'start'}); return; }
   const st = t.closest('.subtabs button');
   if (st){ history.replaceState(null,'','#'+st.dataset.h); renderHist(st.dataset.h); return; }
   const fig = t.closest('.figs button');
-  if (fig){ $('#lbImg').src = IMG[fig.dataset.img]; $('#lbCap').textContent = 'McMaster Clinical Skills Guide, 6e, p. '+fig.dataset.pg; $('#lb').hidden = false; return; }
+  if (fig){ $('#lb').classList.remove('page'); $('#lbImg').src = IMG[fig.dataset.img]; $('#lbCap').textContent = 'McMaster Clinical Skills Guide, 6e, p. '+fig.dataset.pg; $('#lb').hidden = false; return; }
+  const gf = t.closest('[data-gimg]');
+  if (gf){ $('#lb').classList.remove('page'); $('#lbImg').src = ASSET + 'gfig/' + gf.dataset.gimg; $('#lbCap').textContent = 'Figure from the McMaster Clinical Skills Guide, 6e'; $('#lb').hidden = false; return; }
+  const pgb = t.closest('[data-page]');
+  if (pgb){ const n = +pgb.dataset.page; $('#lb').classList.add('page'); $('#lbImg').src = ASSET + 'pages/p' + String(n).padStart(3, '0') + '.webp'; $('#lbCap').textContent = 'McMaster Clinical Skills Guide, 6e, p. ' + n + ' · tap anywhere to close'; $('#lb').hidden = false; $('#lb').scrollTop = 0; return; }
+  const gp = t.closest('[data-gpart]');
+  if (gp){ e.preventDefault(); const el = document.getElementById('gp' + gp.dataset.gpart); if (el){ el.open = true; el.scrollIntoView({block:'start'}); } return; }
   if (t.closest('#lb')){ $('#lb').hidden = true; return; }
   if (t.classList.contains('tick')){
     const val = t.checked; e.preventDefault();
@@ -716,30 +1081,53 @@ document.addEventListener('click', e => {
   const gt = t.closest('[data-goto]');
   if (gt){ e.preventDefault(); history.replaceState(null,'','#'+gt.dataset.goto); go(gt.dataset.goto, gt.dataset.step!=null?+gt.dataset.step:undefined); return; }
   const dt = t.closest('[data-date]');
-  if (dt){ const ta = document.querySelector(`textarea[data-note="${dt.dataset.date}"]`); const line = `— ${today()} —\n`; ta.value = (ta.value ? ta.value.replace(/\s*$/,'')+'\n\n' : '') + line; ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); saveNote(ta); return; }
+  if (dt){ const ed = document.querySelector(`.rte[data-note="${dt.dataset.date}"]`); ed.insertAdjacentHTML('beforeend', `<div><b>— ${esc(today())} —</b></div><div><br></div>`); ed.focus(); caretEnd(ed); saveNote(ed); return; }
+  const fb = t.closest('.fmt button');
+  if (fb){ const ed = document.querySelector(`.rte[data-note="${fb.parentElement.dataset.for}"]`); if (!ed) return;
+    if (document.activeElement !== ed) { ed.focus(); const r = lastRange[ed.dataset.note]; if (r && ed.contains(r.startContainer)) { const s = getSelection(); s.removeAllRanges(); s.addRange(r); } else caretEnd(ed); }
+    if (fb.dataset.cmd) document.execCommand(fb.dataset.cmd, false, null); else document.execCommand('fontSize', false, fb.dataset.size);
+    fmtState(ed); clearTimeout(saveT[ed.dataset.note]); saveT[ed.dataset.note] = setTimeout(()=>saveNote(ed), 300); return; }
   const act = t.closest('[data-act]');
   if (act){
     const a = act.dataset.act;
     if (a==='open') document.querySelectorAll('.step').forEach(d => { if (!d.closest('[hidden]')) { d.open = true; fillStep(d); } });
     if (a==='close') document.querySelectorAll('.step').forEach(d => d.open = false);
+    if (a==='gopen') document.querySelectorAll('.gpart').forEach(d => d.open = true);
+    if (a==='gclose') document.querySelectorAll('.gpart').forEach(d => d.open = false);
     if (a==='reset'){ store.set('t:'+cur, {}); document.querySelectorAll('.step').forEach(d=>{d.classList.remove('done'); d.querySelector('.tick').checked=false;}); updateProg(); }
     if (a==='exportmd') download('clinical-skills-notes.md', notesMarkdown(), 'text/markdown');
     if (a==='exportjson') download('clinical-skills-notes-backup.json', JSON.stringify(notes.all(), null, 1), 'application/json');
     if (a==='rosreset'){ store.set('ros', {}); document.querySelectorAll('[data-ros]').forEach(c=>c.checked=false); }
   }
 });
-let saveT = {};
-function saveNote(ta){
-  const k = ta.dataset.note; notes.set(k, ta.value);
-  document.querySelectorAll(`[data-saved="${k}"]`).forEach(el => el.textContent = ta.value.trim() ? 'Saved ' + fmtTime(Date.now()) : '');
+let saveT = {}, lastRange = {};
+function saveNote(ed){
+  const k = ed.dataset.note, v = edVal(ed); notes.set(k, v);
+  document.querySelectorAll(`[data-saved="${k}"]`).forEach(el => el.textContent = v ? 'Saved ' + fmtTime(Date.now()) : '');
   const det = document.getElementById(k.replace(/^step:/,'').replace(':','-'));
-  if (det && k.startsWith('step:')){ const nm = det.querySelector('summary .name'); const pen = nm.querySelector('.pen'); if (ta.value.trim() && !pen) nm.insertAdjacentHTML('beforeend','<span class="pen">✎</span>'); if (!ta.value.trim() && pen) pen.remove(); }
+  if (det && k.startsWith('step:')){ const nm = det.querySelector('summary .name'); const pen = nm.querySelector('.pen'); if (v && !pen) nm.insertAdjacentHTML('beforeend','<span class="pen">✎</span>'); if (!v && pen) pen.remove(); }
   updateCount();
 }
-function updateCount(){ const c = $('#ncount'); if (c) c.textContent = Object.keys(notes.all()).length || ''; }
-document.addEventListener('input', e => { const ta = e.target; if (ta.dataset && ta.dataset.note){ clearTimeout(saveT[ta.dataset.note]); saveT[ta.dataset.note] = setTimeout(()=>saveNote(ta), 300); } });
-document.addEventListener('focusout', e => { const ta = e.target; if (ta.dataset && ta.dataset.note){ clearTimeout(saveT[ta.dataset.note]); saveNote(ta); } });
-window.addEventListener('beforeunload', () => document.querySelectorAll('textarea[data-note]').forEach(ta => notes.set(ta.dataset.note, ta.value)));
+function caretEnd(ed){ const r = document.createRange(); r.selectNodeContents(ed); r.collapse(false); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
+function fmtState(ed){
+  const bar = ed.previousElementSibling; if (!bar || !bar.classList.contains('fmt')) return;
+  bar.querySelectorAll('[data-cmd]').forEach(b => { let on = false; try { on = document.queryCommandState(b.dataset.cmd); } catch(e){} b.setAttribute('aria-pressed', on); });
+}
+function updateCount(){ const c = $('#ncount'); if (c) c.textContent = noteKeys().length || ''; }
+const edOf = e => e.target && e.target.closest ? e.target.closest('.rte[data-note]') : null;
+document.addEventListener('input', e => { const ed = edOf(e); if (ed){ clearTimeout(saveT[ed.dataset.note]); saveT[ed.dataset.note] = setTimeout(()=>saveNote(ed), 300); } });
+document.addEventListener('focusout', e => { const ed = edOf(e); if (ed){ clearTimeout(saveT[ed.dataset.note]); saveNote(ed); } });
+// keep formatting buttons from stealing focus (and the phone keyboard) from the note
+['pointerdown','mousedown'].forEach(ev => document.addEventListener(ev, e => { if (e.target.closest && e.target.closest('.fmt button')) e.preventDefault(); }));
+// paste as plain text so web pages don't bring their own fonts and colours
+document.addEventListener('paste', e => { const ed = edOf(e); if (!ed) return; e.preventDefault(); document.execCommand('insertText', false, (e.clipboardData || window.clipboardData).getData('text/plain')); });
+document.addEventListener('keydown', e => { const ed = edOf(e); if (ed && (e.ctrlKey || e.metaKey) && /^[biu]$/i.test(e.key)) setTimeout(() => fmtState(ed), 0); });
+document.addEventListener('selectionchange', () => {
+  const ed = document.activeElement && document.activeElement.closest ? document.activeElement.closest('.rte[data-note]') : null;
+  if (ed) { const s = getSelection(); if (s.rangeCount && ed.contains(s.anchorNode)) lastRange[ed.dataset.note] = s.getRangeAt(0).cloneRange(); fmtState(ed); }
+  hl.onSelChange();
+});
+window.addEventListener('beforeunload', () => document.querySelectorAll('.rte[data-note]').forEach(ed => notes.set(ed.dataset.note, edVal(ed))));
 document.addEventListener('toggle', e => { if (e.target.classList && e.target.classList.contains('step') && e.target.open) fillStep(e.target); }, true);
 document.addEventListener('change', e => {
   if (e.target.id==='importNotes' && e.target.files[0]){
@@ -753,8 +1141,13 @@ document.addEventListener('change', e => {
   if (e.target.id==='xtra'){ showExtra = e.target.checked; document.querySelectorAll('[data-extra="1"]').forEach(el=>el.hidden=!showExtra); }
   if (e.target.dataset && e.target.dataset.ros){ const m = store.get('ros') || {}; m[e.target.dataset.ros] = e.target.checked; store.set('ros', m); }
 });
-document.addEventListener('keydown', e => { if (e.key==='Escape'){ $('#lb').hidden = true; $('#results').hidden = true; closeDrawer(); } });
+document.addEventListener('keydown', e => { if (e.key==='Escape'){ hl.panel(false); $('#lb').hidden = true; $('#results').hidden = true; closeDrawer(); } });
+document.addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') hl.down = true; });
+document.addEventListener('mouseup', () => { hl.down = false; if (hl.mode != null) setTimeout(() => hl.fromSelection(), 0); });
+document.addEventListener('touchend', () => { if (hl.mode != null) { clearTimeout(hl.selT); hl.selT = setTimeout(() => hl.fromSelection(), 900); } });
 $('#q').addEventListener('input', e => search(e.target.value));
+document.addEventListener('input', e => { if (e.target.id === 'evq') { evFilter = e.target.value; renderEvList(); } });
+$('#tabGuide').addEventListener('click', () => { const l = store.get('lastGuide') || 'g-c1'; history.replaceState(null,'','#'+l); go(l); });
 $('#q').addEventListener('keydown', e => { if (e.key==='Enter'){ const b = $('#results button[data-k]'); if (b) b.click(); } });
 $('#tabExam').addEventListener('click', () => { const l = store.get('lastExam') || 'approach'; history.replaceState(null,'','#'+l); go(l); });
 $('#tabHist').addEventListener('click', () => { history.replaceState(null,'','#'+histTab); go(histTab); });
@@ -764,10 +1157,13 @@ $('#scrim').addEventListener('click', closeDrawer);
 window.addEventListener('hashchange', routeFromHash);
 const _go = go; go = function(tok, i){ if (D.exams[tok]) store.set('lastExam', tok); _go(tok, i); };
 
-renderRail();
+renderRail('exam');
+hl.ui();
 updateCount();
 cloud.init();
 routeFromHash();
+// fetch the guide in the background so search covers it
+(window.requestIdleCallback || (f => setTimeout(f, 1500)))(() => loadGuide().catch(() => {}));
 })();
 </script>
 
