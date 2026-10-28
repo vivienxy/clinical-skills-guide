@@ -21,7 +21,7 @@ export default async function handler(req, res) {
   if (req.method === 'PUT') {
     const { k, text, at } = await body(req);
     if (typeof k !== 'string' || !/^[a-z0-9:_-]{1,80}$/i.test(k)) return send(res, 400, { error: 'Bad note key.' });
-    if (typeof text !== 'string' || text.length > 100000) return send(res, 400, { error: 'Note is too long (100,000 characters max).' });
+    if (typeof text !== 'string' || text.length > 400000) return send(res, 400, { error: 'Note is too long (400,000 characters max).' });
     const when = Number(at) || Date.now();
     // keep whichever edit is newer, so an old device can't overwrite a newer note
     const prev = await redis('HGET', key, k);

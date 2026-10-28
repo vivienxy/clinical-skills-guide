@@ -4,7 +4,7 @@ This is the same guide, with a login added. Your session notes are saved to your
 
 ## What's on the site
 
-- **Physical exam** and **History**: the quick-reference exam steps and history questions.
+- **Physical exam** and **History**: the quick-reference exam steps and history questions. History also has **Focused histories**: the guide's question lists for each system (30 of them), as cards you can fold, with a printed-page link on each card.
 - **Guide**: the whole McMaster Clinical Skills Guide, 6e, chapter by chapter (all 41 chapters and the 5 appendices), plus every likelihood-ratio table gathered on one page. Each page break has an "original page" button that shows that page exactly as printed.
 - **Notes** with formatting, and a **highlighter**. Both sync to your account.
 

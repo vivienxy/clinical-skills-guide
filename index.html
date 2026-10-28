@@ -197,6 +197,11 @@ td.k{font-family:var(--f-mono);white-space:nowrap}
 /* highlighter */
 mark.hl{color:inherit;border-radius:2px}
 mark.hl[data-c="0"]{background:rgba(255,210,0,.5)}mark.hl[data-c="1"]{background:rgba(60,200,110,.4)}mark.hl[data-c="2"]{background:rgba(255,100,170,.38)}mark.hl[data-c="3"]{background:rgba(70,150,255,.38)}mark.hl[data-c="4"]{background:rgba(255,140,30,.45)}
+.hlpanel .custom{display:flex;gap:8px;align-items:center}
+.hlpanel .custom input[type=color]{width:38px;height:34px;padding:0;border:1px solid var(--line);border-radius:8px;background:none;cursor:pointer}
+.hlpanel .custom input[type=text]{width:96px;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:6px 8px;font:13px var(--f-mono)}
+.hlpanel .custom .btn{padding:6px 10px}
+.hlpanel .custom.on input[type=color]{box-shadow:0 0 0 2px var(--ink)}
 .sw-0{background:#ffd400}.sw-1{background:#3cc86e}.sw-2{background:#ff64aa}.sw-3{background:#4696ff}.sw-4{background:#ff8c1e}
 body.hl-erase mark.hl{cursor:pointer;outline:1px dashed currentColor;outline-offset:1px}
 .hlfab{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:max(16px,env(safe-area-inset-bottom,0px));z-index:35;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
@@ -254,6 +259,58 @@ body.hl-erase mark.hl{cursor:pointer;outline:1px dashed currentColor;outline-off
 .gpg::before,.gpg::after{content:"";flex:1;height:1px;background:var(--line)}
 .gpg button{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:3px 10px;cursor:pointer;font:12px var(--f-mono);color:var(--muted)}
 .gpg button:hover{border-color:var(--accent);color:var(--ink)}
+/* focused histories */
+.fxpick{display:grid;gap:8px;margin:0 0 16px}
+.fxpick div{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.fxpick b{font:600 11px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);min-width:118px}
+.fxpick a{font-size:13px;text-decoration:none;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px 11px}
+.fxpick a:hover{border-color:var(--accent)}
+.fxpick a[aria-current="page"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.fxsec{font:600 12px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin:22px 0 8px}
+.fxgrid{column-width:400px;column-gap:10px}
+.fxcard{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);scroll-margin-top:90px;break-inside:avoid;margin:0 0 10px;display:block}
+.fxcard>summary{list-style:none;cursor:pointer;padding:10px 14px;font:600 15px var(--f-head);display:flex;gap:8px;align-items:center}
+.fxcard>summary::-webkit-details-marker{display:none}
+.fxcard>summary::after{content:"";width:8px;height:8px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);margin-left:auto;flex:none;transition:transform .15s}
+.fxcard[open]>summary::after{transform:rotate(225deg)}
+.fxcard ul{list-style:none;margin:0;padding:0 14px 12px}
+.fxcard li{position:relative;padding:3px 0 3px 16px}
+.fxcard li::before{content:"";position:absolute;left:3px;top:.75em;width:5px;height:5px;border-radius:50%;background:var(--accent)}
+.fxcard li.l1{margin-left:16px}.fxcard li.l1::before{background:none;border:1px solid var(--muted)}
+.fxcard li.l2{margin-left:32px}.fxcard li.l2::before{border-radius:0;width:4px;height:4px;background:var(--muted)}
+.fxcard li.np{padding-left:0}.fxcard li.np::before{display:none}
+.fxcard li.np.cl0{padding-left:16px}.fxcard li.np.cl1{margin-left:16px;padding-left:16px}.fxcard li.np.cl2{margin-left:32px;padding-left:16px}
+.fxcard>summary>span{flex:1}
+.fxpg{font:500 11px var(--f-mono);color:var(--muted);background:none;border:1px solid var(--line);border-radius:999px;padding:1px 7px;cursor:pointer;flex:none}
+.fxpg:hover{color:var(--accent);border-color:var(--accent)}
+.fxcard>summary::after{margin-left:2px}
+.fxcard li.sub{padding-left:0;margin-top:6px;font:600 12px var(--f-mono);text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.fxcard li.sub::before{display:none}
+.fxcard.note{background:var(--bg)}
+.fxwhy{margin:0 14px 12px;border-top:1px dashed var(--line);padding-top:6px}
+.fxwhy>summary{cursor:pointer;font:600 12px var(--f-mono);text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:4px 0}
+.fxwhy>ul{padding:4px 0 0;color:var(--muted)}
+.fxjump{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 6px}
+.fxjump a{font-size:12.5px;text-decoration:none;color:var(--muted);border-bottom:1px dotted var(--muted)}
+.gedbar{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end;padding:8px 16px 0}
+.gedbar .btn{padding:4px 10px;font-size:12.5px}
+.gedtag{font:500 11px/1 var(--f-mono);color:var(--note-ink);background:var(--note-bg);border:1px solid var(--note-line);padding:4px 7px;border-radius:4px;margin-right:auto}
+.gedbar.on{position:sticky;z-index:6;background:var(--panel);padding-bottom:8px;border-bottom:1px solid var(--line)}
+.gedbar .fmt{border-radius:8px;border:1px solid var(--line);margin-right:auto}
+.gbody.editing{outline:2px dashed var(--accent);outline-offset:-6px;background:var(--note-bg);cursor:text}
+.gbody.editing [contenteditable="false"]{opacity:.6}
+.gwarn{display:flex;gap:12px;align-items:center;background:var(--mark);border-radius:8px;padding:8px 10px;margin:6px 0 10px;font-size:13.5px}
+.gwarn button{flex:none;border:1px solid var(--line);background:#fff;border-radius:6px;padding:3px;cursor:zoom-in}
+.gwarn img{display:block;width:72px;height:auto}
+.gwarn b{display:block}
+.gview{display:inline-flex;background:var(--soft);border-radius:999px;padding:3px}
+.gview button{border:0;background:none;padding:5px 12px;border-radius:999px;cursor:pointer;font-size:13px;font-weight:500;color:var(--muted)}
+.gview button[aria-pressed="true"]{background:var(--panel);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.gpages{display:grid;gap:14px;justify-items:center}
+.gpages figure{margin:0;width:100%;max-width:900px;scroll-margin-top:90px}
+.gpages figure button{display:block;width:100%;border:1px solid var(--line);background:#fff;border-radius:8px;padding:0;cursor:zoom-in;overflow:hidden}
+.gpages img{display:block;width:100%;height:auto;aspect-ratio:612/792}
+.gpages figcaption{font:12px var(--f-mono);color:var(--muted);text-align:center;margin-top:4px}
 .gfig{display:inline-block;border:1px solid var(--line);background:#fff;border-radius:8px;padding:4px;margin:6px 6px 6px 0;cursor:zoom-in;max-width:100%;vertical-align:top}
 .gfig img{display:block;max-width:100%;height:auto;max-height:340px;width:auto}
 .pager{display:flex;justify-content:space-between;gap:10px;margin-top:22px;flex-wrap:wrap}
@@ -495,7 +552,7 @@ const notes = {
   set(k, text){ const a = this.all(); const old = a[k] ? a[k].text : ''; if (old === text) return; if (text.trim()) a[k] = {text, at: Date.now()}; else delete a[k]; store.set('notes', a); cloud.push(k); },
 };
 
-const isHl = k => k.startsWith('hl:');
+const isHl = k => k.startsWith('hl:') || k.startsWith('ed:');
 const noteKeys = () => Object.keys(notes.all()).filter(k => !isHl(k));
 
 /* ---------- rich-text notes: stored as a small, cleaned subset of HTML ---------- */
@@ -562,10 +619,14 @@ function editor(k, ph){
 
 /* ---------- highlighter: ranges are character offsets within a page section, synced like notes under "hl:" keys ---------- */
 const HL_NAMES = ['Yellow', 'Green', 'Pink', 'Blue', 'Orange'];
-const NOHL = '.gpg,.gfig,.pager,.note,.snote,.tools,.nrow,.pen,.progress,.tag,[data-sync],[data-saved],button,input,textarea,svg,.fmt,.subtabs,.order,[contenteditable]';
+const isHex = c => typeof c === 'string' && /^#[0-9a-f]{6}$/i.test(c);
+// a hex code typed or picked by the viewer: accepts "abc", "#abc", "aabbcc" or "#aabbcc"
+function toHex(v){ v = String(v || '').trim().replace(/^#/, ''); if (/^[0-9a-f]{3}$/i.test(v)) v = v.replace(/./g, '$&$&'); return /^[0-9a-f]{6}$/i.test(v) ? '#' + v.toLowerCase() : null; }
+const NOHL = '.gpg,.gfig,.gwarn,.gview,.gpages,.pager,.note,.snote,.tools,.nrow,.pen,.progress,.tag,[data-sync],[data-saved],button,input,textarea,svg,.fmt,.subtabs,.order,[contenteditable]';
 const hl = {
   mode: null, // null = off, 0–4 = colour, 'erase'
-  color: (() => { const c = store.get('hlc'); return Number.isInteger(c) && c >= 0 && c < HL_NAMES.length ? c : 0; })(),
+  color: (() => { const c = store.get('hlc'); return (Number.isInteger(c) && c >= 0 && c < HL_NAMES.length) || isHex(c) ? c : 0; })(),
+  custom: (() => { const c = store.get('hlcustom'); return isHex(c) ? c : '#b388ff'; })(),
   get(key){ try { const v = JSON.parse(notes.get(key) || '[]'); return Array.isArray(v) ? v : []; } catch(e){ return []; } },
   put(key, list){ notes.set(key, list.length ? JSON.stringify(list) : ''); },
   // the text nodes that belong to this section (not nested sections, notes, buttons or counters)
@@ -582,7 +643,8 @@ const hl = {
       let pos = 0; const segs = [];
       for (const n of this.nodes(scope)) { const L = n.length, a = Math.max(s, pos), b = Math.min(e, pos + L); if (b > a && n.data.trim()) segs.push([n, a - pos, b - pos]); pos += L; if (pos >= e) break; }
       segs.forEach(([n, a, b]) => { if (a > 0) n = n.splitText(a); if (b - a < n.length) n.splitText(b - a);
-        const m = document.createElement('mark'); m.className = 'hl'; m.dataset.c = c; m.dataset.r = idx; n.replaceWith(m); m.appendChild(n); });
+        const m = document.createElement('mark'); m.className = 'hl'; m.dataset.r = idx;
+        if (isHex(c)) m.style.background = c + '73'; else m.dataset.c = c; n.replaceWith(m); m.appendChild(n); });
     });
   },
   paintAll(){ document.querySelectorAll('[data-hls]').forEach(sc => this.paint(sc)); },
@@ -617,17 +679,18 @@ const hl = {
     clearTimeout(this.selT); this.selT = setTimeout(() => this.fromSelection(), 900);
   },
   pageKeys(){
-    const pre = view === 'guide' ? ['hl:g:' + guideTok.slice(2) + ':'] : cur ? ['hl:x:' + cur, 'hl:s:' + cur + ':'] : ['hl:h:' + histTab];
+    const pre = view === 'hist' && histTab === 'fhx' ? ['hl:f:' + (store.get('lastFhxCh') || 'c5')] : view === 'guide' ? ['hl:g:' + guideTok.slice(2) + ':'] : cur ? ['hl:x:' + cur, 'hl:s:' + cur + ':'] : ['hl:h:' + histTab];
     return Object.keys(notes.all()).filter(k => pre.some(p => k === p || (p.endsWith(':') && k.startsWith(p))));
   },
   set(mode){
     this.mode = mode;
-    if (mode != null && mode !== 'erase') { this.color = mode; store.set('hlc', mode); }
+    if (mode != null && mode !== 'erase') { this.color = mode; store.set('hlc', mode); if (isHex(mode)) { this.custom = mode; store.set('hlcustom', mode); } }
     document.body.classList.toggle('hl-erase', mode === 'erase');
     const b = $('#hlbtn'); b.setAttribute('aria-pressed', mode != null);
-    b.querySelector('.dot').className = 'dot sw-' + this.color; b.querySelector('.dot').hidden = mode == null;
+    const dot = b.querySelector('.dot'); dot.className = isHex(this.color) ? 'dot' : 'dot sw-' + this.color; dot.style.background = isHex(this.color) ? this.color : ''; dot.hidden = mode == null;
     document.querySelectorAll('#hlpanel [data-hlc]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.hlc) === String(mode)));
-    $('#hlstate').textContent = mode == null ? 'Off' : mode === 'erase' ? 'Eraser' : HL_NAMES[mode];
+    $('#hlcol').value = this.custom; $('#hlhex').value = this.custom; $('#hlcustom').classList.toggle('on', isHex(mode));
+    $('#hlstate').textContent = mode == null ? 'Off' : mode === 'erase' ? 'Eraser' : isHex(mode) ? mode : HL_NAMES[mode];
     $('#hlhint').textContent = mode == null ? 'Pick a colour, then select words on the page to highlight them.'
       : mode === 'erase' ? 'Tap a highlight, or select over it, to remove it.' : 'Select words on the page to highlight them. Highlights sync with your notes.';
   },
@@ -638,6 +701,7 @@ const hl = {
         <div class="hd">Highlighter <span id="hlstate">Off</span></div>
         <div class="sw">${HL_NAMES.map((n, i) => `<button type="button" class="sw-${i}" data-hlc="${i}" aria-label="${n}" title="${n}"></button>`).join('')}
           <button type="button" class="er" data-hlc="erase" aria-label="Eraser" title="Eraser"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 21-4-4a2 2 0 0 1 0-2.8L13.2 4a2 2 0 0 1 2.8 0l4 4a2 2 0 0 1 0 2.8L11 20"/><path d="M7 21h14M9 10l5 5"/></svg></button></div>
+        <div class="custom" id="hlcustom"><input type="color" id="hlcol" aria-label="Pick any colour" title="Pick any colour"><input type="text" id="hlhex" placeholder="#ff00aa" maxlength="7" spellcheck="false" autocomplete="off" aria-label="Hex colour code"><button type="button" class="btn" data-hlact="hex">Use</button></div>
         <p id="hlhint"></p>
         <div class="row"><button type="button" class="btn" data-hlact="off">Turn off</button><button type="button" class="btn" data-hlact="clear">Clear this page</button></div>
       </div>
@@ -747,12 +811,14 @@ function syncBadge(){
 function refreshNoteViews(){
   document.querySelectorAll('.rte[data-note]').forEach(ed => { if (document.activeElement !== ed) { const v = noteHtml(notes.get(ed.dataset.note)); if (ed.innerHTML !== v) ed.innerHTML = v; } });
   if ((location.hash || '').slice(1) === 'notes') renderNotes();
+  if (view === 'guide' && G) document.querySelectorAll('.gpart[data-gk]').forEach(det => { if (det === gEditing) return; const [cid, k] = det.dataset.gk.split(':'); const a = notes.all()['ed:g:' + cid + ':' + k]; if ((a ? String(a.at) : 'o') !== det.dataset.sig) replacePart(det); });
   hl.paintAll();
   updateCount();
 }
 function noteLabel(k){
   const [kind, a, b] = k.split(':');
   if (kind === 'guide') { const c = gch(a); return {title: 'Guide · ' + (c ? c.lab + ' ' + c.title : 'chapter'), href: 'g-' + a}; }
+  if (kind === 'fhx') return {title: 'Focused history · ' + (FXNAME[a] || a), href: 'fhx-' + a};
   if (kind === 'hist') return {title: 'History · ' + ({hpi:'OPQRST / HPI', ros:'Review of systems', big6:'Big 6'}[a] || a), href: a};
   const ex = D.exams[a]; if (!ex) return {title: k, href: ''};
   if (kind === 'exam') return {title: ex.title + ' · session notes', href: a};
@@ -811,6 +877,8 @@ function loadGuide(){
   return gLoading;
 }
 const gch = id => G ? G.chapters.find(c => c.id === id) : null;
+const pageSrc = n => ASSET + 'pages/p' + String(+n).padStart(3, '0') + '.webp';
+let gMode = store.get('gmode') === 'pages' ? 'pages' : 'text';
 const unesc = h => { const t = document.createElement('textarea'); t.innerHTML = h; return t.value; };
 function shortPart(t){ const x = t.split(/ – | \(|: /)[0]; return x.length > 44 ? x.slice(0, 42) + '…' : x; }
 function indexGuide(){
@@ -822,6 +890,10 @@ function indexGuide(){
       p.b.forEach(x => { if (x[0] === 'h') { const t = unesc(x[1]).replace(/:$/, ''); INDEX.push({t, sub, g: 'g-' + c.id, part: k, hay: (t + ' ' + c.title).toLowerCase()}); } });
     });
   });
+  FX.forEach(([, xs]) => xs.forEach(([id, name]) => { const c = gch(id); if (!c) return;
+    INDEX.push({t: name + ' focused history', sub: 'History · focused histories', fx: 'fhx-' + id, hay: (name + ' focused history questions hpi ' + c.title).toLowerCase()});
+    fxParts(c).forEach(([p]) => fxItems(p).forEach(r => { if (r.cols && r.title) INDEX.push({t: r.title, sub: 'Focused history · ' + name, fx: 'fhx-' + id, hay: (r.title + ' ' + name + ' history').toLowerCase()}); }));
+  }));
   G.evidence.forEach(e => { const c = gch(e.ch); INDEX.push({t: e.q, sub: 'LR table · ' + (c ? c.lab + ' ' + c.title : ''), g: 'g-evidence', evq: e.q, hay: (e.q + ' likelihood ratio lr ' + (c ? c.title : '')).toLowerCase()}); });
 }
 const okCol = c => /^#[0-9a-f]{6}$/i.test(c || '');
@@ -832,16 +904,18 @@ function gtable(t){
 }
 function gblocks(b){
   return b.map(x => {
-    if (x[0] === 'pg') return `<div class="gpg"><button type="button" data-page="${+x[1]}" title="See this page as it appears in the PDF">Guide p. ${+x[1]} · original page</button></div>`;
+    if (x[0] === 'pg') return `<div class="gpg" data-keep="pg:${+x[1]}${x[2] ? ':1' : ''}"><button type="button" data-page="${+x[1]}" title="See this page as it appears in the PDF">Guide p. ${+x[1]} · original page</button></div>`
+      + (x[2] ? `<div class="gwarn" data-keep="skip"><button type="button" data-page="${+x[1]}" aria-label="Open page ${+x[1]} as printed"><img src="${pageSrc(x[1])}" alt="" loading="lazy" width="72" height="93"></button><span><b>Layout check: p. ${+x[1]}</b>This page has diagrams, formulas or side-by-side boxes that may read oddly below. Tap the page to see it as printed.</span></div>` : '');
     if (x[0] === 'h') return `<h3>${x[1]}</h3>`;
     if (x[0] === 'p') return `<p>${x[1]}</p>`;
     if (x[0] === 'ul') return `<ul class="gl">${x[1].map(([lv, t]) => `<li class="lv${Math.min(+lv, 3)}">${t}</li>`).join('')}</ul>`;
     if (x[0] === 't') return gtable(x[1]);
-    if (x[0] === 'f') return `<button type="button" class="gfig" data-gimg="${esc(x[1])}" aria-label="Enlarge figure"><img src="${ASSET}gfig/${esc(x[1])}" width="${+x[2]}" height="${+x[3]}" alt="Figure from the guide" loading="lazy"></button>`;
+    if (x[0] === 'f') return `<button type="button" class="gfig" data-keep="f:${esc(x[1])}:${+x[2]}:${+x[3]}" data-gimg="${esc(x[1])}" aria-label="Enlarge figure"><img src="${ASSET}gfig/${esc(x[1])}" width="${+x[2]}" height="${+x[3]}" alt="Figure from the guide" loading="lazy"></button>`;
     return '';
   }).join('');
 }
 function renderGuide(tok, part){
+  gEditing = null;
   view = 'guide'; cur = null; setTop('guide'); guideTok = tok; store.set('lastGuide', tok);
   const main = $('#main'); delete main.dataset.hls;
   if (!G) {
@@ -855,17 +929,285 @@ function renderGuide(tok, part){
   const quick = c.exam && (D.exams[c.exam] || HIST[c.exam]) ? c.exam : null;
   let h = `<div class="eyebrow">Guide · ${esc(G.sections[c.sec] || '')} · pp. ${c.pg[0]}–${c.pg[1]}</div><h1>${esc(c.lab)}: ${esc(c.title)}</h1>`;
   if (c.parts.length > 1) h += `<div class="order" aria-label="Parts of this chapter">` + c.parts.map((p, k) => `${k ? '<i>·</i>' : ''}<a href="#g-${c.id}" data-gpart="${k}">${esc(shortPart(p.t))}</a>`).join('') + `</div>`;
-  h += `<div class="tools"><button class="btn" data-act="gopen">Expand all</button><button class="btn" data-act="gclose">Collapse all</button>`
+  h += `<div class="tools"><div class="gview" role="group" aria-label="How to show this chapter"><button type="button" data-gmode="text" aria-pressed="${gMode === 'text'}">Text</button><button type="button" data-gmode="pages" aria-pressed="${gMode === 'pages'}">Original pages</button></div>`
+    + (gMode === 'text' ? `<button class="btn" data-act="gopen">Expand all</button><button class="btn" data-act="gclose">Collapse all</button>` : '')
     + (quick ? `<a class="btn" href="#${quick}" data-goto="${quick}">${D.exams[quick] ? 'Quick exam steps' : 'Quick history questions'} →</a>` : '') + `</div>`;
   h += noteBox('guide:' + c.id, 'My notes – ' + c.lab + ' ' + c.title);
   const openAll = c.parts.length <= 2;
-  h += c.parts.map((p, k) => `<details class="gpart" id="gp${k}"${openAll || k === part ? ' open' : ''}><summary>${p.n ? `<span class="gpn">Part ${esc(p.n)}</span>` : ''}<h2>${esc(p.t)}</h2></summary><div class="gbody" data-hls="hl:g:${c.id}:${k}">${gblocks(p.b)}</div></details>`).join('');
+  if (gMode === 'pages') {
+    const nums = []; for (let n = c.pg[0]; n <= c.pg[1]; n++) nums.push(n);
+    h += `<p class="tip">Every page of this chapter exactly as printed. Tap a page to zoom in. The part buttons above jump to where each part starts. Switch back to <b>Text</b> to highlight.</p><div class="gpages">` + nums.map(n => `<figure id="pp${n}"><button type="button" data-page="${n}" aria-label="Zoom page ${n}"><img src="${pageSrc(n)}" alt="Guide page ${n}" loading="lazy" width="612" height="792"></button><figcaption>Guide p. ${n}</figcaption></figure>`).join('') + `</div>`;
+  } else
+  h += c.parts.map((p, k) => { const g = gPart(c, k);
+    return `<details class="gpart" id="gp${k}" data-gk="${c.id}:${k}" data-sig="${g.sig}"${openAll || k === part ? ' open' : ''}><summary>${p.n ? `<span class="gpn">Part ${esc(p.n)}</span>` : ''}<h2>${esc(p.t)}</h2></summary><div class="gedbar">${gedbar(g.edited)}</div><div class="gbody" data-hls="${g.hls}">${g.html}</div></details>`; }).join('');
   const prev = G.chapters[ci - 1], next = G.chapters[ci + 1];
   h += `<div class="pager">${prev ? `<a href="#g-${prev.id}" data-goto="g-${prev.id}"><small>← Previous</small>${esc(prev.lab)}: ${esc(prev.title)}</a>` : '<span></span>'}${next ? `<a href="#g-${next.id}" data-goto="g-${next.id}" style="text-align:right"><small>Next →</small>${esc(next.lab)}: ${esc(next.title)}</a>` : ''}</div>`;
   main.innerHTML = h; syncBadge(); hl.paintAll(); markRail(tok);
-  if (part != null) { const el = document.getElementById('gp' + part); if (el) { el.open = true; el.scrollIntoView({block: 'start'}); return; } }
+  if (part != null) {
+    const el = gMode === 'pages' ? document.getElementById('pp' + partPage(c, part)) : document.getElementById('gp' + part);
+    if (el) { if (el.tagName === 'DETAILS') el.open = true; el.scrollIntoView({block: 'start'}); return; }
+  }
   window.scrollTo(0, 0);
 }
+/* ---------- your own fixes to the guide text: saved like notes under "ed:" keys ---------- */
+const GOK = {P:1, H3:1, H4:1, UL:1, OL:1, LI:1, B:1, STRONG:1, I:1, EM:1, U:1, BR:1, DIV:1, SPAN:1, FONT:1, TABLE:1, THEAD:1, TBODY:1, TR:1, TD:1, TH:1, HR:1, SUB:1, SUP:1};
+const GCLS = {gl:1, lv0:1, lv1:1, lv2:1, lv3:1, tbl:1, gt:1, cc:1};
+const KEEP = /^(pg:\d{1,3}(:1)?|f:[\w.-]{1,40}:\d{1,5}:\d{1,5})$/;
+function cleanGuideHtml(html){
+  const tpl = document.createElement('template'); tpl.innerHTML = html;
+  tpl.content.querySelectorAll('[data-keep]').forEach(x => { const k = x.getAttribute('data-keep'); if (KEEP.test(k)) { const hr = document.createElement('hr'); hr.setAttribute('data-k', k); x.replaceWith(hr); } else x.remove(); });
+  tpl.content.querySelectorAll('mark.hl').forEach(m => m.replaceWith(...m.childNodes));
+  (function walk(el){
+    [...el.childNodes].forEach(n => {
+      if (n.nodeType === 3) return;
+      if (n.nodeType !== 1 || /^(script|style|iframe|object|embed|template|svg|math|img|video|audio|button|input|textarea|select|form|link|meta)$/i.test(n.nodeName)) { n.remove(); return; }
+      walk(n);
+      if (!GOK[n.nodeName]) { n.replaceWith(...n.childNodes); return; }
+      const keep = {};
+      const cls = [...n.classList].filter(c => GCLS[c]); if (cls.length) keep.class = cls.join(' ');
+      if (n.nodeName === 'FONT' && /^[1-7]$/.test(n.getAttribute('size') || '')) keep.size = n.getAttribute('size');
+      if ((n.nodeName === 'TD' || n.nodeName === 'TH')) {
+        const m = (n.getAttribute('style') || '').match(/--cc:\s*(#[0-9a-f]{6})/i); if (m) keep.style = '--cc:' + m[1];
+        ['colspan', 'rowspan'].forEach(a => { if (/^\d{1,2}$/.test(n.getAttribute(a) || '')) keep[a] = n.getAttribute(a); });
+      }
+      if (n.nodeName === 'SPAN') { const st = [], cs = n.style;
+        if (/bold|[6-9]00/.test(cs.fontWeight)) st.push('font-weight:bold');
+        if (cs.fontStyle === 'italic') st.push('font-style:italic');
+        if (/underline/.test(cs.textDecorationLine || cs.textDecoration || '')) st.push('text-decoration:underline');
+        if (st.length) keep.style = st.join(';'); }
+      if (n.nodeName === 'HR' && KEEP.test(n.getAttribute('data-k') || '')) keep['data-k'] = n.getAttribute('data-k');
+      [...n.attributes].forEach(a => n.removeAttribute(a.name));
+      Object.entries(keep).forEach(([k, v]) => n.setAttribute(k, v));
+      if ((n.nodeName === 'FONT' && !keep.size) || (n.nodeName === 'SPAN' && !keep.style)) n.replaceWith(...n.childNodes);
+    });
+  })(tpl.content);
+  return tpl.innerHTML;
+}
+// put page dividers and figures back where the saved text has their placeholders
+function expandGuide(html){
+  const tpl = document.createElement('template'); tpl.innerHTML = cleanGuideHtml(html);
+  tpl.content.querySelectorAll('hr[data-k]').forEach(hr => { const k = hr.getAttribute('data-k').split(':');
+    const blk = k[0] === 'pg' ? ['pg', +k[1], k[2] ? 1 : 0] : ['f', k[1], +k[2], +k[3]];
+    const t = document.createElement('template'); t.innerHTML = gblocks([blk]); hr.replaceWith(t.content); });
+  return tpl.innerHTML;
+}
+function gPart(c, k){
+  const key = 'ed:g:' + c.id + ':' + k, a = notes.all()[key];
+  return a ? {html: expandGuide(a.text), edited: true, hls: 'hl:g:' + c.id + ':' + k + 'e', sig: String(a.at)}
+           : {html: gblocks(c.parts[k].b), edited: false, hls: 'hl:g:' + c.id + ':' + k, sig: 'o'};
+}
+function gedbar(edited){
+  return (edited ? `<span class="gedtag">✎ Edited by you</span><button type="button" class="btn" data-ged="reset">Reset to original</button>` : '')
+    + `<button type="button" class="btn" data-ged="edit" title="Fix the text or formatting of this part">✎ Edit text</button>`;
+}
+let gEditing = null;
+function replacePart(det){
+  const [cid, k] = det.dataset.gk.split(':'), c = gch(cid), g = gPart(c, +k);
+  const body = det.querySelector('.gbody'), bar = det.querySelector('.gedbar');
+  body.removeAttribute('contenteditable'); body.classList.remove('editing'); bar.classList.remove('on'); bar.style.top = '';
+  body.dataset.hls = g.hls; body.innerHTML = g.html; bar.innerHTML = gedbar(g.edited); det.dataset.sig = g.sig;
+  if (gEditing === det) gEditing = null;
+  hl.paint(body);
+}
+function startEdit(det){
+  if (gEditing && gEditing !== det) { if (!confirm('Stop editing the other part without saving?')) return; replacePart(gEditing); }
+  if (hl.mode != null) { hl.set(null); hl.panel(false); }
+  const body = det.querySelector('.gbody'), bar = det.querySelector('.gedbar');
+  body.querySelectorAll('mark.hl').forEach(m => m.replaceWith(...m.childNodes)); body.normalize();
+  delete body.dataset.hls;
+  body.querySelectorAll('[data-keep]').forEach(x => x.setAttribute('contenteditable', 'false'));
+  body.setAttribute('contenteditable', 'true'); body.classList.add('editing');
+  bar.classList.add('on'); bar.style.top = $('.top').offsetHeight + 'px';
+  bar.innerHTML = `<div class="fmt" role="toolbar" aria-label="Formatting">
+    <button type="button" data-gcmd="bold" title="Bold" aria-label="Bold"><b>B</b></button>
+    <button type="button" data-gcmd="italic" title="Italic" aria-label="Italic"><i>I</i></button>
+    <button type="button" data-gcmd="underline" title="Underline" aria-label="Underline"><u>U</u></button><span class="sep"></span>
+    <button type="button" data-gsize="2" class="fs2" title="Small text" aria-label="Small text">A</button>
+    <button type="button" data-gsize="3" title="Normal text" aria-label="Normal text">A</button>
+    <button type="button" data-gsize="5" class="fs5" title="Large text" aria-label="Large text">A</button><span class="sep"></span>
+    <button type="button" data-gcmd="insertUnorderedList" title="Bullet list" aria-label="Bullet list">• List</button>
+    <button type="button" data-gblock="h3" title="Make this line a heading" aria-label="Heading">H</button>
+    <button type="button" data-gblock="p" title="Make this line normal text" aria-label="Normal paragraph">¶</button>
+  </div><button type="button" class="btn" data-ged="cancel">Cancel</button><button type="button" class="btn" data-ged="save" style="border-color:var(--accent);color:var(--accent)">Save</button>`;
+  gEditing = det; det.open = true; body.focus();
+}
+/* ---------- focused histories (built from each chapter's focused-history part in guide.js) ---------- */
+const FX = [
+  ['Core systems', [['c4','Vital signs'],['c5','Respiratory'],['c6','Cardiac'],['c7','Head & neck'],['c8','Peripheral vascular'],['c9','Volume status'],['c10','Renal / GU'],['c11','Lymph nodes'],['c13','Abdominal'],['c12','Dermatology']]],
+  ['Endocrine & breast', [['c14','Diabetes'],['c15','Thyroid'],['c16','Adrenal'],['c21','Breast']]],
+  ['Sexual & reproductive', [['c18','Sexual history'],['c19','Pelvic / gynecology'],['c20','Obstetrics']]],
+  ['Musculoskeletal', [['c23','Shoulder'],['c24','Elbow'],['c25','Hand & wrist'],['c26','Knee'],['c27','Hip'],['c28','Ankle & foot'],['c29','Back']]],
+  ['Neuro, psych & eye', [['c31','Neurological'],['c32','Psychiatric'],['c37','Substance use'],['c40','Ophthalmology']]],
+  ['Life stages', [['c17','Pediatrics'],['c41','Palliative care']]]
+];
+const FXNAME = Object.fromEntries(FX.flatMap(([, xs]) => xs));
+const FXPART = /^(Focused|Taking an Inclusive Sexual|Taking a Sexual Function|Detailed Substance Use)/;
+function fxParts(c){ return c.parts.map((p, k) => [p, k]).filter(([p]) => FXPART.test(p.t)); }
+const cellTxt = c => Array.isArray(c) ? c[0] : (c || '');
+const fxNorm = s => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+const FXNEW = /^([•▪o✓❖–-]\s|[a-z]\.\s|\d{1,2}[.)]\s|\(\d{1,2}\)\s|\([a-z]\)\s)/;
+const FXWHY = /^(Why Check|Approach|Key Ideas?|Supportive Communication|Importance of|Helpful Resource)\b/i;
+const fxBal = s => (s.match(/\(/g) || []).length === (s.match(/\)/g) || []).length;
+const fxHead = s => s.length <= 64 && !/\n/.test(s) && /^[A-Z↑↓]/.test(s) && !FXNEW.test(s) && !FXWHY.test(s) && !/[.,;:”"]$/.test(s) && !/“|LR[+-]/.test(s) && (!/: /.test(s) || /hapter/.test(s)) && fxBal(s) && !/\b(and|or|of|the|to|with|a|in|for|by)$/i.test(s) && s.split(' ').length <= 9;
+// undo line-break hyphenation ("Assess- ment", "24- hour")
+const fxHyph = s => s.replace(/([a-z])- (ment|mental|tion|tions|sion|ing|ity|ness|ance|ence|ical|ally|ive|ated|ation|ations|ization|itis|vascular|ology|ectomy|ular)\b/g, '$1$2').replace(/(\w)- (\w)/g, '$1-$2');
+// add a cell's lines to a list, joining text that wrapped onto the next table row back onto its line
+function fxAdd(list, txt){
+  txt.split('\n').forEach(raw => {
+    const x = raw.trim(); if (!x || /^[o▪•]$/.test(x)) return;
+    const prev = list[list.length - 1];
+    if (prev == null || FXNEW.test(x) || /:$/.test(prev) || FXWHY.test(x) || /^§/.test(prev) || /^§/.test(x)) list.push(x);
+    else list[list.length - 1] = prev + ' ' + x;
+  });
+  for (let k = 0; k < list.length; k++) list[k] = fxHyph(list[k]);
+}
+// blank a merged cell that repeats the text of the cells beside it
+function fxDedup(r){
+  return r.map((s, j) => s && /\n/.test(s) && r.some((o, k) => k !== j && o && o !== s && o.length < s.length && s.startsWith(o.split('\n')[0])) ? '' : s);
+}
+// one focused-history part -> section headers, question cards, side-by-side comparison cards, and leftover blocks
+function fxItems(p){
+  const out = [], titles = []; let cur = null, pend = null, wide = null, pg = 0, last = '', skipHdr = false;
+  const sec = h => {
+    if (/hapter|^HPI\b/.test(h)) h = /HPI/.test(h) ? 'HPI & associated symptoms' : /Medical|PMH|Big/.test(h) ? 'Past history & Big 6' : /Approach/.test(h) ? 'By presenting complaint' : h.replace(/C ?hapter \d+:?/, '').trim();
+    out.push({sec: h}); cur = null;
+  };
+  const card = (title, extra) => {
+    title = fxHyph(title.replace(/\s+/g, ' ').trim()) || (last ? last + ' (continued)' : '');
+    if (/^Past Medical History/i.test(title) && !out.some(x => x.sec === 'Past history & Big 6')) out.push({sec: 'Past history & Big 6'});
+    cur = Object.assign({title, cols: {}, ord: [], pg}, extra); out.push(cur); titles.push(fxNorm(title)); if (title && !/\(continued\)$/.test(title)) last = title; return cur;
+  };
+  const flushPend = () => { if (pend != null) { sec(pend); pend = null; last = ''; } };
+  const endWide = () => {
+    if (!wide) return;
+    const w = wide; wide = null;
+    const body = w.rows.slice(1);
+    if (body.length && body.every(r => r.filter(Boolean).length >= w.cols.length - 1 && r.every(c => c.length < 40 && !/\n/.test(c)))) out.push({tbl: {rows: w.rows.map(r => w.cols.map(j => r[j])), hdr: true}, pg: w.pg});
+    else if (w.g.some(g => !g.lines.length)) w.g.forEach(g => g.lines.filter(l => !/^§/.test(l)).forEach(l => put(w.cols[0], l)));
+    else out.push({wide: w.g, pg: w.pg});
+  };
+  const put = (j, txt) => {
+    if (!cur) card('');
+    if (cur.tcol === j && txt.length < 40 && !FXNEW.test(txt)) { cur.title += ' ' + txt; return; }
+    if (cur.title && fxNorm(cur.title).includes(fxNorm(txt))) { if (cur.tcol == null && j > 0 && txt.length < 40) cur.tcol = j; return; }
+    if (!cur.cols[j]) { cur.cols[j] = []; cur.ord.push(j); }
+    fxAdd(cur.cols[j], txt);
+  };
+  const near = j => wide.cols.reduce((b, c) => Math.abs(c - j) <= Math.abs(b - j) ? c : b, wide.cols[0]);
+  p.b.forEach(x => {
+    if (x[0] === 'pg') { pg = x[1]; return; }
+    if (x[0] !== 't') { endWide(); flushPend(); out.push({blk: x}); cur = null; return; }
+    const rows = x[1].rows.map(r => fxDedup(r.map(c => cellTxt(c).trim())));
+    const one = rows.every(r => r.filter(Boolean).length <= 1);
+    // a stray label box that repeats a card title we already have
+    if (one && titles.some(t => t && t.includes(fxNorm(rows.map(r => r.join(' ')).join(' '))))) return;
+    if (rows.filter(r => r.filter(Boolean).length >= 3).length > rows.length * .6) { endWide(); flushPend(); out.push({tbl: x[1], pg}); cur = null; return; }
+    rows.forEach(r => {
+      const ne = r.map((s, j) => s ? j : -1).filter(j => j >= 0);
+      if (!ne.length) return;
+      if (skipHdr && ne.length === 1 && ne[0] > 0 && r[ne[0]].length < 40 && !FXNEW.test(r[ne[0]])) return;
+      skipHdr = false;
+      if (wide) {
+        if (r[0] && !wide.cols.includes(0)) endWide();
+        else {
+          const vals = ne.map(j => r[j]);
+          wide.rows.push(r);
+          if (ne.length >= 2 && vals.every(v => v === vals[0]) && fxHead(vals[0])) wide.g.forEach(g => g.lines.push('§' + vals[0]));
+          else ne.forEach(j => fxAdd(wide.g[wide.cols.indexOf(near(j))].lines, r[j]));
+          return;
+        }
+      }
+      if (ne.length >= 3 && !r[0]) {
+        flushPend();
+        const heads = ne.every(j => r[j].length < 48 && !FXNEW.test(r[j]) && !/\n/.test(r[j]));
+        wide = {cols: ne, pg, rows: [r], g: ne.map(j => ({title: heads ? r[j] : '', lines: []}))};
+        if (!heads) ne.forEach((j, k) => fxAdd(wide.g[k].lines, r[j]));
+        return;
+      }
+      if (ne.length === 1) {
+        const j = ne[0], s = r[j];
+        if (cur && cur.tcol === j && s.length < 40 && !FXNEW.test(s)) { cur.title += ' ' + s; return; }
+        if (/^(C ?hapter|HPI)\b/.test(s) && s.length < 60) { flushPend(); sec(s); return; }
+        if (j === 0 && fxHead(s)) { flushPend(); pend = s; return; }
+        if (j === 0 && r.length > 1 && s.length <= 110 && /^[A-Z]/.test(s) && !FXNEW.test(s) && !FXWHY.test(s) && !/\. |“/.test(s) && !/[.:,;]$/.test(s) && !/\b(and|or|of|the|to|with|a|in|for|by|from)$/i.test(s) && fxBal(s)) { flushPend(); card(s); return; }
+        if (pend != null) { card(pend); pend = null; }
+        else if (/“Don[’']t|Choosing Wisely/.test(s) && !(cur && cur.note)) card('Choosing Wisely', {note: 1});
+        put(j, s); return;
+      }
+      if (r[0]) { flushPend(); card(r[0]); ne.slice(1).forEach(j => put(j, r[j])); return; }
+      if (pend != null) { card(pend); pend = null; ne.forEach(j => put(j, r[j])); return; }
+      const j = ne[0], s = r[j];
+      if (cur && cur.tcol === j && s.length < 40 && !FXNEW.test(s)) {
+        if (/^[A-Z]/.test(s) && ne.some(k => k > j && FXNEW.test(r[k])) && !fxNorm(cur.title).includes(fxNorm(s))) card(s, {tcol: j});
+        else if (!fxNorm(cur.title).includes(fxNorm(s))) cur.title += ' ' + s;
+        ne.slice(1).forEach(k => put(k, r[k])); return;
+      }
+      // a title split across rows in its own column, e.g. "Anterior Cerebral Artery" / "Occlusion"
+      if (s.length < 40 && /^[A-Z(]/.test(s) && !FXNEW.test(s) && !/[.,;:]$/.test(s) && ne.some(k => k >= j + 2 && FXNEW.test(r[k])) && !(cur && fxNorm(cur.title).includes(fxNorm(s)))) {
+        card(s, {tcol: j}); ne.slice(1).forEach(k => put(k, r[k])); return;
+      }
+      // a header row over a sub-table (e.g. "Stroke Syndrome" / "Clinical Manifestations"): no questions in it
+      if (ne.every(k => r[k].length < 40 && !FXNEW.test(r[k]) && !/\n/.test(r[k]))) { skipHdr = true; return; }
+      ne.forEach(k => put(k, r[k]));
+    });
+    endWide();
+  });
+  endWide(); flushPend();
+  return out.filter(x => !x.cols || Object.keys(x.cols).length || x.title);
+}
+function fxCard(r, id){
+  let lines = (r.ord || Object.keys(r.cols)).flatMap(k => r.cols[k]), why = [];
+  const w = lines.findIndex(l => FXWHY.test(l.replace(/^[•▪o]\s+/, '')));
+  if (w > 0) { why = lines.slice(w); lines = lines.slice(0, w); }
+  const pgb = r.pg ? `<button type="button" class="fxpg" data-page="${r.pg}" aria-label="Open page ${r.pg} as printed">p. ${r.pg}</button>` : '';
+  const list = ls => { let lv = ''; return ls.map(l => { const h = fxLine(l, lv); const m = h.match(/^<li class="(l\d)"/); lv = m ? m[1] : /^<li>/.test(h) ? 'l0' : lv; return h; }).join(''); };
+  return `<details class="fxcard${r.note ? ' note' : ''}" id="${id}" open><summary><span>${esc(r.title || 'More')}</span>${pgb}</summary><ul>${list(lines)}</ul>`
+    + (why.length ? `<details class="fxwhy"><summary>Why check &amp; background</summary><ul>${list(why)}</ul></details>` : '') + `</details>`;
+}
+function fxLine(x, lv){
+  if (/^§/.test(x)) return `<li class="sub">${esc(x.slice(1))}</li>`;
+  let cls = lv ? 'np c' + lv : 'np', t = x;
+  const m = x.match(/^([•▪o✓❖-])\s+(.*)$/);
+  if (m) { cls = m[1] === '•' || m[1] === '-' || m[1] === '✓' ? '' : m[1] === 'o' ? 'l1' : 'l2'; t = m[2]; }
+  let h = esc(t);
+  const lab = t.match(/^([^:?]{2,38}):\s/); if (lab) h = `<b>${esc(lab[1])}:</b> ` + esc(t.slice(lab[0].length));
+  else if (/^[^:?]{2,70}:$/.test(t)) h = `<b>${h}</b>`;
+  return `<li${cls ? ` class="${cls}"` : ''}>${h}</li>`;
+}
+function renderFhx(tok){
+  view = 'hist'; cur = null; histTab = 'fhx'; setTop('hist'); store.set('lastFhx', tok);
+  const main = $('#main'); delete main.dataset.hls;
+  const head = `<div class="eyebrow">History · focused histories from the guide</div><h1>History taking</h1>
+    <div class="subtabs" role="tablist">${[['hpi','OPQRST / HPI'],['ros','Review of systems'],['big6','Big 6'],['fhx','Focused histories']].map(([k,l])=>`<button role="tab" aria-selected="${k==='fhx'}" data-h="${k}">${l}</button>`).join('')}</div>`;
+  if (!G) { main.innerHTML = head + `<p class="lead">Loading the focused histories…</p>`; loadGuide().then(() => { if (view === 'hist' && histTab === 'fhx') renderFhx(tok); }).catch(() => { main.innerHTML = head + `<p class="lead">Couldn’t load them. Check your connection and try again.</p>`; }); return; }
+  const cid = (tok || '').slice(4) || store.get('lastFhxCh') || 'c5'; const c = gch(cid) || gch('c5'); store.set('lastFhxCh', c.id);
+  let h = head + `<p class="lead">The question lists for each system, straight from each chapter’s focused-history section. Pick a system, then tap a heading to fold it away.</p>`;
+  h += `<nav class="fxpick" aria-label="Systems">` + FX.map(([g, xs]) => `<div><b>${esc(g)}</b>${xs.map(([id, n]) => `<a href="#fhx-${id}" data-goto="fhx-${id}"${id === c.id ? ' aria-current="page"' : ''}>${esc(n)}</a>`).join('')}</div>`).join('') + `</nav>`;
+  const name = FXNAME[c.id] || c.title;
+  h += `<h2 style="margin:6px 0 4px">${esc(name)}</h2><div class="tools">`
+    + `<button class="btn" data-act="fxopen">Expand all</button><button class="btn" data-act="fxclose">Collapse all</button>`
+    + (c.exam && D.exams[c.exam] ? `<a class="btn" href="#${c.exam}" data-goto="${c.exam}">Exam steps →</a>` : '')
+    + `<a class="btn" href="#g-${c.id}" data-goto="g-${c.id}">${esc(c.lab)} in the guide →</a></div>`;
+  h += noteBox('fhx:' + c.id, 'My notes – ' + name + ' history');
+  let body = '', cards = [], n = 0;
+  fxParts(c).forEach(([p]) => {
+    if (fxParts(c).length > 1) body += `<div class="fxsec">${esc(p.t)}</div>`;
+    let grid = [];
+    const flush = () => { if (grid.length) { body += `<div class="fxgrid">${grid.join('')}</div>`; grid = []; } };
+    fxItems(p).forEach(r => {
+      if (r.sec) { flush(); body += `<div class="fxsec">${esc(r.sec)}</div>`; }
+      else if (r.cols) { const id = 'fx' + (n++); if (r.title) cards.push([id, r.title]); grid.push(fxCard(r, id)); }
+      else if (r.wide) r.wide.forEach(g => grid.push(fxCard({title: g.title, cols: {0: g.lines}, pg: r.pg}, 'fx' + (n++))));
+      else if (r.tbl) { flush(); body += gtable(r.tbl); }
+      else { flush(); body += `<div class="gbody" style="border:0;padding:0">${gblocks([r.blk])}</div>`; }
+    });
+    flush();
+  });
+  if (cards.length > 3) h += `<div class="fxjump" aria-label="Jump to">${cards.map(([id, t]) => `<a href="#" data-fxjump="${id}">${esc(t.length > 40 ? t.slice(0, 38) + '…' : t)}</a>`).join('')}</div>`;
+  h += `<div data-hls="hl:f:${c.id}">${body}</div>`;
+  main.innerHTML = h; syncBadge(); hl.paintAll(); markRail('fhx'); window.scrollTo(0, 0);
+}
+function partPage(c, k){ const p = c.parts[k]; const pg = p && p.b.find(x => x[0] === 'pg'); return pg ? pg[1] : c.pg[0]; }
 function renderEvidence(){
   const main = $('#main');
   main.innerHTML = `<div class="eyebrow">Guide · Evidence-based diagnosis</div><h1>Likelihood-ratio tables</h1>
@@ -900,7 +1242,7 @@ function renderRail(mode, force){
   }
   r.innerHTML = D.groups.map(g => `<h4>${esc(g.name)}</h4>` + g.ids.map(id =>
     `<a href="#${id}" data-id="${id}">${esc(D.exams[id].title)}<span>${D.exams[id].steps.length}</span></a>`).join('')).join('')
-    + `<h4>History</h4><a href="#hpi" data-h="hpi">OPQRST / HPI</a><a href="#ros" data-h="ros">Review of systems</a><a href="#big6" data-h="big6">Big 6</a>`
+    + `<h4>History</h4><a href="#hpi" data-h="hpi">OPQRST / HPI</a><a href="#ros" data-h="ros">Review of systems</a><a href="#big6" data-h="big6">Big 6</a><a href="#fhx" data-h="fhx">Focused histories <span>30</span></a>`
     + `<h4>Notes</h4><a href="#notes" data-h="notes">My notes <span id="ncount"></span></a>`
     + `<p class="tip" style="margin-top:18px">Built from the McMaster Clinical Skills Guide, 6e (2026–27). Figures are the guide’s; original image sources are cited there.</p>`;
   updateCount();
@@ -916,6 +1258,7 @@ function renderExam(id){
   h += `<div class="order" aria-label="Exam order">` + secs.map((s,k) => `${k?'<i>→</i>':''}<a href="#${id}" data-jump="s${k}">${esc(s.name)}</a>`).join('') + `</div>`;
   h += `<div class="tools"><button class="btn" data-act="open">Expand all</button><button class="btn" data-act="close">Collapse all</button><button class="btn" data-act="reset">Clear ticks</button>`;
   if (extraCount) h += `<label class="toggle"><input type="checkbox" id="xtra" ${showExtra?'checked':''}> Show non-routine tests (${extraCount})</label>`;
+  if (EXAM2CH[id] && FXNAME[EXAM2CH[id]]) h += `<a class="btn" href="#fhx-${EXAM2CH[id]}" data-goto="fhx-${EXAM2CH[id]}">Focused history →</a>`;
   if (EXAM2CH[id]) h += `<a class="btn" href="#g-${EXAM2CH[id]}" data-goto="g-${EXAM2CH[id]}">Full chapter in the guide →</a>`;
   h += `<span class="progress" id="prog"></span></div>`;
   h += noteBox('exam:'+id, 'My session notes – '+ex.title);
@@ -976,7 +1319,7 @@ function updateProg(){
 /* ---------- history ---------- */
 function renderHist(tab){
   histTab = tab; cur = null; view = 'hist';
-  const tabs = [['hpi','OPQRST / HPI'],['ros','Review of systems'],['big6','Big 6']];
+  const tabs = [['hpi','OPQRST / HPI'],['ros','Review of systems'],['big6','Big 6'],['fhx','Focused histories']];
   let h = `<div class="eyebrow">History · guide Ch 1, pp. 9–14</div><h1>History taking</h1>
     <div class="subtabs" role="tablist">${tabs.map(([k,l])=>`<button role="tab" aria-selected="${k===tab}" data-h="${k}">${l}</button>`).join('')}</div>`;
   const H = HIST[tab];
@@ -1009,6 +1352,7 @@ function setTop(t){
 function go(token, stepIdx){
   closeDrawer();
   if (token === 'notes') { renderNotes(); window.scrollTo(0,0); return; }
+  if (/^fhx(-[a-z0-9]+)?$/.test(token || '')) { renderFhx(token); store.set('last', token); return; }
   if (/^g-[a-z0-9]+$/.test(token || '')) { renderGuide(token, stepIdx); store.set('last', token); return; }
   if (HIST[token]) { setTop(true); renderHist(token); window.scrollTo(0,0); store.set('last', token); return; }
   const id = D.exams[token] ? token : 'approach';
@@ -1028,6 +1372,7 @@ for (const [id,ex] of Object.entries(D.exams)) INDEX.push({t:ex.title+' exam', s
 INDEX.push({t:'OPQRST / HPI', sub:'History', h:'hpi', hay:'opqrst hpi history onset provoking quality radiation severity timing fife'});
 INDEX.push({t:'Review of systems', sub:'History', h:'ros', hay:'review of systems ros functional inquiry'});
 INDEX.push({t:'My notes', sub:'Notes', h:'notes', hay:'my notes preceptor session notes export backup'});
+INDEX.push({t:'Focused histories', sub:'History', h:'fhx', hay:'focused history histories questions by system chief complaint'});
 INDEX.push({t:'Big 6', sub:'History', h:'big6', hay:'big 6 past medical surgical family social medications allergies if-it-helps'});
 function search(q){
   const box = $('#results'); q = q.trim().toLowerCase();
@@ -1047,6 +1392,7 @@ document.addEventListener('click', e => {
   const ha = t.closest('[data-hlact]');
   if (ha){
     if (ha.dataset.hlact === 'off') { hl.set(null); hl.panel(false); }
+    if (ha.dataset.hlact === 'hex') { const v = toHex($('#hlhex').value); if (v) hl.set(v); else { $('#hlhint').textContent = 'That isn’t a hex colour. Try something like #ff00aa.'; $('#hlhex').focus(); } }
     if (ha.dataset.hlact === 'clear') { const ks = hl.pageKeys(); if (ks.length && confirm('Remove all highlights on this page?')) { ks.forEach(k => notes.set(k, '')); hl.paintAll(); } }
     return;
   }
@@ -1054,22 +1400,26 @@ document.addEventListener('click', e => {
   if (hl.mode === 'erase'){ const m = t.closest('mark.hl'); if (m){ e.preventDefault(); const sc = m.closest('[data-hls]'); const list = hl.get(sc.dataset.hls); list.splice(+m.dataset.r, 1); hl.put(sc.dataset.hls, list); hl.paint(sc); return; } }
   if (hl.mode != null && !getSelection().isCollapsed && t.closest('summary')) { e.preventDefault(); return; }
   const rr = t.closest('#results button[data-k]');
-  if (rr){ const x = INDEX[+rr.dataset.k]; $('#results').hidden = true; $('#q').value=''; if (x.g){ if (x.evq) evFilter = x.evq; history.replaceState(null,'','#'+x.g); go(x.g, x.part); return; } if (x.h){ history.replaceState(null,'','#'+x.h); go(x.h);} else { history.replaceState(null,'','#'+x.id); go(x.id, x.i); } return; }
+  if (rr){ const x = INDEX[+rr.dataset.k]; $('#results').hidden = true; $('#q').value=''; if (x.fx){ history.replaceState(null,'','#'+x.fx); go(x.fx); return; } if (x.g){ if (x.evq) evFilter = x.evq; history.replaceState(null,'','#'+x.g); go(x.g, x.part); return; } if (x.h){ history.replaceState(null,'','#'+x.h); go(x.h);} else { history.replaceState(null,'','#'+x.id); go(x.id, x.i); } return; }
   if (!t.closest('.search')) $('#results').hidden = true;
   const ra = t.closest('.rail a');
   if (ra){ e.preventDefault(); const tok = ra.dataset.id || ra.dataset.h || ra.dataset.g; if (ra.dataset.g === 'g-evidence') evFilter = ''; history.replaceState(null,'','#'+tok); go(tok); return; }
   const j = t.closest('[data-jump]');
   if (j){ e.preventDefault(); const el = document.getElementById(j.dataset.jump); if (el) el.scrollIntoView({block:'start'}); return; }
   const st = t.closest('.subtabs button');
-  if (st){ history.replaceState(null,'','#'+st.dataset.h); renderHist(st.dataset.h); return; }
+  if (st){ const tk = st.dataset.h === 'fhx' ? 'fhx-' + (store.get('lastFhxCh') || 'c5') : st.dataset.h; history.replaceState(null,'','#'+tk); go(tk); return; }
+  const fj = t.closest('[data-fxjump]');
+  if (fj){ e.preventDefault(); const el = document.getElementById(fj.dataset.fxjump); if (el){ el.open = true; el.scrollIntoView({block:'start'}); } return; }
   const fig = t.closest('.figs button');
   if (fig){ $('#lb').classList.remove('page'); $('#lbImg').src = IMG[fig.dataset.img]; $('#lbCap').textContent = 'McMaster Clinical Skills Guide, 6e, p. '+fig.dataset.pg; $('#lb').hidden = false; return; }
   const gf = t.closest('[data-gimg]');
   if (gf){ $('#lb').classList.remove('page'); $('#lbImg').src = ASSET + 'gfig/' + gf.dataset.gimg; $('#lbCap').textContent = 'Figure from the McMaster Clinical Skills Guide, 6e'; $('#lb').hidden = false; return; }
   const pgb = t.closest('[data-page]');
-  if (pgb){ const n = +pgb.dataset.page; $('#lb').classList.add('page'); $('#lbImg').src = ASSET + 'pages/p' + String(n).padStart(3, '0') + '.webp'; $('#lbCap').textContent = 'McMaster Clinical Skills Guide, 6e, p. ' + n + ' · tap anywhere to close'; $('#lb').hidden = false; $('#lb').scrollTop = 0; return; }
+  if (pgb){ e.preventDefault(); const n = +pgb.dataset.page; $('#lb').classList.add('page'); $('#lbImg').src = pageSrc(n); $('#lbCap').textContent = 'McMaster Clinical Skills Guide, 6e, p. ' + n + ' · tap anywhere to close'; $('#lb').hidden = false; $('#lb').scrollTop = 0; return; }
   const gp = t.closest('[data-gpart]');
-  if (gp){ e.preventDefault(); const el = document.getElementById('gp' + gp.dataset.gpart); if (el){ el.open = true; el.scrollIntoView({block:'start'}); } return; }
+  if (gp){ e.preventDefault(); const c = gch(guideTok.slice(2)); const el = gMode === 'pages' ? document.getElementById('pp' + partPage(c, +gp.dataset.gpart)) : document.getElementById('gp' + gp.dataset.gpart); if (el){ if (el.tagName === 'DETAILS') el.open = true; el.scrollIntoView({block:'start'}); } return; }
+  const gm = t.closest('[data-gmode]');
+  if (gm){ gMode = gm.dataset.gmode; store.set('gmode', gMode); renderGuide(guideTok); return; }
   if (t.closest('#lb')){ $('#lb').hidden = true; return; }
   if (t.classList.contains('tick')){
     const val = t.checked; e.preventDefault();
@@ -1082,6 +1432,21 @@ document.addEventListener('click', e => {
   if (gt){ e.preventDefault(); history.replaceState(null,'','#'+gt.dataset.goto); go(gt.dataset.goto, gt.dataset.step!=null?+gt.dataset.step:undefined); return; }
   const dt = t.closest('[data-date]');
   if (dt){ const ed = document.querySelector(`.rte[data-note="${dt.dataset.date}"]`); ed.insertAdjacentHTML('beforeend', `<div><b>— ${esc(today())} —</b></div><div><br></div>`); ed.focus(); caretEnd(ed); saveNote(ed); return; }
+  const gb = t.closest('[data-gcmd],[data-gsize],[data-gblock]');
+  if (gb && gEditing){ const body = gEditing.querySelector('.gbody'); if (!body.contains(getSelection().anchorNode)) body.focus();
+    if (gb.dataset.gcmd) document.execCommand(gb.dataset.gcmd, false, null);
+    else if (gb.dataset.gsize) document.execCommand('fontSize', false, gb.dataset.gsize);
+    else document.execCommand('formatBlock', false, gb.dataset.gblock.toUpperCase());
+    return; }
+  const ge = t.closest('[data-ged]');
+  if (ge){ const det = ge.closest('.gpart'); const [cid, k] = det.dataset.gk.split(':'); const key = 'ed:g:' + cid + ':' + k; const a = ge.dataset.ged;
+    if (a === 'edit') startEdit(det);
+    if (a === 'cancel') replacePart(det);
+    if (a === 'save') { const html = cleanGuideHtml(det.querySelector('.gbody').innerHTML);
+      if (html.length > 390000) { alert('This part is too long to save as one edit. Try undoing some changes.'); return; }
+      notes.set(key, html); replacePart(det); }
+    if (a === 'reset' && confirm('Undo your edits to this part and go back to the guide’s original text?')) { notes.set(key, ''); replacePart(det); }
+    return; }
   const fb = t.closest('.fmt button');
   if (fb){ const ed = document.querySelector(`.rte[data-note="${fb.parentElement.dataset.for}"]`); if (!ed) return;
     if (document.activeElement !== ed) { ed.focus(); const r = lastRange[ed.dataset.note]; if (r && ed.contains(r.startContainer)) { const s = getSelection(); s.removeAllRanges(); s.addRange(r); } else caretEnd(ed); }
@@ -1092,6 +1457,8 @@ document.addEventListener('click', e => {
     const a = act.dataset.act;
     if (a==='open') document.querySelectorAll('.step').forEach(d => { if (!d.closest('[hidden]')) { d.open = true; fillStep(d); } });
     if (a==='close') document.querySelectorAll('.step').forEach(d => d.open = false);
+    if (a==='fxopen') document.querySelectorAll('.fxcard').forEach(d => d.open = true);
+    if (a==='fxclose') document.querySelectorAll('.fxcard').forEach(d => d.open = false);
     if (a==='gopen') document.querySelectorAll('.gpart').forEach(d => d.open = true);
     if (a==='gclose') document.querySelectorAll('.gpart').forEach(d => d.open = false);
     if (a==='reset'){ store.set('t:'+cur, {}); document.querySelectorAll('.step').forEach(d=>{d.classList.remove('done'); d.querySelector('.tick').checked=false;}); updateProg(); }
@@ -1120,7 +1487,7 @@ document.addEventListener('focusout', e => { const ed = edOf(e); if (ed){ clearT
 // keep formatting buttons from stealing focus (and the phone keyboard) from the note
 ['pointerdown','mousedown'].forEach(ev => document.addEventListener(ev, e => { if (e.target.closest && e.target.closest('.fmt button')) e.preventDefault(); }));
 // paste as plain text so web pages don't bring their own fonts and colours
-document.addEventListener('paste', e => { const ed = edOf(e); if (!ed) return; e.preventDefault(); document.execCommand('insertText', false, (e.clipboardData || window.clipboardData).getData('text/plain')); });
+document.addEventListener('paste', e => { const ed = edOf(e) || (e.target.closest && e.target.closest('.gbody.editing')); if (!ed) return; e.preventDefault(); document.execCommand('insertText', false, (e.clipboardData || window.clipboardData).getData('text/plain')); });
 document.addEventListener('keydown', e => { const ed = edOf(e); if (ed && (e.ctrlKey || e.metaKey) && /^[biu]$/i.test(e.key)) setTimeout(() => fmtState(ed), 0); });
 document.addEventListener('selectionchange', () => {
   const ed = document.activeElement && document.activeElement.closest ? document.activeElement.closest('.rte[data-note]') : null;
@@ -1141,12 +1508,12 @@ document.addEventListener('change', e => {
   if (e.target.id==='xtra'){ showExtra = e.target.checked; document.querySelectorAll('[data-extra="1"]').forEach(el=>el.hidden=!showExtra); }
   if (e.target.dataset && e.target.dataset.ros){ const m = store.get('ros') || {}; m[e.target.dataset.ros] = e.target.checked; store.set('ros', m); }
 });
-document.addEventListener('keydown', e => { if (e.key==='Escape'){ hl.panel(false); $('#lb').hidden = true; $('#results').hidden = true; closeDrawer(); } });
+document.addEventListener('keydown', e => { if (e.target.id === 'hlhex' && e.key === 'Enter') { e.preventDefault(); $('[data-hlact="hex"]').click(); return; } if (e.key==='Escape'){ hl.panel(false); $('#lb').hidden = true; $('#results').hidden = true; closeDrawer(); } });
 document.addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') hl.down = true; });
 document.addEventListener('mouseup', () => { hl.down = false; if (hl.mode != null) setTimeout(() => hl.fromSelection(), 0); });
 document.addEventListener('touchend', () => { if (hl.mode != null) { clearTimeout(hl.selT); hl.selT = setTimeout(() => hl.fromSelection(), 900); } });
 $('#q').addEventListener('input', e => search(e.target.value));
-document.addEventListener('input', e => { if (e.target.id === 'evq') { evFilter = e.target.value; renderEvList(); } });
+document.addEventListener('input', e => { if (e.target.id === 'hlcol') { hl.set(e.target.value.toLowerCase()); return; } if (e.target.id === 'evq') { evFilter = e.target.value; renderEvList(); } });
 $('#tabGuide').addEventListener('click', () => { const l = store.get('lastGuide') || 'g-c1'; history.replaceState(null,'','#'+l); go(l); });
 $('#q').addEventListener('keydown', e => { if (e.key==='Enter'){ const b = $('#results button[data-k]'); if (b) b.click(); } });
 $('#tabExam').addEventListener('click', () => { const l = store.get('lastExam') || 'approach'; history.replaceState(null,'','#'+l); go(l); });
