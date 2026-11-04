@@ -302,7 +302,11 @@ body.hl-erase mark.hl{cursor:pointer;outline:1px dashed currentColor;outline-off
 .qt,.qx{padding:6px 0 6px 30px}
 .qx.gbody{border:0}
 .pill{display:inline-block;font:600 11.5px/1.5 var(--f-body);background:var(--accent-soft);color:var(--accent);border-radius:5px;padding:0 6px;margin-right:6px;vertical-align:1px;white-space:nowrap}
-.hint{color:var(--muted);font-size:.92em}
+.hint{color:var(--muted);font-size:.92em;font-weight:400}
+.qq.l0>span,.qf.l0{font-weight:600}
+.qq.l0>span .hint,.qf.l0 .hint{font-weight:400}
+.qq.done>span{font-weight:400}
+.body b.lead{font-weight:650;color:var(--ink)}
 .rf{display:inline-block;font:600 10.5px/1.6 var(--f-mono);text-transform:uppercase;letter-spacing:.03em;background:#fde4e4;color:#a1232b;border-radius:4px;padding:0 5px;margin-left:2px;white-space:nowrap}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .rf{background:#4a1c20;color:#ff9ea4}}
 :root[data-theme="dark"] .rf{background:#4a1c20;color:#ff9ea4}
@@ -594,9 +598,17 @@ function liClass(t){
   if (/:$/.test(t) && t.length < 70) return ['hd', t];
   return ['plain', t];
 }
-function list(arr){
+// main (top-level) points get a bold lead: the text before the first colon or dash, or the whole line if it's short
+function boldLead(x){
+  const m = x.match(/^(.{3,70}?)(:\s| – | - )/);
+  if (m && !/\(/.test(m[1].replace(/\([^)]*\)/g, ''))) return `<b class="lead">${esc(m[1])}</b>${esc(x.slice(m[1].length))}`;
+  const p = x.match(/^([^(]{3,}?)(\s*\((?:e\.g\.|i\.e\.|eg)[\s\S]*)$/);
+  if (p && p[1].length <= 90) return `<b class="lead">${esc(p[1])}</b><span class="hint">${esc(p[2])}</span>`;
+  return x.length <= 90 ? `<b class="lead">${esc(x)}</b>` : esc(x);
+}
+function list(arr, bold){
   if (!arr || !arr.length) return '';
-  return '<ul>' + arr.map(t => { const [c,x] = liClass(t); return `<li class="${c}">${esc(x)}</li>`; }).join('') + '</ul>';
+  return '<ul>' + arr.map(t => { const [c,x] = liClass(t); return `<li class="${c}">${bold && c === '' ? boldLead(x) : esc(x)}</li>`; }).join('') + '</ul>';
 }
 function para(arr){ return (arr||[]).map(t => `<p>${esc(t.replace(/^•\s*/,''))}</p>`).join(''); }
 
@@ -1249,18 +1261,67 @@ function renderCondList(){
   markRail('cond'); window.scrollTo(0, 0);
   if (matchMedia('(pointer: fine)').matches) $('#condq').focus();
 }
-function examStepsHtml(exId){
+// Which exam steps belong to which condition. Each rule is [step name pattern, condition title pattern]:
+// a step that matches a rule is shown only for conditions whose title matches. Steps with no rule are shown for every condition.
+// Everything else stays one tap away under "Rest of the exam".
+const CONDEX = {
+  volume: [[/^Hypervolemia$/, /hyper/i], [/^Hypovolemia$/, /hypo/i], [/^Orthostatic/, /hypo/i], [/^Listening to breathing|^Precordial auscultation/, /hyper/i]],
+  resp: [[/Forced Expiratory/, /short|wheez|cough/i]],
+  cardiac: [[/Pulsus Paradoxus/, /chest|short/i]],
+  headneck: [[/Mallampati/, /sleep/i], [/Outer Ear|Otoscopy/, /ear|hearing|tinnitus|dizz/i], [/Hearing Loss/, /hearing|tinnitus|dizz/i],
+    [/^Nose/, /epistaxis|rhinosin/i], [/Transillumination/, /rhinosin/i], [/^Mouth|^Oropharynx/, /pharyng|sleep|ear|rhinosin/i],
+    [/Closer Assessment of Eyes|Fundoscopy/, /dizz/i], [/HINTS|Dix-Hallpike|Supine Roll/, /dizz/i]],
+  lymph: [[/Tonsils/, /constitutional|enlarged/i], [/Spleen|Traube|Castell/, /constitutional|enlarged|bony/i]],
+  abdo: [[/Stigmata|Venous Hum|Liver Scratch|Liver Excursion|liver edge|Fluid Wave|Shifting Dullness/, /liver|abdominal pain/i],
+    [/Castell|Traube|Splenic/, /liver|abdominal pain/i],
+    [/Cullen|Peritonitis|Friction Rub|Rebound|Shake Test|McBurney|Rovsing|Psoas|Obturator|Murphy/, /abdominal pain|nausea/i],
+    [/Digital Rectal/, /bowel|abdominal pain/i]],
+  thyroid: [[/hyperthyroidism/i, /hyper/i]],
+  adrenal: [[/Waist|Abdomen|Hirsutism|Coagulopathy|Skinfold|Edema/, /hypercort/i]],
+  elbow: [[/Lateral Epicondylitis/, /lateral/i], [/Medial Epicondylitis|Tinel|Elbow Flexion/, /medial/i], [/Elbow Stability/, /medial|lateral/i]],
+  hand: [[/Finkelstein/, /radial/i], [/Wrist Stability/, /radial|central/i], [/Piano Key/, /ulnar/i], [/Tinel|Phalen/, /central|hand/i], [/\(MCP\)|\(IP\)/, /hand|finger/i]],
+  knee: [[/McMurray|Apley/, /medial|lateral|posterior/i], [/Clarke|Patellar/, /anterior/i], [/Functional Trendelenburg/, /lateral/i]],
+  hip: [[/Thomas|FADIR|Barlow/, /anterior|groin/i], [/Ober/, /lateral/i], [/FABER/, /anterior|groin|posterior|buttock/i]],
+  ankle: [[/Thompson/, /achilles/i], [/Tinel/, /medial|rearfoot/i], [/Stability/, /anterior|medial|lateral/i]],
+  back: [[/Spurling/, /neck/i], [/Straight Leg|Femoral Nerve|Gaenslen|FABER|Schober|Rib-Pelvis|Adam/, /low back/i]],
+  neuro: [[/HINTS|Dix-Hallpike|Supine Roll|Subclavian|Parietal|Cortical Sensation/, /stroke/i], [/Hearing Loss/, /stroke/i],
+    [/Meningismus/, /headache|seizure|concussion/i], [/Brainstem Reflexes/, /stroke|concussion/i], [/Gower|Digital Rectal/, /weakness/i],
+    [/Frontal Release/, /frailty|behaviour|aphasia/i], [/Timed Up/, /frailty|weakness/i], [/Dysmorphia/, /behaviour|seizure/i]],
+};
+// evidence tables that belong to one condition only, for chapters that cover opposite conditions
+const CONDEV = {
+  c9: [[/hyper/i, /^$/], [/hypo/i, /hypovol|dehydrat/i]],
+  c15: [[/hyper/i, /hyperthy|goiter/i], [/hypo/i, /hypothy|goiter/i]],
+  c16: [[/hypercort/i, /cushing/i], [/hypocort/i, /^$/], [/pheo/i, /pheo/i]],
+};
+function condEvOk(c, cp, e){
+  const r = (CONDEV[c.id] || []).find(([cre]) => cre.test(cp.t));
+  return !r || r[1].test(e.q);
+}
+function condStepOk(exId, s, cp){
+  if (!cp || cp.all) return true;
+  const rules = (CONDEX[exId] || []).filter(([re]) => re.test(s.name));
+  return !rules.length || rules.some(([, cre]) => cre.test(cp.t));
+}
+function examStepsHtml(exId, cp){
   const ex = D.exams[exId]; if (!ex) return '';
   const ticks = store.get('t:' + exId) || {};
+  const keep = ex.steps.map(s => condStepOk(exId, s, cp)), rest = keep.filter(k => !k).length;
   const secs = [];
-  ex.steps.forEach((s, i) => { if (!secs.length || secs[secs.length - 1].name !== s.sec) secs.push({name: s.sec, items: []}); secs[secs.length - 1].items.push(i); });
+  ex.steps.forEach((s, i) => { if (!keep[i]) return; if (!secs.length || secs[secs.length - 1].name !== s.sec) secs.push({name: s.sec, items: []}); secs[secs.length - 1].items.push(i); });
   let n = 0, h = '';
+  if (rest) h += `<p class="tip">Showing the steps for ${esc(cp.t.toLowerCase())}. Steps for other conditions are folded away at the bottom.</p>`;
   secs.forEach(sec => {
     const isExtra = ex.steps[sec.items[0]].tags.includes('extra');
     h += `<div class="sec sm"${isExtra && !showExtra ? ' hidden' : ''} data-extra="${isExtra ? 1 : 0}"><h3>${esc(sec.name)}</h3><span class="n">${sec.items.length}</span></div><div class="steps"${isExtra && !showExtra ? ' hidden' : ''} data-extra="${isExtra ? 1 : 0}">`;
     sec.items.forEach(i => { const s = ex.steps[i]; n++; h += stepHtml(exId, s, i, n, !!ticks[i]); });
     h += `</div>`;
   });
+  if (rest) {
+    h += `<details class="box condrest"><summary>Rest of the ${esc(ex.title.toLowerCase())} (${rest} step${rest > 1 ? 's' : ''} for other conditions)</summary><div class="inner"><div class="steps">`;
+    ex.steps.forEach((s, i) => { if (!keep[i]) h += stepHtml(exId, s, i, '·', !!ticks[i]); });
+    h += `</div></div></details>`;
+  }
   return h;
 }
 function renderCond(tok){
@@ -1287,7 +1348,7 @@ function renderCond(tok){
     const extra = ex.steps.filter(s => s.tags.includes('extra')).length;
     px += `<div class="tools"><button class="btn" data-act="open">Expand all</button><button class="btn" data-act="close">Collapse all</button>${extra ? `<label class="toggle"><input type="checkbox" id="xtra" ${showExtra ? 'checked' : ''}> Show non-routine tests (${extra})</label>` : ''}<a class="btn" href="#${exam}" data-goto="${exam}">Open full exam page →</a></div>`;
     if (ex.notes && ex.notes.length) px += `<details class="box notes"><summary>Setup & tips from the guide</summary><div class="inner">${list(ex.notes)}</div></details>`;
-    px += examStepsHtml(exam);
+    px += examStepsHtml(exam, cp);
   } else px += `<div id="condpx"><p class="lead">This chapter’s physical exam isn’t one of the quick exam pages. Loading it from the guide…</p></div>`;
   px += `</div>`;
   h += hx + px;
@@ -1295,7 +1356,7 @@ function renderCond(tok){
   main.innerHTML = h; condApplyMode(); syncBadge(); hl.paintAll(); markRail('cond'); window.scrollTo(0, 0);
   loadGuide().then(() => {
     if (view !== 'cond' || store.get('lastCond') !== tok) return;
-    const evs = G.evidence.filter(e => e.ch === c.id);
+    const evs = G.evidence.filter(e => e.ch === c.id && condEvOk(c, cp, e));
     const ei = $('#condevin'); if (ei) ei.innerHTML = evs.length ? evs.map(e => `<details class="evitem"><summary><small>Q${e.n}</small>${esc(e.q)}</summary><div class="in">${e.t.map(gtable).join('')}${e.pg ? `<button type="button" class="fxpg" data-page="${e.pg}">p. ${e.pg}</button>` : ''}</div></details>`).join('') : `<p class="tip">This chapter has no likelihood-ratio tables.</p>`;
     if (!evs.length) { const d = $('#condev'); if (d) d.hidden = true; }
     const cp2 = $('#condpx'); if (!cp2) return;
@@ -1416,8 +1477,8 @@ function fillStep(el){
   const exId = el.dataset.ex || cur, s = D.exams[exId].steps[+el.dataset.i];
   let h = '';
   if (s.how) h += `<div><div class="lab">How</div><p style="margin:0">${esc(s.how)}</p></div>`;
-  if (s.setup) h += `<div><div class="lab">Setup</div>${list(s.setup)}</div>`;
-  if (s.do) h += `<div><div class="lab">Do</div>${list(s.do)}</div>`;
+  if (s.setup) h += `<div><div class="lab">Setup</div>${list(s.setup, true)}</div>`;
+  if (s.do) h += `<div><div class="lab">Do</div>${list(s.do, true)}</div>`;
   if (s.imgs && s.imgs.length) h += `<div class="figs">` + s.imgs.map(f => IMG[f] ? `<button data-img="${f}" data-pg="${s.pg}" aria-label="Enlarge figure"><img src="${IMG[f]}" alt="Figure for ${esc(s.name)}" loading="lazy"></button>` : '').join('') + `</div>`;
   if (s.report) h += `<div class="report"><div class="lab">Report</div>${para(s.report)}</div>`;
   if (s.say) h += `<details class="more"><summary>Say to the patient</summary><div class="in">${para(s.say)}</div></details>`;
