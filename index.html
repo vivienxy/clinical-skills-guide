@@ -259,39 +259,96 @@ body.hl-erase mark.hl{cursor:pointer;outline:1px dashed currentColor;outline-off
 .gpg::before,.gpg::after{content:"";flex:1;height:1px;background:var(--line)}
 .gpg button{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:3px 10px;cursor:pointer;font:12px var(--f-mono);color:var(--muted)}
 .gpg button:hover{border-color:var(--accent);color:var(--ink)}
-/* focused histories */
-.fxpick{display:grid;gap:8px;margin:0 0 16px}
-.fxpick div{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-.fxpick b{font:600 11px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);min-width:118px}
-.fxpick a{font-size:13px;text-decoration:none;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px 11px}
-.fxpick a:hover{border-color:var(--accent)}
-.fxpick a[aria-current="page"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-.fxsec{font:600 12px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin:22px 0 8px}
-.fxgrid{column-width:400px;column-gap:10px}
-.fxcard{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);scroll-margin-top:90px;break-inside:avoid;margin:0 0 10px;display:block}
-.fxcard>summary{list-style:none;cursor:pointer;padding:10px 14px;font:600 15px var(--f-head);display:flex;gap:8px;align-items:center}
-.fxcard>summary::-webkit-details-marker{display:none}
-.fxcard>summary::after{content:"";width:8px;height:8px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);margin-left:auto;flex:none;transition:transform .15s}
-.fxcard[open]>summary::after{transform:rotate(225deg)}
-.fxcard ul{list-style:none;margin:0;padding:0 14px 12px}
-.fxcard li{position:relative;padding:3px 0 3px 16px}
-.fxcard li::before{content:"";position:absolute;left:3px;top:.75em;width:5px;height:5px;border-radius:50%;background:var(--accent)}
-.fxcard li.l1{margin-left:16px}.fxcard li.l1::before{background:none;border:1px solid var(--muted)}
-.fxcard li.l2{margin-left:32px}.fxcard li.l2::before{border-radius:0;width:4px;height:4px;background:var(--muted)}
-.fxcard li.np{padding-left:0}.fxcard li.np::before{display:none}
-.fxcard li.np.cl0{padding-left:16px}.fxcard li.np.cl1{margin-left:16px;padding-left:16px}.fxcard li.np.cl2{margin-left:32px;padding-left:16px}
-.fxcard>summary>span{flex:1}
-.fxpg{font:500 11px var(--f-mono);color:var(--muted);background:none;border:1px solid var(--line);border-radius:999px;padding:1px 7px;cursor:pointer;flex:none}
+/* focused histories & conditions */
+.syspick{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.syspick select{font:inherit;font-size:14px;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 28px 6px 10px;max-width:62vw}
+.fxnav{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--toph,61px));z-index:8;background:var(--bg);margin:0 -4px 12px;padding:8px 4px;border-bottom:1px solid var(--line)}
+.fxnav-in{display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin;padding-bottom:2px}
+.fxnav a{flex:none;font-size:13px;text-decoration:none;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px 11px;white-space:nowrap}
+.fxnav a.core{border-style:dashed}
+.fxnav a.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.fxgroup{font:600 12px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin:22px 0 8px}
+.fxs{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);margin:0 0 14px;padding:0 0 10px;scroll-margin-top:130px}
+.fxs.core{border-left:3px solid var(--accent)}
+.fxh{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;padding:12px 16px 8px;border-bottom:1px solid var(--line);margin-bottom:6px;flex-wrap:wrap}
+.fxh h2{font-size:19px}
+.fxt{min-width:0;flex:1 1 240px}
+.also{margin:3px 0 0;font-size:12.5px;color:var(--muted)}
+.coretag{display:block;font:600 11px var(--f-mono);text-transform:uppercase;letter-spacing:.05em;color:var(--accent);margin-bottom:3px}
+.fxtools{display:flex;gap:6px;align-items:center;flex:none}
+.fxcount{font:500 12px var(--f-mono);color:var(--muted);background:var(--soft);border-radius:999px;padding:2px 8px}
+.fxcount.all{background:var(--accent-soft);color:var(--accent)}
+.fxpg{font:500 11px var(--f-mono);color:var(--muted);background:none;border:1px solid var(--line);border-radius:999px;padding:2px 8px;cursor:pointer}
 .fxpg:hover{color:var(--accent);border-color:var(--accent)}
-.fxcard>summary::after{margin-left:2px}
-.fxcard li.sub{padding-left:0;margin-top:6px;font:600 12px var(--f-mono);text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
-.fxcard li.sub::before{display:none}
-.fxcard.note{background:var(--bg)}
-.fxwhy{margin:0 14px 12px;border-top:1px dashed var(--line);padding-top:6px}
-.fxwhy>summary{cursor:pointer;font:600 12px var(--f-mono);text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:4px 0}
-.fxwhy>ul{padding:4px 0 0;color:var(--muted)}
-.fxjump{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 6px}
-.fxjump a{font-size:12.5px;text-decoration:none;color:var(--muted);border-bottom:1px dotted var(--muted)}
+.fxiso{font-size:12.5px;font-weight:600;text-decoration:none;border:1px solid var(--accent);color:var(--accent);border-radius:999px;padding:2px 10px}
+.fxiso:hover{background:var(--accent);color:var(--accent-ink)}
+.qlist{padding:0 16px}
+.qq,.qf,.qn,.qh,.qt,.qx{display:block;margin:0;line-height:1.5}
+.qq{display:grid;grid-template-columns:22px minmax(0,1fr);gap:8px;align-items:start;padding:6px 0;border-top:1px solid var(--soft);cursor:pointer}
+.qlist>.qq:first-child,.qh+.qq{border-top:0}
+.qq input{width:17px;height:17px;margin:2px 0 0;accent-color:var(--accent);cursor:pointer}
+.qq.isq>span{font-size:15.5px}
+.qq.done>span{color:var(--muted)}
+.qq.done>span .pill{opacity:.6}
+.qf{padding:3px 0 3px 30px;color:var(--ink);font-size:14px;position:relative}
+.qf::before{content:"";position:absolute;left:12px;top:.72em;width:5px;height:5px;border-radius:50%;background:var(--muted)}
+.qf.isq{font-size:15px}
+.qn{padding:3px 0 3px 30px;font-size:13.5px;color:var(--muted)}
+.qn b{color:var(--ink);font-weight:600}
+.qh{font:600 14.5px/1.4 var(--f-head);color:var(--ink);padding:12px 0 4px}
+.qh .pg{text-transform:none}
+.l1{margin-left:22px}.l2{margin-left:44px}.l3{margin-left:62px}
+.qf.l1,.qf.l2,.qf.l3{font-size:13.8px}
+.qt,.qx{padding:6px 0 6px 30px}
+.qx.gbody{border:0}
+.pill{display:inline-block;font:600 11.5px/1.5 var(--f-body);background:var(--accent-soft);color:var(--accent);border-radius:5px;padding:0 6px;margin-right:6px;vertical-align:1px;white-space:nowrap}
+.hint{color:var(--muted);font-size:.92em}
+.rf{display:inline-block;font:600 10.5px/1.6 var(--f-mono);text-transform:uppercase;letter-spacing:.03em;background:#fde4e4;color:#a1232b;border-radius:4px;padding:0 5px;margin-left:2px;white-space:nowrap}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .rf{background:#4a1c20;color:#ff9ea4}}
+:root[data-theme="dark"] .rf{background:#4a1c20;color:#ff9ea4}
+.fxmore{margin:10px 16px 0;border:1px dashed var(--line);border-radius:8px}
+.fxmore>summary{cursor:pointer;padding:7px 10px;font-size:13px;font-weight:600;color:var(--muted)}
+.fxmore[open]>summary{border-bottom:1px dashed var(--line)}
+.fxmore>.qlist,.fxmore>.qh{padding-left:10px;padding-right:10px}
+.fxbgh{color:var(--accent);font:600 12px var(--f-mono);text-transform:uppercase;letter-spacing:.05em;margin-top:6px}
+.fxcat{border-top:1px solid var(--line)}
+.fxcat:first-of-type{border-top:0}
+.fxcat>summary{cursor:pointer;padding:10px 16px;font-weight:600;list-style:none;display:flex;gap:8px;align-items:center}
+.fxcat>summary::-webkit-details-marker{display:none}
+.fxcat>summary::before{content:"";width:7px;height:7px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(-45deg);transition:transform .15s;flex:none}
+.fxcat[open]>summary::before{transform:rotate(45deg)}
+.fxcat .n{font:12px var(--f-mono);color:var(--muted)}
+.fxcard-t{padding-left:16px;color:var(--ink);text-transform:none;font:600 14.5px var(--f-head);letter-spacing:0}
+.fxcat .qlist{padding-left:16px}
+.fxintro{border:0;padding:0;margin:0 0 10px;color:var(--muted);font-size:14px}
+.fxbgwrap{padding:0}
+.fxbgwrap>summary{cursor:pointer;list-style:none;padding:12px 16px;display:block}
+.fxbgwrap>summary::-webkit-details-marker{display:none}
+.fxbgwrap>summary h2{font-size:17px;display:inline}
+.fxbgwrap>summary .also{display:block}
+.fxbgwrap>summary h2::after{content:"  ▾";color:var(--muted);font-size:13px}
+.fxbgwrap[open]>summary h2::after{content:"  ▴"}
+.condsearch{position:relative;max-width:640px;margin:0 0 16px}
+.condsearch svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.condsearch input{width:100%;font-size:17px;border:2px solid var(--accent);background:var(--panel);border-radius:12px;padding:12px 14px 12px 40px}
+.condsearch.sm{margin:0;flex:1 1 260px;max-width:420px}
+.condsearch.sm input{font-size:14px;border-width:1px;border-color:var(--line);border-radius:8px;padding:7px 10px 7px 32px}
+.condsearch.sm svg{left:10px}
+.condsys{font:600 12px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:18px 0 8px}
+.condgrid{display:flex;flex-wrap:wrap;gap:8px}
+.condbtn{text-decoration:none;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:14.5px}
+.condbtn:hover{border-color:var(--accent);color:var(--accent)}
+.condbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 12px}
+.partttl{display:flex;align-items:center;gap:10px;font-size:22px;margin:24px 0 12px}
+.partttl span{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font:600 14px var(--f-mono)}
+.sec.sm{margin:16px 0 8px}.sec.sm h3{font:600 16px var(--f-head);margin:0}
+.railsys>summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;padding:6px 10px;border-radius:7px}
+.railsys>summary::-webkit-details-marker{display:none}
+.railsys>summary:hover{background:var(--soft)}
+.railsys>summary span{color:var(--muted);font:12px var(--f-mono)}
+.railsys[open]>summary{font-weight:600}
+.railsys a{padding-left:20px;font-size:13.5px}
+.nhint{font-weight:400;font-size:12.5px;color:var(--muted)}
 .gedbar{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end;padding:8px 16px 0}
 .gedbar .btn{padding:4px 10px;font-size:12.5px}
 .gedtag{font:500 11px/1 var(--f-mono);color:var(--note-ink);background:var(--note-bg);border:1px solid var(--note-line);padding:4px 7px;border-radius:4px;margin-right:auto}
@@ -362,11 +419,12 @@ body.hl-erase mark.hl{cursor:pointer;outline:1px dashed currentColor;outline-off
     <div class="seg" role="group" aria-label="Section">
       <button id="tabExam" aria-pressed="true"><span class="tabs-lg">Physical exam</span><span class="tabs-sm">Exam</span></button>
       <button id="tabHist" aria-pressed="false">History</button>
+      <button id="tabCond" aria-pressed="false"><span class="tabs-lg">Conditions</span><span class="tabs-sm">Find</span></button>
       <button id="tabGuide" aria-pressed="false">Guide</button>
     </div>
     <div class="search">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
-      <input id="q" type="search" placeholder="Search tests, topics, guide… (e.g. Lachman, JVP, eczema)" autocomplete="off" aria-label="Search tests and history">
+      <input id="q" type="search" placeholder="Search conditions, tests, guide… (e.g. chest pain, Lachman, JVP)" autocomplete="off" aria-label="Search tests and history">
       <div class="results" id="results" hidden></div>
     </div>
   </div>
@@ -383,6 +441,7 @@ body.hl-erase mark.hl{cursor:pointer;outline:1px dashed currentColor;outline-off
 
 <script src="assets/data.js"></script>
 <script src="assets/img.js"></script>
+<script src="assets/fhx.js"></script>
 <script>
 (function(){
 const D = window.CS, IMG = window.CSIMG || {};
@@ -679,7 +738,7 @@ const hl = {
     clearTimeout(this.selT); this.selT = setTimeout(() => this.fromSelection(), 900);
   },
   pageKeys(){
-    const pre = view === 'hist' && histTab === 'fhx' ? ['hl:f:' + (store.get('lastFhxCh') || 'c5')] : view === 'guide' ? ['hl:g:' + guideTok.slice(2) + ':'] : cur ? ['hl:x:' + cur, 'hl:s:' + cur + ':'] : ['hl:h:' + histTab];
+    const pre = view === 'hist' && histTab === 'fhx' ? ['hl:f2:' + (store.get('lastFhxCh') || 'c5')] : view === 'cond' ? ['hl:f2:'] : view === 'guide' ? ['hl:g:' + guideTok.slice(2) + ':'] : cur ? ['hl:x:' + cur, 'hl:s:' + cur + ':'] : ['hl:h:' + histTab];
     return Object.keys(notes.all()).filter(k => pre.some(p => k === p || (p.endsWith(':') && k.startsWith(p))));
   },
   set(mode){
@@ -819,6 +878,7 @@ function noteLabel(k){
   const [kind, a, b] = k.split(':');
   if (kind === 'guide') { const c = gch(a); return {title: 'Guide · ' + (c ? c.lab + ' ' + c.title : 'chapter'), href: 'g-' + a}; }
   if (kind === 'fhx') return {title: 'Focused history · ' + (FXNAME[a] || a), href: 'fhx-' + a};
+  if (kind === 'cond') { const x = FXCP[a]; return {title: 'Condition · ' + (x ? x.cp.t + ' (' + x.c.name + ')' : a), href: 'cond-' + a}; }
   if (kind === 'hist') return {title: 'History · ' + ({hpi:'OPQRST / HPI', ros:'Review of systems', big6:'Big 6'}[a] || a), href: a};
   const ex = D.exams[a]; if (!ex) return {title: k, href: ''};
   if (kind === 'exam') return {title: ex.title + ' · session notes', href: a};
@@ -828,7 +888,7 @@ function fmtTime(t){ try { return new Date(t).toLocaleString(undefined, {dateSty
 function today(){ try { return new Date().toLocaleDateString(undefined, {weekday:'short', day:'numeric', month:'short', year:'numeric'}); } catch(e){ return ''; } }
 function noteBox(k, title){
   const a = notes.all()[k];
-  return `<details class="note" open><summary><span class="pen">✎ notes</span> ${esc(title)}</summary><div class="inner">
+  return `<details class="note"${a ? ' open' : ''}><summary><span class="pen">✎ notes</span> ${esc(title)}${a ? '' : ' <span class="nhint">tap to add</span>'}</summary><div class="inner">
     ${editor(k, 'What did your preceptor say? Tips, corrections, things to practise…')}
     <div class="nrow"><button class="btn" data-date="${k}">Add today’s date</button><span data-saved="${k}">${a?'Saved '+fmtTime(a.at):'Saves automatically as you type'}</span><span class="sync" data-sync hidden></span></div></div></details>`;
 }
@@ -890,10 +950,6 @@ function indexGuide(){
       p.b.forEach(x => { if (x[0] === 'h') { const t = unesc(x[1]).replace(/:$/, ''); INDEX.push({t, sub, g: 'g-' + c.id, part: k, hay: (t + ' ' + c.title).toLowerCase()}); } });
     });
   });
-  FX.forEach(([, xs]) => xs.forEach(([id, name]) => { const c = gch(id); if (!c) return;
-    INDEX.push({t: name + ' focused history', sub: 'History · focused histories', fx: 'fhx-' + id, hay: (name + ' focused history questions hpi ' + c.title).toLowerCase()});
-    fxParts(c).forEach(([p]) => fxItems(p).forEach(r => { if (r.cols && r.title) INDEX.push({t: r.title, sub: 'Focused history · ' + name, fx: 'fhx-' + id, hay: (r.title + ' ' + name + ' history').toLowerCase()}); }));
-  }));
   G.evidence.forEach(e => { const c = gch(e.ch); INDEX.push({t: e.q, sub: 'LR table · ' + (c ? c.lab + ' ' + c.title : ''), g: 'g-evidence', evq: e.q, hay: (e.q + ' likelihood ratio lr ' + (c ? c.title : '')).toLowerCase()}); });
 }
 const okCol = c => /^#[0-9a-f]{6}$/i.test(c || '');
@@ -1031,181 +1087,234 @@ function startEdit(det){
   </div><button type="button" class="btn" data-ged="cancel">Cancel</button><button type="button" class="btn" data-ged="save" style="border-color:var(--accent);color:var(--accent)">Save</button>`;
   gEditing = det; det.open = true; body.focus();
 }
-/* ---------- focused histories (built from each chapter's focused-history part in guide.js) ---------- */
-const FX = [
-  ['Core systems', [['c4','Vital signs'],['c5','Respiratory'],['c6','Cardiac'],['c7','Head & neck'],['c8','Peripheral vascular'],['c9','Volume status'],['c10','Renal / GU'],['c11','Lymph nodes'],['c13','Abdominal'],['c12','Dermatology']]],
-  ['Endocrine & breast', [['c14','Diabetes'],['c15','Thyroid'],['c16','Adrenal'],['c21','Breast']]],
-  ['Sexual & reproductive', [['c18','Sexual history'],['c19','Pelvic / gynecology'],['c20','Obstetrics']]],
-  ['Musculoskeletal', [['c23','Shoulder'],['c24','Elbow'],['c25','Hand & wrist'],['c26','Knee'],['c27','Hip'],['c28','Ankle & foot'],['c29','Back']]],
-  ['Neuro, psych & eye', [['c31','Neurological'],['c32','Psychiatric'],['c37','Substance use'],['c40','Ophthalmology']]],
-  ['Life stages', [['c17','Pediatrics'],['c41','Palliative care']]]
-];
-const FXNAME = Object.fromEntries(FX.flatMap(([, xs]) => xs));
-const FXPART = /^(Focused|Taking an Inclusive Sexual|Taking a Sexual Function|Detailed Substance Use)/;
-function fxParts(c){ return c.parts.map((p, k) => [p, k]).filter(([p]) => FXPART.test(p.t)); }
-const cellTxt = c => Array.isArray(c) ? c[0] : (c || '');
-const fxNorm = s => s.toLowerCase().replace(/[^a-z0-9]/g, '');
-const FXNEW = /^([•▪o✓❖–-]\s|[a-z]\.\s|\d{1,2}[.)]\s|\(\d{1,2}\)\s|\([a-z]\)\s)/;
-const FXWHY = /^(Why Check|Approach|Key Ideas?|Supportive Communication|Importance of|Helpful Resource)\b/i;
-const fxBal = s => (s.match(/\(/g) || []).length === (s.match(/\)/g) || []).length;
-const fxHead = s => s.length <= 64 && !/\n/.test(s) && /^[A-Z↑↓]/.test(s) && !FXNEW.test(s) && !FXWHY.test(s) && !/[.,;:”"]$/.test(s) && !/“|LR[+-]/.test(s) && (!/: /.test(s) || /hapter/.test(s)) && fxBal(s) && !/\b(and|or|of|the|to|with|a|in|for|by)$/i.test(s) && s.split(' ').length <= 9;
-// undo line-break hyphenation ("Assess- ment", "24- hour")
-const fxHyph = s => s.replace(/([a-z])- (ment|mental|tion|tions|sion|ing|ity|ness|ance|ence|ical|ally|ive|ated|ation|ations|ization|itis|vascular|ology|ectomy|ular)\b/g, '$1$2').replace(/(\w)- (\w)/g, '$1-$2');
-// add a cell's lines to a list, joining text that wrapped onto the next table row back onto its line
-function fxAdd(list, txt){
-  txt.split('\n').forEach(raw => {
-    const x = raw.trim(); if (!x || /^[o▪•]$/.test(x)) return;
-    const prev = list[list.length - 1];
-    if (prev == null || FXNEW.test(x) || /:$/.test(prev) || FXWHY.test(x) || /^§/.test(prev) || /^§/.test(x)) list.push(x);
-    else list[list.length - 1] = prev + ' ' + x;
-  });
-  for (let k = 0; k < list.length; k++) list[k] = fxHyph(list[k]);
-}
-// blank a merged cell that repeats the text of the cells beside it
-function fxDedup(r){
-  return r.map((s, j) => s && /\n/.test(s) && r.some((o, k) => k !== j && o && o !== s && o.length < s.length && s.startsWith(o.split('\n')[0])) ? '' : s);
-}
-// one focused-history part -> section headers, question cards, side-by-side comparison cards, and leftover blocks
-function fxItems(p){
-  const out = [], titles = []; let cur = null, pend = null, wide = null, pg = 0, last = '', skipHdr = false;
-  const sec = h => {
-    if (/hapter|^HPI\b/.test(h)) h = /HPI/.test(h) ? 'HPI & associated symptoms' : /Medical|PMH|Big/.test(h) ? 'Past history & Big 6' : /Approach/.test(h) ? 'By presenting complaint' : h.replace(/C ?hapter \d+:?/, '').trim();
-    out.push({sec: h}); cur = null;
-  };
-  const card = (title, extra) => {
-    title = fxHyph(title.replace(/\s+/g, ' ').trim()) || (last ? last + ' (continued)' : '');
-    if (/^Past Medical History/i.test(title) && !out.some(x => x.sec === 'Past history & Big 6')) out.push({sec: 'Past history & Big 6'});
-    cur = Object.assign({title, cols: {}, ord: [], pg}, extra); out.push(cur); titles.push(fxNorm(title)); if (title && !/\(continued\)$/.test(title)) last = title; return cur;
-  };
-  const flushPend = () => { if (pend != null) { sec(pend); pend = null; last = ''; } };
-  const endWide = () => {
-    if (!wide) return;
-    const w = wide; wide = null;
-    const body = w.rows.slice(1);
-    if (body.length && body.every(r => r.filter(Boolean).length >= w.cols.length - 1 && r.every(c => c.length < 40 && !/\n/.test(c)))) out.push({tbl: {rows: w.rows.map(r => w.cols.map(j => r[j])), hdr: true}, pg: w.pg});
-    else if (w.g.some(g => !g.lines.length)) w.g.forEach(g => g.lines.filter(l => !/^§/.test(l)).forEach(l => put(w.cols[0], l)));
-    else out.push({wide: w.g, pg: w.pg});
-  };
-  const put = (j, txt) => {
-    if (!cur) card('');
-    if (cur.tcol === j && txt.length < 40 && !FXNEW.test(txt)) { cur.title += ' ' + txt; return; }
-    if (cur.title && fxNorm(cur.title).includes(fxNorm(txt))) { if (cur.tcol == null && j > 0 && txt.length < 40) cur.tcol = j; return; }
-    if (!cur.cols[j]) { cur.cols[j] = []; cur.ord.push(j); }
-    fxAdd(cur.cols[j], txt);
-  };
-  const near = j => wide.cols.reduce((b, c) => Math.abs(c - j) <= Math.abs(b - j) ? c : b, wide.cols[0]);
-  p.b.forEach(x => {
-    if (x[0] === 'pg') { pg = x[1]; return; }
-    if (x[0] !== 't') { endWide(); flushPend(); out.push({blk: x}); cur = null; return; }
-    const rows = x[1].rows.map(r => fxDedup(r.map(c => cellTxt(c).trim())));
-    const one = rows.every(r => r.filter(Boolean).length <= 1);
-    // a stray label box that repeats a card title we already have
-    if (one && titles.some(t => t && t.includes(fxNorm(rows.map(r => r.join(' ')).join(' '))))) return;
-    if (rows.filter(r => r.filter(Boolean).length >= 3).length > rows.length * .6) { endWide(); flushPend(); out.push({tbl: x[1], pg}); cur = null; return; }
-    rows.forEach(r => {
-      const ne = r.map((s, j) => s ? j : -1).filter(j => j >= 0);
-      if (!ne.length) return;
-      if (skipHdr && ne.length === 1 && ne[0] > 0 && r[ne[0]].length < 40 && !FXNEW.test(r[ne[0]])) return;
-      skipHdr = false;
-      if (wide) {
-        if (r[0] && !wide.cols.includes(0)) endWide();
-        else {
-          const vals = ne.map(j => r[j]);
-          wide.rows.push(r);
-          if (ne.length >= 2 && vals.every(v => v === vals[0]) && fxHead(vals[0])) wide.g.forEach(g => g.lines.push('§' + vals[0]));
-          else ne.forEach(j => fxAdd(wide.g[wide.cols.indexOf(near(j))].lines, r[j]));
-          return;
-        }
-      }
-      if (ne.length >= 3 && !r[0]) {
-        flushPend();
-        const heads = ne.every(j => r[j].length < 48 && !FXNEW.test(r[j]) && !/\n/.test(r[j]));
-        wide = {cols: ne, pg, rows: [r], g: ne.map(j => ({title: heads ? r[j] : '', lines: []}))};
-        if (!heads) ne.forEach((j, k) => fxAdd(wide.g[k].lines, r[j]));
-        return;
-      }
-      if (ne.length === 1) {
-        const j = ne[0], s = r[j];
-        if (cur && cur.tcol === j && s.length < 40 && !FXNEW.test(s)) { cur.title += ' ' + s; return; }
-        if (/^(C ?hapter|HPI)\b/.test(s) && s.length < 60) { flushPend(); sec(s); return; }
-        if (j === 0 && fxHead(s)) { flushPend(); pend = s; return; }
-        if (j === 0 && r.length > 1 && s.length <= 110 && /^[A-Z]/.test(s) && !FXNEW.test(s) && !FXWHY.test(s) && !/\. |“/.test(s) && !/[.:,;]$/.test(s) && !/\b(and|or|of|the|to|with|a|in|for|by|from)$/i.test(s) && fxBal(s)) { flushPend(); card(s); return; }
-        if (pend != null) { card(pend); pend = null; }
-        else if (/“Don[’']t|Choosing Wisely/.test(s) && !(cur && cur.note)) card('Choosing Wisely', {note: 1});
-        put(j, s); return;
-      }
-      if (r[0]) { flushPend(); card(r[0]); ne.slice(1).forEach(j => put(j, r[j])); return; }
-      if (pend != null) { card(pend); pend = null; ne.forEach(j => put(j, r[j])); return; }
-      const j = ne[0], s = r[j];
-      if (cur && cur.tcol === j && s.length < 40 && !FXNEW.test(s)) {
-        if (/^[A-Z]/.test(s) && ne.some(k => k > j && FXNEW.test(r[k])) && !fxNorm(cur.title).includes(fxNorm(s))) card(s, {tcol: j});
-        else if (!fxNorm(cur.title).includes(fxNorm(s))) cur.title += ' ' + s;
-        ne.slice(1).forEach(k => put(k, r[k])); return;
-      }
-      // a title split across rows in its own column, e.g. "Anterior Cerebral Artery" / "Occlusion"
-      if (s.length < 40 && /^[A-Z(]/.test(s) && !FXNEW.test(s) && !/[.,;:]$/.test(s) && ne.some(k => k >= j + 2 && FXNEW.test(r[k])) && !(cur && fxNorm(cur.title).includes(fxNorm(s)))) {
-        card(s, {tcol: j}); ne.slice(1).forEach(k => put(k, r[k])); return;
-      }
-      // a header row over a sub-table (e.g. "Stroke Syndrome" / "Clinical Manifestations"): no questions in it
-      if (ne.every(k => r[k].length < 40 && !FXNEW.test(r[k]) && !/\n/.test(r[k]))) { skipHdr = true; return; }
-      ne.forEach(k => put(k, r[k]));
-    });
-    endWide();
-  });
-  endWide(); flushPend();
-  return out.filter(x => !x.cols || Object.keys(x.cols).length || x.title);
-}
-function fxCard(r, id){
-  let lines = (r.ord || Object.keys(r.cols)).flatMap(k => r.cols[k]), why = [];
-  const w = lines.findIndex(l => FXWHY.test(l.replace(/^[•▪o]\s+/, '')));
-  if (w > 0) { why = lines.slice(w); lines = lines.slice(0, w); }
-  const pgb = r.pg ? `<button type="button" class="fxpg" data-page="${r.pg}" aria-label="Open page ${r.pg} as printed">p. ${r.pg}</button>` : '';
-  const list = ls => { let lv = ''; return ls.map(l => { const h = fxLine(l, lv); const m = h.match(/^<li class="(l\d)"/); lv = m ? m[1] : /^<li>/.test(h) ? 'l0' : lv; return h; }).join(''); };
-  return `<details class="fxcard${r.note ? ' note' : ''}" id="${id}" open><summary><span>${esc(r.title || 'More')}</span>${pgb}</summary><ul>${list(lines)}</ul>`
-    + (why.length ? `<details class="fxwhy"><summary>Why check &amp; background</summary><ul>${list(why)}</ul></details>` : '') + `</details>`;
-}
-function fxLine(x, lv){
-  if (/^§/.test(x)) return `<li class="sub">${esc(x.slice(1))}</li>`;
-  let cls = lv ? 'np c' + lv : 'np', t = x;
-  const m = x.match(/^([•▪o✓❖-])\s+(.*)$/);
-  if (m) { cls = m[1] === '•' || m[1] === '-' || m[1] === '✓' ? '' : m[1] === 'o' ? 'l1' : 'l2'; t = m[2]; }
+/* ---------- focused histories & conditions (assets/fhx.js: each chapter's focused history, cleaned and checked against the guide) ---------- */
+const FXD = window.CSFX || [];
+const FXC = Object.fromEntries(FXD.map(c => [c.id, c]));
+const FXCP = {}; FXD.forEach(c => c.complaints.forEach(cp => { FXCP[cp.id] = {c, cp}; }));
+const FXNAME = Object.fromEntries(FXD.map(c => [c.id, c.name]));
+const FX = []; FXD.forEach(c => { let g = FX.find(x => x[0] === c.group); if (!g) FX.push(g = [c.group, []]); g[1].push([c.id, c.name]); });
+const CH2EXAM = Object.fromEntries(Object.entries(EXAM2CH).filter(([e]) => e !== 'approach').map(([e, c]) => [c, e]));
+const fxKey = cid => 'fx:t:' + cid;
+const fxTicks = cid => store.get(fxKey(cid)) || {};
+
+// question text: grey out the "what it suggests" parts so the question itself stands out
+function fxText(t){
   let h = esc(t);
-  const lab = t.match(/^([^:?]{2,38}):\s/); if (lab) h = `<b>${esc(lab[1])}:</b> ` + esc(t.slice(lab[0].length));
-  else if (/^[^:?]{2,70}:$/.test(t)) h = `<b>${h}</b>`;
-  return `<li${cls ? ` class="${cls}"` : ''}>${h}</li>`;
+  h = h.replace(/\s*[–-]\s*(Red Flag[^.;,)]*)/gi, ' <span class="rf">$1</span>');
+  h = h.replace(/\((?:Consider|consider|e\.g\.|E\.g\.|i\.e\.|re[:.]|re |seen in|suggestive|suggests|associated|common|Cardiac|LR)[^()]*(?:\([^()]*\)[^()]*)*\)/g, m => `<span class="hint">${m}</span>`);
+  h = h.replace(/\s(→|&gt;|–&gt;)\s(.+)$/, (m, a, b) => ` <span class="hint">→ ${b}</span>`);
+  return h;
+}
+const ASKH = /associated|red flag|ask|symptom|screen|focus on|questions|history|risk factor/i;
+function fxRow(it, key, ticks, tickable){
+  const lv = Math.min(it.lv || 0, 3);
+  if (it.k === 'h') return `<div class="qh l${lv}">${esc(it.x)}</div>`;
+  if (it.k === 't') return `<div class="qt l${lv}">${gtable({rows: it.rows, hdr: true})}</div>`;
+  if (it.k === 'x') return `<div class="qx gbody">${it.blk[0] === 't' ? gtable(it.blk[1]) : gblocks([it.blk])}</div>`;
+  const lab = it.lab ? (it.lab.length <= 24 && it.k !== 'n' ? `<span class="pill">${esc(it.lab)}</span>` : `<b>${esc(it.lab)}:</b> `) : '';
+  const body = lab + fxText(it.x) + (it.flag && !/red flag/i.test(it.x) ? ' <span class="rf">Red flag</span>' : '');
+  if (it.k === 'n') return `<div class="qn l${lv}">${body}</div>`;
+  const can = tickable && (it.k === 'q' || lv === 0 || it.ask);
+  if (!can) return `<div class="qf l${lv}${it.k === 'q' ? ' isq' : ''}">${body}</div>`;
+  return `<label class="qq l${lv}${it.k === 'q' ? ' isq' : ''}${ticks[key] ? ' done' : ''}"><input type="checkbox" class="fxtick" data-fxq="${esc(key)}"${ticks[key] ? ' checked' : ''}><span>${body}</span></label>`;
+}
+// rows directly under an "Associated symptoms" / "Red flags" style heading are things to ask, so they get a tick box too
+function fxMarkAsk(items){
+  let hlv = -1;
+  (items || []).forEach(it => {
+    const lv = it.lv || 0;
+    if (it.k === 'h') { hlv = ASKH.test(it.x) ? lv : (lv <= hlv ? -1 : hlv); it.ask = false; return; }
+    if (hlv >= 0 && lv <= hlv) hlv = -1;
+    it.ask = hlv >= 0 && lv === hlv + 1 && (it.k === 'f' || it.k === 'q');
+    if (lv === 0 && it.lab && ASKH.test(it.lab) && it.k !== 'n') hlv = 0;
+  });
+  return items;
+}
+function fxList(items, pre, ticks, tickable){ if (tickable) fxMarkAsk(items); return `<div class="qlist">${(items || []).map((it, i) => fxRow(it, pre + ':' + i, ticks, tickable)).join('')}</div>`; }
+function fxDone(ticks, pre){ const re = new RegExp('^' + pre.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ':\\d+$'); return Object.keys(ticks).filter(k => ticks[k] && re.test(k)).length; }
+function fxCountable(items){ fxMarkAsk(items); return (items || []).filter(it => it.k === 'q' || (it.k === 'f' && ((it.lv || 0) === 0 || it.ask))).length; }
+function fxPearls(ps, pre, ticks){
+  if (!ps || !ps.length) return '';
+  return `<details class="fxmore"><summary>${esc(ps.map(p => p.t.replace(/ Recommendations?.*$/, '').replace(/^Relevant /, '')).filter((x, i, a) => a.indexOf(x) === i).join(' & '))}</summary>${ps.map((p, k) => `<div class="qh">${esc(p.t)}</div>${fxList(p.items, pre + ':p' + k, ticks, false)}`).join('')}</details>`;
+}
+// one presenting complaint, as a section you can scroll through and tick off
+function fxSection(c, cp, opt){
+  opt = opt || {};
+  const ticks = fxTicks(c.id), pre = cp.id;
+  const n = fxCountable(cp.items), done = fxDone(ticks, pre);
+  let h = `<section class="fxs${cp.core ? ' core' : ''}" id="fx-${cp.id}" data-cp="${cp.id}" data-ch="${c.id}">
+    <header class="fxh"><div class="fxt">${cp.core && !opt.noCoreTag ? `<span class="coretag">Ask for every ${esc(c.name.toLowerCase())} complaint</span>` : ''}<h2>${esc(cp.t)}</h2>${(cp.also || []).length ? `<p class="also">${cp.also.map(esc).join(' · ')}</p>` : ''}</div>
+    <div class="fxtools">${n ? `<span class="fxcount" data-count="${cp.id}">${Math.min(done, n)}/${n}</span>` : ''}${cp.pg ? `<button type="button" class="fxpg" data-page="${cp.pg}" title="See this page as printed">p. ${cp.pg}</button>` : ''}${opt.isolate !== false && !cp.core ? `<a class="fxiso" href="#cond-${cp.id}" data-goto="cond-${cp.id}" title="History and physical exam for this condition only">Isolate</a>` : ''}</div></header>`;
+  h += fxList(cp.items, pre, ticks, true);
+  (cp.bg || []).forEach((b, k) => { h += `<div class="qh fxbgh">${esc(b.cat)}</div>` + fxList(b.items, pre + ':b' + k, ticks, true); });
+  if (cp.more && cp.more.length) h += `<details class="fxmore"><summary>${esc(cp.moret || 'More')}</summary>${fxList(cp.more, pre + ':m', ticks, false)}</details>`;
+  if (cp.refs && cp.refs.length) h += `<details class="fxmore"><summary>${cp.refs.length === 1 ? esc(cp.refs[0].t) : 'Related: ' + esc(cp.refs.map(r => r.t.replace(/\s*\(.*$/, '')).slice(0, 3).join(', ')) + (cp.refs.length > 3 ? ` + ${cp.refs.length - 3} more` : '')}</summary>${cp.refs.map((r, k) => `<div class="qh">${esc(r.t)}${r.pg ? ` <span class="pg">p. ${r.pg}</span>` : ''}</div>${fxList(r.items, pre + ':r' + k, ticks, false)}`).join('')}</details>`;
+  h += fxPearls(cp.pearls, pre, ticks);
+  return h + `</section>`;
+}
+// the Big 6 part of the chapter: past medical, surgical, family, social, medications
+function fxBackground(c, open){
+  const ticks = fxTicks(c.id);
+  const cats = c.background.map(b => ({cat: b.cat, cards: b.cards.filter(cd => !cd.for)})).filter(b => b.cards.length);
+  if (!cats.length) return '';
+  return `<section class="fxs bgsec" id="fx-bg" data-cp="bg" data-ch="${c.id}"><header class="fxh"><div class="fxt"><h2>Background history</h2><p class="also">The guide’s ${esc(c.name.toLowerCase())}-specific past medical, surgical, family, social and medication questions</p></div></header>`
+    + cats.map((b, j) => `<details class="fxcat"${open ? ' open' : ''}><summary>${esc(b.cat)} <span class="n">${b.cards.length}</span></summary>`
+      + b.cards.map((cd, k) => { const same = b.cards.length === 1 && /^(past|family|social|medication)/i.test(cd.t);
+          return `${same ? '' : `<div class="qh fxcard-t">${esc(cd.t)}${cd.pg ? ` <span class="pg">p. ${cd.pg}</span>` : ''}</div>`}${fxList(cd.items, 'bg:' + j + ':' + k, ticks, true)}${fxPearls(cd.pearls, 'bg:' + j + ':' + k, ticks)}`; }).join('')
+      + `</details>`).join('') + `</section>`;
+}
+function fxSysPicker(cid, mode){
+  return `<label class="syspick"><span>System</span><select data-sys="${mode}">${FX.map(([g, xs]) => `<optgroup label="${esc(g)}">${xs.map(([id, n]) => `<option value="${id}"${id === cid ? ' selected' : ''}>${esc(n)}</option>`).join('')}</optgroup>`).join('')}</select></label>`;
+}
+function fxNav(items){
+  return `<nav class="fxnav" id="fxnav" aria-label="Jump to a complaint"><div class="fxnav-in">${items.map(([id, t, core]) => `<a href="#" data-fxjump="${id}"${core ? ' class="core"' : ''}>${esc(t)}</a>`).join('')}</div></nav>`;
 }
 function renderFhx(tok){
   view = 'hist'; cur = null; histTab = 'fhx'; setTop('hist'); store.set('lastFhx', tok);
-  const main = $('#main'); delete main.dataset.hls;
-  const head = `<div class="eyebrow">History · focused histories from the guide</div><h1>History taking</h1>
+  const main = $('#main');
+  const cid = (tok || '').slice(4) || store.get('lastFhxCh') || 'c5'; const c = FXC[cid] || FXC.c5; store.set('lastFhxCh', c.id);
+  const exam = CH2EXAM[c.id];
+  let h = `<div class="eyebrow">History · focused history${c.pg ? ` · guide pp. ${c.pg[0]}–${c.pg[1]}` : ''}</div><h1>${esc(c.name)}</h1>
     <div class="subtabs" role="tablist">${[['hpi','OPQRST / HPI'],['ros','Review of systems'],['big6','Big 6'],['fhx','Focused histories']].map(([k,l])=>`<button role="tab" aria-selected="${k==='fhx'}" data-h="${k}">${l}</button>`).join('')}</div>`;
-  if (!G) { main.innerHTML = head + `<p class="lead">Loading the focused histories…</p>`; loadGuide().then(() => { if (view === 'hist' && histTab === 'fhx') renderFhx(tok); }).catch(() => { main.innerHTML = head + `<p class="lead">Couldn’t load them. Check your connection and try again.</p>`; }); return; }
-  const cid = (tok || '').slice(4) || store.get('lastFhxCh') || 'c5'; const c = gch(cid) || gch('c5'); store.set('lastFhxCh', c.id);
-  let h = head + `<p class="lead">The question lists for each system, straight from each chapter’s focused-history section. Pick a system, then tap a heading to fold it away.</p>`;
-  h += `<nav class="fxpick" aria-label="Systems">` + FX.map(([g, xs]) => `<div><b>${esc(g)}</b>${xs.map(([id, n]) => `<a href="#fhx-${id}" data-goto="fhx-${id}"${id === c.id ? ' aria-current="page"' : ''}>${esc(n)}</a>`).join('')}</div>`).join('') + `</nav>`;
-  const name = FXNAME[c.id] || c.title;
-  h += `<h2 style="margin:6px 0 4px">${esc(name)}</h2><div class="tools">`
-    + `<button class="btn" data-act="fxopen">Expand all</button><button class="btn" data-act="fxclose">Collapse all</button>`
-    + (c.exam && D.exams[c.exam] ? `<a class="btn" href="#${c.exam}" data-goto="${c.exam}">Exam steps →</a>` : '')
-    + `<a class="btn" href="#g-${c.id}" data-goto="g-${c.id}">${esc(c.lab)} in the guide →</a></div>`;
-  h += noteBox('fhx:' + c.id, 'My notes – ' + name + ' history');
-  let body = '', cards = [], n = 0;
-  fxParts(c).forEach(([p]) => {
-    if (fxParts(c).length > 1) body += `<div class="fxsec">${esc(p.t)}</div>`;
-    let grid = [];
-    const flush = () => { if (grid.length) { body += `<div class="fxgrid">${grid.join('')}</div>`; grid = []; } };
-    fxItems(p).forEach(r => {
-      if (r.sec) { flush(); body += `<div class="fxsec">${esc(r.sec)}</div>`; }
-      else if (r.cols) { const id = 'fx' + (n++); if (r.title) cards.push([id, r.title]); grid.push(fxCard(r, id)); }
-      else if (r.wide) r.wide.forEach(g => grid.push(fxCard({title: g.title, cols: {0: g.lines}, pg: r.pg}, 'fx' + (n++))));
-      else if (r.tbl) { flush(); body += gtable(r.tbl); }
-      else { flush(); body += `<div class="gbody" style="border:0;padding:0">${gblocks([r.blk])}</div>`; }
-    });
-    flush();
+  h += `<div class="tools">${fxSysPicker(c.id, 'fhx')}<button class="btn" data-act="fxclear" data-ch="${c.id}">Clear ticks</button>`
+    + (exam ? `<a class="btn" href="#${exam}" data-goto="${exam}">Exam steps →</a>` : '')
+    + `<a class="btn" href="#g-${c.id}" data-goto="g-${c.id}">Chapter in the guide →</a></div>`;
+  h += `<p class="lead">Start open-ended, then work down each complaint. Tick questions as you ask them; grey text is what an answer points to. Tap <b>Isolate</b> to see one complaint with its physical exam.</p>`;
+  if (c.intro) h += `<div class="intro">${esc(c.intro)}</div>`;
+  c.extras.filter(e => e.after === 0).forEach(e => { h += `<div class="gbody fxintro">${gblocks([e.blk])}</div>`; });
+  h += noteBox('fhx:' + c.id, 'My notes – ' + c.name + ' history');
+  const navItems = c.complaints.filter(cp => !cp.all).map(cp => [cp.id, cp.t, cp.core]);
+  if (c.background.some(b => b.cards.some(cd => !cd.for))) navItems.push(['bg', 'Background history']);
+  h += fxNav(navItems);
+  let body = '';
+  const core = c.complaints.filter(cp => cp.core), rest = c.complaints.filter(cp => !cp.core && !cp.all);
+  if (core.length && rest.length) body += `<div class="fxgroup">Ask for every ${esc(c.name.toLowerCase())} complaint</div>`;
+  body += core.map(cp => fxSection(c, cp, {noCoreTag: true})).join('');
+  if (core.length && rest.length) body += `<div class="fxgroup">Then the presenting complaint</div>`;
+  body += rest.map(cp => fxSection(c, cp)).join('');
+  body += fxBackground(c, true);
+  h += `<div data-hls="hl:f2:${c.id}">${body}</div>`;
+  h += `<p class="tip" style="margin-top:28px">Source: McMaster Clinical Skills Guide, 6e (2026–27), ${esc(gchLab(c.id))}. Use the page buttons to check any card against the printed page.</p>`;
+  delete main.dataset.hls;
+  main.innerHTML = h; syncBadge(); hl.paintAll(); markRail('fhx-' + c.id); window.scrollTo(0, 0); fxWatch();
+}
+const CHLAB = {c4:'Ch 4',c5:'Ch 5',c6:'Ch 6',c7:'Ch 7',c8:'Ch 8',c9:'Ch 9',c10:'Ch 10',c11:'Ch 11',c12:'Ch 12',c13:'Ch 13',c14:'Ch 14',c15:'Ch 15',c16:'Ch 16',c17:'Ch 17',c18:'Ch 18',c19:'Ch 19',c20:'Ch 20',c21:'Ch 21',c23:'Ch 23',c24:'Ch 24',c25:'Ch 25',c26:'Ch 26',c27:'Ch 27',c28:'Ch 28',c29:'Ch 29',c31:'Ch 31',c32:'Ch 32',c37:'Ch 37',c40:'Ch 40',c41:'Ch 41'};
+const gchLab = id => CHLAB[id] || '';
+// highlight the complaint you're scrolled to in the sticky jump bar
+let fxObs = null;
+function fxWatch(){
+  if (fxObs) fxObs.disconnect();
+  const nav = $('#fxnav'); if (!nav || !('IntersectionObserver' in window)) return;
+  const secs = [...document.querySelectorAll('.fxs[data-cp]')];
+  const vis = new Map();
+  fxObs = new IntersectionObserver(es => {
+    es.forEach(e => vis.set(e.target, e.isIntersecting ? e.boundingClientRect.top : null));
+    const top = secs.find(s => vis.get(s) != null);
+    nav.querySelectorAll('a').forEach(a => { const on = top && a.dataset.fxjump === top.dataset.cp; a.classList.toggle('on', !!on); if (on) { const r = a.getBoundingClientRect(), nr = nav.getBoundingClientRect(); if (r.left < nr.left || r.right > nr.right) a.scrollIntoView({block: 'nearest', inline: 'center'}); } });
+  }, {rootMargin: '-140px 0px -55% 0px'});
+  secs.forEach(s => fxObs.observe(s));
+}
+function fxUpdateCount(cpid){
+  const hit = FXCP[cpid]; if (!hit) return;
+  const t = fxTicks(hit.c.id), n = fxCountable(hit.cp.items);
+  const done = fxDone(t, cpid);
+  document.querySelectorAll(`[data-count="${cpid}"]`).forEach(el => { el.textContent = Math.min(done, n) + '/' + n; el.classList.toggle('all', done >= n); });
+}
+
+/* ---------- conditions: pick one presenting complaint, see only its history and physical exam ---------- */
+let condQ = '', condMode = store.get('condMode') || 'both';
+FXD.forEach(c => { if (c.complaints.length && c.complaints.every(cp => cp.core)) { const all = {id: c.id + '-all', t: c.name + ' (whole history)', pg: c.pg && c.pg[0], items: [], all: 1}; c.complaints.push(all); FXCP[all.id] = {c, cp: all}; } });
+const CONDS = FXD.flatMap(c => c.complaints.filter(cp => !cp.core).map(cp => ({id: cp.id, t: cp.t, ch: c.id, sys: c.name, hay: (cp.t + ' ' + (cp.also || []).join(' ') + ' ' + c.name + ' ' + c.title + ' ' + (cp.refs || []).map(r => r.t).join(' ')).toLowerCase()})));
+const SYN = {sob:'shortness of breath', dyspnea:'shortness of breath', dyspnoea:'shortness of breath', cp:'chest pain', ha:'headache', uti:'urinary', dvt:'claudication', pe:'shortness of breath', abdo:'abdominal', gi:'abdominal', n:'nausea', v:'vomiting', tia:'stroke', cva:'stroke', ms:'weakness', loc:'seizure', syncope:'dizziness', vertigo:'dizziness', ent:'head & neck', std:'sti', sti:'stbbi', pregnant:'pregnancy', ob:'obstetrics', ankle:'ankle', acl:'knee', rash:'rash', eczema:'rash', psych:'psychiatric', mood:'psychiatric', depression:'depression', etoh:'substance', alcohol:'substance', drugs:'substance', thyroid:'thyroid', dm:'diabetes', sugar:'diabetes'};
+function condMatch(q){
+  const words = q.toLowerCase().split(/\s+/).filter(Boolean).map(w => SYN[w] || w);
+  if (!words.length) return CONDS;
+  return CONDS.filter(x => words.every(w => x.hay.includes(w)));
+}
+function condListHtml(q){
+  const hits = condMatch(q);
+  if (!hits.length) return `<div class="intro">No condition matches “${esc(q)}”. Try a symptom like “cough”, “knee”, “headache” or “bleeding”.</div>`;
+  let h = '', last = null;
+  hits.forEach(x => { if (x.ch !== last) { if (last) h += `</div>`; h += `<h3 class="condsys">${esc(x.sys)}</h3><div class="condgrid">`; last = x.ch; }
+    h += `<a class="condbtn" href="#cond-${x.id}" data-goto="cond-${x.id}">${esc(x.t)}</a>`; });
+  return h + `</div>`;
+}
+function renderCondList(){
+  view = 'cond'; cur = null; setTop('cond');
+  const main = $('#main'); delete main.dataset.hls;
+  main.innerHTML = `<div class="eyebrow">Conditions · ${CONDS.length} presenting complaints from the guide</div><h1>Find a condition</h1>
+    <p class="lead">Search for a presenting complaint or condition, then pick it to see only its focused history questions and the physical exam for that system.</p>
+    <div class="condsearch"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="condq" type="search" placeholder="e.g. chest pain, cough, knee, seizure, nipple discharge" autocomplete="off" aria-label="Search conditions" value="${esc(condQ)}"></div>
+    <div id="condlist">${condListHtml(condQ)}</div>`;
+  markRail('cond'); window.scrollTo(0, 0);
+  if (matchMedia('(pointer: fine)').matches) $('#condq').focus();
+}
+function examStepsHtml(exId){
+  const ex = D.exams[exId]; if (!ex) return '';
+  const ticks = store.get('t:' + exId) || {};
+  const secs = [];
+  ex.steps.forEach((s, i) => { if (!secs.length || secs[secs.length - 1].name !== s.sec) secs.push({name: s.sec, items: []}); secs[secs.length - 1].items.push(i); });
+  let n = 0, h = '';
+  secs.forEach(sec => {
+    const isExtra = ex.steps[sec.items[0]].tags.includes('extra');
+    h += `<div class="sec sm"${isExtra && !showExtra ? ' hidden' : ''} data-extra="${isExtra ? 1 : 0}"><h3>${esc(sec.name)}</h3><span class="n">${sec.items.length}</span></div><div class="steps"${isExtra && !showExtra ? ' hidden' : ''} data-extra="${isExtra ? 1 : 0}">`;
+    sec.items.forEach(i => { const s = ex.steps[i]; n++; h += stepHtml(exId, s, i, n, !!ticks[i]); });
+    h += `</div>`;
   });
-  if (cards.length > 3) h += `<div class="fxjump" aria-label="Jump to">${cards.map(([id, t]) => `<a href="#" data-fxjump="${id}">${esc(t.length > 40 ? t.slice(0, 38) + '…' : t)}</a>`).join('')}</div>`;
-  h += `<div data-hls="hl:f:${c.id}">${body}</div>`;
-  main.innerHTML = h; syncBadge(); hl.paintAll(); markRail('fhx'); window.scrollTo(0, 0);
+  return h;
+}
+function renderCond(tok){
+  const hit = FXCP[tok.slice(5)];
+  if (!hit) { renderCondList(); return; }
+  const {c, cp} = hit;
+  view = 'cond'; cur = null; setTop('cond'); store.set('lastCond', tok);
+  const main = $('#main'); delete main.dataset.hls;
+  const exam = CH2EXAM[c.id], ex = exam && D.exams[exam];
+  const twins = CONDS.filter(x => x.id !== cp.id && fxNormT(x.t) === fxNormT(cp.t));
+  const core = c.complaints.filter(x => x.core);
+  let h = `<div class="eyebrow">Condition · ${esc(c.name)}</div><h1>${esc(cp.t)}</h1>`;
+  h += `<div class="condbar"><div class="condsearch sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="condq2" type="search" placeholder="Switch to another condition…" autocomplete="off" aria-label="Switch condition"><div class="results" id="condres" hidden></div></div>
+    <div class="gview" role="group" aria-label="Show">${[['both','History + exam'],['hx','History'],['px','Exam']].map(([k, l]) => `<button type="button" data-cmode="${k}" aria-pressed="${condMode === k}">${l}</button>`).join('')}</div></div>`;
+  if (twins.length) h += `<p class="tip">Also covered in: ${twins.map(x => `<a href="#cond-${x.id}" data-goto="cond-${x.id}">${esc(x.sys)}</a>`).join(', ')}</p>`;
+  h += noteBox('cond:' + cp.id, 'My notes – ' + cp.t);
+  let hx = `<div class="condpart" data-part="hx"><h2 class="partttl"><span>1</span>Focused history</h2>`;
+  if (core.length) hx += (cp.all ? '' : `<div class="fxgroup">Ask for every ${esc(c.name.toLowerCase())} complaint</div>`) + core.map(x => fxSection(c, x, {noCoreTag: true})).join('') + (cp.all ? '' : `<div class="fxgroup">${esc(cp.t)}</div>`);
+  if (!cp.all) hx += fxSection(c, cp, {isolate: false});
+  hx += `<details class="fxs fxbgwrap" data-ch="${c.id}"><summary><h2>Background history for ${esc(c.name.toLowerCase())}</h2><span class="also">Past medical, surgical, family, social, medications</span></summary>${fxBackground(c, false).replace(/^<section[^>]*>[\s\S]*?<\/header>/, '').replace(/<\/section>$/, '')}</details>`;
+  hx += `</div>`;
+  let px = `<div class="condpart" data-part="px"><h2 class="partttl"><span>2</span>Physical exam${ex ? ` · ${esc(ex.title)}` : ''}</h2>`;
+  if (ex) {
+    const extra = ex.steps.filter(s => s.tags.includes('extra')).length;
+    px += `<div class="tools"><button class="btn" data-act="open">Expand all</button><button class="btn" data-act="close">Collapse all</button>${extra ? `<label class="toggle"><input type="checkbox" id="xtra" ${showExtra ? 'checked' : ''}> Show non-routine tests (${extra})</label>` : ''}<a class="btn" href="#${exam}" data-goto="${exam}">Open full exam page →</a></div>`;
+    if (ex.notes && ex.notes.length) px += `<details class="box notes"><summary>Setup & tips from the guide</summary><div class="inner">${list(ex.notes)}</div></details>`;
+    px += examStepsHtml(exam);
+  } else px += `<div id="condpx"><p class="lead">This chapter’s physical exam isn’t one of the quick exam pages. Loading it from the guide…</p></div>`;
+  px += `</div>`;
+  h += hx + px;
+  h += `<div class="condpart" data-part="hx px"><details class="box" id="condev"><summary>Evidence: likelihood ratios for ${esc(c.name.toLowerCase())}</summary><div class="inner" id="condevin"><p class="tip">Loading…</p></div></details></div>`;
+  main.innerHTML = h; condApplyMode(); syncBadge(); hl.paintAll(); markRail('cond'); window.scrollTo(0, 0);
+  loadGuide().then(() => {
+    if (view !== 'cond' || store.get('lastCond') !== tok) return;
+    const evs = G.evidence.filter(e => e.ch === c.id);
+    const ei = $('#condevin'); if (ei) ei.innerHTML = evs.length ? evs.map(e => `<details class="evitem"><summary><small>Q${e.n}</small>${esc(e.q)}</summary><div class="in">${e.t.map(gtable).join('')}${e.pg ? `<button type="button" class="fxpg" data-page="${e.pg}">p. ${e.pg}</button>` : ''}</div></details>`).join('') : `<p class="tip">This chapter has no likelihood-ratio tables.</p>`;
+    if (!evs.length) { const d = $('#condev'); if (d) d.hidden = true; }
+    const cp2 = $('#condpx'); if (!cp2) return;
+    const gc = gch(c.id), parts = gc ? gc.parts.map((p, k) => [p, k]).filter(([p]) => /Physical Exam|Maneuvers|Approach to Lesions|Skin Cancers|Vitals and Measures/i.test(p.t)) : [];
+    cp2.innerHTML = parts.length ? parts.map(([p, k]) => `<details class="gpart"${parts.length === 1 ? ' open' : ''}><summary><h2>${esc(p.t)}</h2></summary><div class="gbody">${gblocks(p.b)}</div></details>`).join('') + `<a class="btn" href="#g-${c.id}" data-goto="g-${c.id}">Whole chapter in the guide →</a>`
+      : `<p class="lead">The guide has no physical exam section for ${esc(c.name.toLowerCase())}. <a href="#g-${c.id}" data-goto="g-${c.id}">Open the chapter →</a></p>`;
+  }).catch(() => {});
+}
+const fxNormT = s => s.toLowerCase().replace(/\(.*?\)/g, '').replace(/[^a-z]/g, '');
+function condApplyMode(){
+  document.querySelectorAll('.condpart').forEach(p => { p.hidden = condMode !== 'both' && !p.dataset.part.split(' ').includes(condMode); });
+  document.querySelectorAll('[data-cmode]').forEach(b => b.setAttribute('aria-pressed', b.dataset.cmode === condMode));
+}
+function condResults(q, box){
+  q = q.trim();
+  if (q.length < 2) { box.hidden = true; return; }
+  const hits = condMatch(q).slice(0, 20);
+  box.innerHTML = hits.length ? hits.map(x => `<button type="button" data-goto="cond-${x.id}">${esc(x.t)}<small>${esc(x.sys)}</small></button>`).join('') : `<button type="button" disabled>No match</button>`;
+  box.hidden = false;
 }
 function partPage(c, k){ const p = c.parts[k]; const pg = p && p.b.find(x => x[0] === 'pg'); return pg ? pg[1] : c.pg[0]; }
 function renderEvidence(){
@@ -1229,10 +1338,24 @@ function renderEvList(){
   $('#evn').textContent = `${hits.length} of ${G.evidence.length}`;
 }
 function markRail(tok){ document.querySelectorAll('.rail a').forEach(a => { if ((a.dataset.id || a.dataset.h || a.dataset.g) === tok) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); }); }
+function railHist(){
+  return `<h4>History basics</h4><a href="#hpi" data-h="hpi">OPQRST / HPI</a><a href="#ros" data-h="ros">Review of systems</a><a href="#big6" data-h="big6">Big 6</a>`
+    + FX.map(([g, xs]) => `<h4>${esc(g)}</h4>` + xs.map(([id, n]) => `<a href="#fhx-${id}" data-h="fhx-${id}">${esc(n)}<span>${FXC[id].complaints.filter(x => !x.all).length}</span></a>`).join('')).join('')
+    + `<h4>Notes</h4><a href="#notes" data-h="notes">My notes <span id="ncount"></span></a>`;
+}
+function railCond(){
+  const cur = (store.get('lastCond') || '').slice(5), curCh = FXCP[cur] ? FXCP[cur].c.id : null;
+  return `<a href="#cond" data-h="cond" style="font-weight:600">Search all conditions</a>`
+    + FX.map(([g, xs]) => `<h4>${esc(g)}</h4>` + xs.map(([id, n]) => { const cs = FXC[id].complaints.filter(x => !x.core);
+        return `<details class="railsys"${id === curCh ? ' open' : ''}><summary>${esc(n)}<span>${cs.length}</span></summary>${cs.map(x => `<a href="#cond-${x.id}" data-h="cond-${x.id}">${esc(x.t)}</a>`).join('')}</details>`; }).join('')).join('')
+    + `<h4>Notes</h4><a href="#notes" data-h="notes">My notes <span id="ncount"></span></a>`;
+}
 
 function renderRail(mode, force){
   mode = mode || railMode || 'exam'; if (mode === railMode && !force) return; railMode = mode;
-  const r = $('#rail'); $('#menuLab').textContent = mode === 'guide' ? 'Chapters' : 'Exams';
+  const r = $('#rail'); $('#menuLab').textContent = {guide: 'Chapters', hist: 'Systems', cond: 'Conditions'}[mode] || 'Exams';
+  if (mode === 'hist') { r.innerHTML = railHist(); updateCount(); return; }
+  if (mode === 'cond') { r.innerHTML = railCond(); updateCount(); return; }
   if (mode === 'guide') {
     r.innerHTML = (!G ? `<p class="tip">Loading the guide…</p>` : Object.entries(G.sections).map(([k, name]) => `<h4>${esc(name)}</h4>` + G.chapters.filter(c => c.sec === k).map(c => `<a href="#g-${c.id}" data-g="g-${c.id}"><span class="gl">${esc(c.lab)}</span>${esc(c.title)}</a>`).join('')).join('')
       + `<h4>Evidence</h4><a href="#g-evidence" data-g="g-evidence">All likelihood-ratio tables <span>${G.evidence.length}</span></a>`)
@@ -1242,7 +1365,7 @@ function renderRail(mode, force){
   }
   r.innerHTML = D.groups.map(g => `<h4>${esc(g.name)}</h4>` + g.ids.map(id =>
     `<a href="#${id}" data-id="${id}">${esc(D.exams[id].title)}<span>${D.exams[id].steps.length}</span></a>`).join('')).join('')
-    + `<h4>History</h4><a href="#hpi" data-h="hpi">OPQRST / HPI</a><a href="#ros" data-h="ros">Review of systems</a><a href="#big6" data-h="big6">Big 6</a><a href="#fhx" data-h="fhx">Focused histories <span>30</span></a>`
+    + `<h4>History</h4><a href="#hpi" data-h="hpi">OPQRST / HPI</a><a href="#ros" data-h="ros">Review of systems</a><a href="#big6" data-h="big6">Big 6</a><a href="#fhx" data-h="fhx">Focused histories <span>${FXD.length}</span></a><a href="#cond" data-h="cond">Find a condition <span>${CONDS.length}</span></a>`
     + `<h4>Notes</h4><a href="#notes" data-h="notes">My notes <span id="ncount"></span></a>`
     + `<p class="tip" style="margin-top:18px">Built from the McMaster Clinical Skills Guide, 6e (2026–27). Figures are the guide’s; original image sources are cited there.</p>`;
   updateCount();
@@ -1268,18 +1391,7 @@ function renderExam(id){
   secs.forEach((sec,k) => {
     const isExtra = ex.steps[sec.items[0]].tags.includes('extra');
     h += `<div class="sec" id="s${k}" ${isExtra&&!showExtra?'hidden':''} data-extra="${isExtra?1:0}"><h2>${esc(sec.name)}</h2><span class="n">${sec.items.length} step${sec.items.length>1?'s':''}</span></div><div class="steps" ${isExtra&&!showExtra?'hidden':''} data-extra="${isExtra?1:0}">`;
-    sec.items.forEach(i => {
-      const s = ex.steps[i]; n++;
-      const ph = stepPhase(s);
-      const tags = s.tags.filter(t=>t!=='extra').map(t => `<span class="tag ${t==='conditional'?'cond':''}">${t==='conditional'?'if indicated':t}</span>`).join('');
-      const done = !!ticks[i];
-      const hasNote = !!notes.get('step:'+id+':'+i);
-      h += `<details class="step${done?' done':''}" id="${id}-${i}" data-i="${i}"><summary>
-        <input type="checkbox" class="tick" aria-label="Mark done" ${done?'checked':''}>
-        <span class="num">${n}</span>
-        <span class="name">${ph?`<span class="ph ${ph}" title="${PHASE_LABEL[ph]||''}"></span>`:''}${esc(s.name)}${tags?`<span class="tags">${tags}</span>`:''}${hasNote?'<span class="pen">✎</span>':''}</span>
-        <span class="chev" aria-hidden="true"></span></summary><div class="body"></div></details>`;
-    });
+    sec.items.forEach(i => { n++; h += stepHtml(id, ex.steps[i], i, n, !!ticks[i]); });
     h += `</div>`;
   });
   h += `<p class="tip" style="margin-top:28px">Source: McMaster Clinical Skills Guide, 6e (2026–27). Check the guide for full likelihood ratios and references.</p>`;
@@ -1289,9 +1401,19 @@ function renderExam(id){
   document.querySelectorAll('.rail a').forEach(a => { if (a.dataset.id===id) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current'); });
 }
 
+function stepHtml(id, s, i, n, done){
+  const ph = stepPhase(s);
+  const tags = s.tags.filter(t=>t!=='extra').map(t => `<span class="tag ${t==='conditional'?'cond':''}">${t==='conditional'?'if indicated':t}</span>`).join('');
+  const hasNote = !!notes.get('step:'+id+':'+i);
+  return `<details class="step${done?' done':''}" id="${id}-${i}" data-i="${i}" data-ex="${id}"><summary>
+    <input type="checkbox" class="tick" aria-label="Mark done" ${done?'checked':''}>
+    <span class="num">${n}</span>
+    <span class="name">${ph?`<span class="ph ${ph}" title="${PHASE_LABEL[ph]||''}"></span>`:''}${esc(s.name)}${tags?`<span class="tags">${tags}</span>`:''}${hasNote?'<span class="pen">✎</span>':''}</span>
+    <span class="chev" aria-hidden="true"></span></summary><div class="body"></div></details>`;
+}
 function fillStep(el){
   const body = el.querySelector('.body'); if (body.dataset.f) return;
-  const s = D.exams[cur].steps[+el.dataset.i];
+  const exId = el.dataset.ex || cur, s = D.exams[exId].steps[+el.dataset.i];
   let h = '';
   if (s.how) h += `<div><div class="lab">How</div><p style="margin:0">${esc(s.how)}</p></div>`;
   if (s.setup) h += `<div><div class="lab">Setup</div>${list(s.setup)}</div>`;
@@ -1303,15 +1425,15 @@ function fillStep(el){
   if (s.why) h += `<details class="more"><summary>Why check / interpretation</summary><div class="in">${list(s.why)}</div></details>`;
   if (s.more) h += `<details class="more"><summary>Notes</summary><div class="in">${list(s.more)}</div></details>`;
   if (s.gloss && s.gloss.length) h += `<details class="more"><summary>Terms (${s.gloss.length})</summary><div class="in">${list(s.gloss.map(g=>'• '+g))}</div></details>`;
-  const sk = 'step:'+cur+':'+el.dataset.i, st = notes.all()[sk];
+  const sk = 'step:'+exId+':'+el.dataset.i, st = notes.all()[sk];
   h += `<div class="snote"><div class="lab">My notes</div>${editor(sk, 'Preceptor tips for this step…')}<div class="nrow"><span data-saved="${sk}">${st?'Saved '+fmtTime(st.at):''}</span></div></div>`;
   h += `<div class="pg">Guide p. ${s.pg}</div>`;
   body.innerHTML = h; body.dataset.f = 1;
-  body.dataset.hls = 'hl:s:' + cur + ':' + el.dataset.i; hl.paint(body);
+  body.dataset.hls = 'hl:s:' + exId + ':' + el.dataset.i; hl.paint(body);
 }
 
 function updateProg(){
-  const ex = D.exams[cur]; const t = store.get('t:'+cur) || {};
+  if (!cur) return; const ex = D.exams[cur]; const t = store.get('t:'+cur) || {};
   const done = Object.keys(t).filter(k=>t[k]).length;
   const p = $('#prog'); if (p) p.textContent = `${done}/${ex.steps.length} ticked`;
 }
@@ -1346,15 +1468,17 @@ function renderHist(tab){
 /* ---------- routing ---------- */
 function setTop(t){
   t = t === true ? 'hist' : t === false ? 'exam' : t;
-  $('#tabExam').setAttribute('aria-pressed', t === 'exam'); $('#tabHist').setAttribute('aria-pressed', t === 'hist'); $('#tabGuide').setAttribute('aria-pressed', t === 'guide');
-  renderRail(t === 'guide' ? 'guide' : 'exam');
+  $('#tabExam').setAttribute('aria-pressed', t === 'exam'); $('#tabHist').setAttribute('aria-pressed', t === 'hist'); $('#tabCond').setAttribute('aria-pressed', t === 'cond'); $('#tabGuide').setAttribute('aria-pressed', t === 'guide');
+  renderRail(t === 'guide' ? 'guide' : t === 'hist' ? 'hist' : t === 'cond' ? 'cond' : 'exam', t === 'cond');
 }
 function go(token, stepIdx){
   closeDrawer();
   if (token === 'notes') { renderNotes(); window.scrollTo(0,0); return; }
   if (/^fhx(-[a-z0-9]+)?$/.test(token || '')) { renderFhx(token); store.set('last', token); return; }
+  if (token === 'cond') { renderCondList(); store.set('last', token); return; }
+  if (/^cond-[a-z0-9-]+$/.test(token || '')) { renderCond(token); store.set('last', token); return; }
   if (/^g-[a-z0-9]+$/.test(token || '')) { renderGuide(token, stepIdx); store.set('last', token); return; }
-  if (HIST[token]) { setTop(true); renderHist(token); window.scrollTo(0,0); store.set('last', token); return; }
+  if (HIST[token]) { setTop(true); renderHist(token); markRail(token); window.scrollTo(0,0); store.set('last', token); return; }
   const id = D.exams[token] ? token : 'approach';
   setTop(false); renderExam(id); store.set('last', id);
   if (stepIdx != null){
@@ -1373,6 +1497,9 @@ INDEX.push({t:'OPQRST / HPI', sub:'History', h:'hpi', hay:'opqrst hpi history on
 INDEX.push({t:'Review of systems', sub:'History', h:'ros', hay:'review of systems ros functional inquiry'});
 INDEX.push({t:'My notes', sub:'Notes', h:'notes', hay:'my notes preceptor session notes export backup'});
 INDEX.push({t:'Focused histories', sub:'History', h:'fhx', hay:'focused history histories questions by system chief complaint'});
+INDEX.push({t:'Find a condition', sub:'Conditions', h:'cond', hay:'find condition conditions isolate select presenting complaint'});
+CONDS.forEach(x => INDEX.unshift({t: x.t, sub: 'Condition · ' + x.sys + ' · history + exam', h: 'cond-' + x.id, hay: x.hay + ' condition'}));
+FXD.forEach(c => INDEX.push({t: c.name + ' focused history', sub: 'History · focused histories', h: 'fhx-' + c.id, hay: (c.name + ' ' + c.title + ' focused history questions').toLowerCase()}));
 INDEX.push({t:'Big 6', sub:'History', h:'big6', hay:'big 6 past medical surgical family social medications allergies if-it-helps'});
 function search(q){
   const box = $('#results'); q = q.trim().toLowerCase();
@@ -1398,7 +1525,7 @@ document.addEventListener('click', e => {
   }
   if (!t.closest('#hlfab')) hl.panel(false);
   if (hl.mode === 'erase'){ const m = t.closest('mark.hl'); if (m){ e.preventDefault(); const sc = m.closest('[data-hls]'); const list = hl.get(sc.dataset.hls); list.splice(+m.dataset.r, 1); hl.put(sc.dataset.hls, list); hl.paint(sc); return; } }
-  if (hl.mode != null && !getSelection().isCollapsed && t.closest('summary')) { e.preventDefault(); return; }
+  if (hl.mode != null && !getSelection().isCollapsed && t.closest('summary, .qq')) { e.preventDefault(); return; }
   const rr = t.closest('#results button[data-k]');
   if (rr){ const x = INDEX[+rr.dataset.k]; $('#results').hidden = true; $('#q').value=''; if (x.fx){ history.replaceState(null,'','#'+x.fx); go(x.fx); return; } if (x.g){ if (x.evq) evFilter = x.evq; history.replaceState(null,'','#'+x.g); go(x.g, x.part); return; } if (x.h){ history.replaceState(null,'','#'+x.h); go(x.h);} else { history.replaceState(null,'','#'+x.id); go(x.id, x.i); } return; }
   if (!t.closest('.search')) $('#results').hidden = true;
@@ -1409,7 +1536,17 @@ document.addEventListener('click', e => {
   const st = t.closest('.subtabs button');
   if (st){ const tk = st.dataset.h === 'fhx' ? 'fhx-' + (store.get('lastFhxCh') || 'c5') : st.dataset.h; history.replaceState(null,'','#'+tk); go(tk); return; }
   const fj = t.closest('[data-fxjump]');
-  if (fj){ e.preventDefault(); const el = document.getElementById(fj.dataset.fxjump); if (el){ el.open = true; el.scrollIntoView({block:'start'}); } return; }
+  if (fj){ e.preventDefault(); const el = document.getElementById('fx-' + fj.dataset.fxjump); if (el){ const off = $('.top').offsetHeight + ($('#fxnav') ? $('#fxnav').offsetHeight : 0) + 8; window.scrollTo({top: el.getBoundingClientRect().top + scrollY - off}); } return; }
+  const cm = t.closest('[data-cmode]');
+  if (cm){ condMode = cm.dataset.cmode; store.set('condMode', condMode); condApplyMode(); return; }
+  if (t.classList.contains('fxtick')){
+    const k = t.dataset.fxq, cpid = k.split(':')[0], row = t.closest('.qq');
+    const cid = (t.closest('[data-ch]') || {}).dataset ? t.closest('[data-ch]').dataset.ch : store.get('lastFhxCh');
+    const m = fxTicks(cid); if (t.checked) m[k] = 1; else delete m[k]; store.set(fxKey(cid), m);
+    document.querySelectorAll(`[data-fxq="${CSS.escape(k)}"]`).forEach(x => { x.checked = t.checked; x.closest('.qq').classList.toggle('done', t.checked); });
+    fxUpdateCount(cpid); return;
+  }
+  if (!t.closest('.condsearch')) { const cr = $('#condres'); if (cr) cr.hidden = true; }
   const fig = t.closest('.figs button');
   if (fig){ $('#lb').classList.remove('page'); $('#lbImg').src = IMG[fig.dataset.img]; $('#lbCap').textContent = 'McMaster Clinical Skills Guide, 6e, p. '+fig.dataset.pg; $('#lb').hidden = false; return; }
   const gf = t.closest('[data-gimg]');
@@ -1423,7 +1560,7 @@ document.addEventListener('click', e => {
   if (t.closest('#lb')){ $('#lb').hidden = true; return; }
   if (t.classList.contains('tick')){
     const val = t.checked; e.preventDefault();
-    const det = t.closest('.step'); const i = det.dataset.i; const k = 't:'+cur; const m = store.get(k) || {};
+    const det = t.closest('.step'); const i = det.dataset.i; const k = 't:'+(det.dataset.ex || cur); const m = store.get(k) || {};
     m[i] = val; store.set(k, m); det.classList.toggle('done', val); updateProg();
     setTimeout(()=>{ t.checked = val; }, 0);
     return;
@@ -1457,8 +1594,7 @@ document.addEventListener('click', e => {
     const a = act.dataset.act;
     if (a==='open') document.querySelectorAll('.step').forEach(d => { if (!d.closest('[hidden]')) { d.open = true; fillStep(d); } });
     if (a==='close') document.querySelectorAll('.step').forEach(d => d.open = false);
-    if (a==='fxopen') document.querySelectorAll('.fxcard').forEach(d => d.open = true);
-    if (a==='fxclose') document.querySelectorAll('.fxcard').forEach(d => d.open = false);
+    if (a==='fxclear' && confirm('Clear all ticked questions for this system?')){ store.set(fxKey(act.dataset.ch), {}); renderFhx('fhx-' + act.dataset.ch); }
     if (a==='gopen') document.querySelectorAll('.gpart').forEach(d => d.open = true);
     if (a==='gclose') document.querySelectorAll('.gpart').forEach(d => d.open = false);
     if (a==='reset'){ store.set('t:'+cur, {}); document.querySelectorAll('.step').forEach(d=>{d.classList.remove('done'); d.querySelector('.tick').checked=false;}); updateProg(); }
@@ -1505,6 +1641,7 @@ document.addEventListener('change', e => {
     } catch(err){ $('.lead').insertAdjacentHTML('afterend', '<div class="intro">That file isn’t a notes backup. Choose the .json file made with “Back up”.</div>'); } };
     r.readAsText(e.target.files[0]);
   }
+  if (e.target.dataset && e.target.dataset.sys){ const tok = (e.target.dataset.sys === 'fhx' ? 'fhx-' : 'cond-') + e.target.value; history.replaceState(null,'','#'+tok); go(tok); return; }
   if (e.target.id==='xtra'){ showExtra = e.target.checked; document.querySelectorAll('[data-extra="1"]').forEach(el=>el.hidden=!showExtra); }
   if (e.target.dataset && e.target.dataset.ros){ const m = store.get('ros') || {}; m[e.target.dataset.ros] = e.target.checked; store.set('ros', m); }
 });
@@ -1513,17 +1650,23 @@ document.addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') h
 document.addEventListener('mouseup', () => { hl.down = false; if (hl.mode != null) setTimeout(() => hl.fromSelection(), 0); });
 document.addEventListener('touchend', () => { if (hl.mode != null) { clearTimeout(hl.selT); hl.selT = setTimeout(() => hl.fromSelection(), 900); } });
 $('#q').addEventListener('input', e => search(e.target.value));
-document.addEventListener('input', e => { if (e.target.id === 'hlcol') { hl.set(e.target.value.toLowerCase()); return; } if (e.target.id === 'evq') { evFilter = e.target.value; renderEvList(); } });
+document.addEventListener('input', e => { if (e.target.id === 'hlcol') { hl.set(e.target.value.toLowerCase()); return; } if (e.target.id === 'evq') { evFilter = e.target.value; renderEvList(); }
+  if (e.target.id === 'condq') { condQ = e.target.value; $('#condlist').innerHTML = condListHtml(condQ); }
+  if (e.target.id === 'condq2') condResults(e.target.value, $('#condres')); });
+document.addEventListener('keydown', e => { if (e.key === 'Enter' && (e.target.id === 'condq' || e.target.id === 'condq2')) { const b = (e.target.id === 'condq' ? $('#condlist') : $('#condres')).querySelector('[data-goto]'); if (b) b.click(); } });
 $('#tabGuide').addEventListener('click', () => { const l = store.get('lastGuide') || 'g-c1'; history.replaceState(null,'','#'+l); go(l); });
 $('#q').addEventListener('keydown', e => { if (e.key==='Enter'){ const b = $('#results button[data-k]'); if (b) b.click(); } });
 $('#tabExam').addEventListener('click', () => { const l = store.get('lastExam') || 'approach'; history.replaceState(null,'','#'+l); go(l); });
-$('#tabHist').addEventListener('click', () => { history.replaceState(null,'','#'+histTab); go(histTab); });
+$('#tabHist').addEventListener('click', () => { const tk = histTab === 'fhx' ? 'fhx-' + (store.get('lastFhxCh') || 'c5') : histTab; history.replaceState(null,'','#'+tk); go(tk); });
+$('#tabCond').addEventListener('click', () => { history.replaceState(null,'','#cond'); go('cond'); });
 function closeDrawer(){ $('#rail').classList.remove('open'); $('#scrim').classList.remove('open'); }
 $('#menuBtn').addEventListener('click', () => { $('#rail').classList.add('open'); $('#scrim').classList.add('open'); });
 $('#scrim').addEventListener('click', closeDrawer);
 window.addEventListener('hashchange', routeFromHash);
 const _go = go; go = function(tok, i){ if (D.exams[tok]) store.set('lastExam', tok); _go(tok, i); };
 
+const setTopH = () => document.documentElement.style.setProperty('--toph', $('.top').offsetHeight + 'px');
+setTopH(); window.addEventListener('resize', setTopH);
 renderRail('exam');
 hl.ui();
 updateCount();

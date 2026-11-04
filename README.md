@@ -4,13 +4,15 @@ This is the same guide, with a login added. Your session notes are saved to your
 
 ## What's on the site
 
-- **Physical exam** and **History**: the quick-reference exam steps and history questions. History also has **Focused histories**: the guide's question lists for each system (30 of them), as cards you can fold, with a printed-page link on each card.
+- **Physical exam** and **History**: the quick-reference exam steps and history questions.
+- **Focused histories** (under History): the guide's questions for each system (30 systems, about 215 presenting complaints), rewritten to be easy to ask from top to bottom. Each complaint is one card. Questions are listed in the order you would ask them, with examples in grey, red flags marked in red, and tick boxes so you can keep track of what you've asked. Reference material (can't-miss diagnoses, why to ask) is folded away at the end of each card. A bar of chips at the top lets you jump between complaints.
+- **Find a condition** (the "Find" tab): search for one condition or complaint (for example "chest pain", "knee", "headache") and get a page with only that condition: its focused history, the background history that goes with it, and the physical exam for that system, with the evidence tables. You can switch between history and exam, history only, or exam only.
 - **Guide**: the whole McMaster Clinical Skills Guide, 6e, chapter by chapter (all 41 chapters and the 5 appendices), plus every likelihood-ratio table gathered on one page. Each page break has an "original page" button that shows that page exactly as printed.
 - **Notes** with formatting, and a **highlighter**. Both sync to your account.
 
 ## What's in here
 
-- `index.html`, `assets/`: the site itself (`assets/guide.js` is the full guide text, `assets/pages/` the original page images, `assets/gfig/` the guide's figures).
+- `index.html`, `assets/`: the site itself (`assets/fhx.js` is the cleaned focused-history data, `assets/data.js` the exam steps, `assets/guide.js` the full guide text, `assets/pages/` the original page images, `assets/gfig/` the guide's figures).
 - `login.html`: the login and sign-up page.
 - `middleware.js`: sends anyone who isn't logged in to the login page.
 - `api/`: small server functions for sign-up, log-in, log-out and notes.
@@ -38,6 +40,8 @@ While these are set, sign-up is turned off and the only login is that username a
 To change the password later, edit `SITE_PASSWORD` in Vercel and redeploy. Every device that logged in with the old password is logged out straight away and has to log in with the new one. Notes aren't affected.
 
 ## Good to know
+
+- Highlights made on the old focused-history pages don't carry over to the new ones, because the text was rewritten. Notes are kept.
 
 - If two devices edit the same note, the most recent edit wins.
 - Notes you typed in the old offline folder stay in that browser. To move them over, open **My notes** there, click **Back up (.json)**, then click **Restore backup** on the new site and pick that file.
