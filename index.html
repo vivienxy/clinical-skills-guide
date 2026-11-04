@@ -270,6 +270,11 @@ body.hl-erase mark.hl{cursor:pointer;outline:1px dashed currentColor;outline-off
 .fxgroup{font:600 12px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin:22px 0 8px}
 .fxs{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);margin:0 0 14px;padding:0 0 10px;scroll-margin-top:130px}
 .fxs.core{border-left:3px solid var(--accent)}
+.fxfold{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:6px;width:28px;height:26px;cursor:pointer;font-size:14px;line-height:1;transition:transform .15s}
+.fxs.shut .fxfold{transform:rotate(-90deg)}
+.fxs.shut>.fxbody{display:none}
+.fxs.shut{padding-bottom:0}.fxs.shut>.fxh{border-bottom:0;margin-bottom:0;cursor:pointer}
+.fxscore>summary{color:var(--accent)}
 .fxh{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;padding:12px 16px 8px;border-bottom:1px solid var(--line);margin-bottom:6px;flex-wrap:wrap}
 .fxh h2{font-size:19px}
 .fxt{min-width:0;flex:1 1 240px}
@@ -301,11 +306,12 @@ body.hl-erase mark.hl{cursor:pointer;outline:1px dashed currentColor;outline-off
 .qf.l1,.qf.l2,.qf.l3{font-size:13.8px}
 .qt,.qx{padding:6px 0 6px 30px}
 .qx.gbody{border:0}
-.pill{display:inline-block;font:600 11.5px/1.5 var(--f-body);background:var(--accent-soft);color:var(--accent);border-radius:5px;padding:0 6px;margin-right:6px;vertical-align:1px;white-space:nowrap}
+.pill{display:inline-block;font:600 13.5px/1.55 var(--f-body);background:var(--accent-soft);color:var(--accent);border-radius:6px;padding:1px 8px;margin-right:7px;vertical-align:1px;white-space:nowrap}
 .hint{color:var(--muted);font-size:.92em;font-weight:400}
-.qq.l0>span,.qf.l0{font-weight:600}
-.qq.l0>span .hint,.qf.l0 .hint{font-weight:400}
-.qq.done>span{font-weight:400}
+.qq b.key,.qf b.key,.qn b.key{font-weight:650}
+.qul{margin:4px 0 2px;padding-left:20px;list-style:disc}.qul li{margin:1px 0;padding-left:2px}.qul li::marker{color:var(--muted)}
+.pill+.qul{margin-top:6px}
+.qq.done b.key{font-weight:500}
 .body b.lead{font-weight:650;color:var(--ink)}
 .rf{display:inline-block;font:600 10.5px/1.6 var(--f-mono);text-transform:uppercase;letter-spacing:.03em;background:#fde4e4;color:#a1232b;border-radius:4px;padding:0 5px;margin-left:2px;white-space:nowrap}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .rf{background:#4a1c20;color:#ff9ea4}}
@@ -601,10 +607,9 @@ function liClass(t){
 // main (top-level) points get a bold lead: the text before the first colon or dash, or the whole line if it's short
 function boldLead(x){
   const m = x.match(/^(.{3,70}?)(:\s| – | - )/);
-  if (m && !/\(/.test(m[1].replace(/\([^)]*\)/g, ''))) return `<b class="lead">${esc(m[1])}</b>${esc(x.slice(m[1].length))}`;
-  const p = x.match(/^([^(]{3,}?)(\s*\((?:e\.g\.|i\.e\.|eg)[\s\S]*)$/);
-  if (p && p[1].length <= 90) return `<b class="lead">${esc(p[1])}</b><span class="hint">${esc(p[2])}</span>`;
-  return x.length <= 90 ? `<b class="lead">${esc(x)}</b>` : esc(x);
+  if (m && m[1].split(/\s+/).length <= 6 && !/\(/.test(m[1].replace(/\([^)]*\)/g, ''))) return `<b class="lead">${esc(m[1])}</b>${esc(x.slice(m[1].length))}`;
+  if (/:$/.test(x) && x.split(/\s+/).length <= 6) return `<b class="lead">${esc(x)}</b>`;
+  return esc(x);
 }
 function list(arr, bold){
   if (!arr || !arr.length) return '';
@@ -1118,13 +1123,42 @@ function fxText(t){
   return h;
 }
 const ASKH = /associated|red flag|ask|symptom|screen|focus on|questions|history|risk factor/i;
+// "a, b, c, d" lists become vertical bullets (commas inside brackets don't count)
+function fxSplitList(t){
+  if (!t || /\?/.test(t)) return null;
+  const out = []; let d = 0, cur = '';
+  let semi = false; { let dd = 0; for (const ch of t) { if (ch === '(') dd++; if (ch === ')') dd = Math.max(0, dd - 1); if (ch === ';' && dd === 0) semi = true; } }
+  const sep = semi ? ';' : ',';
+  for (const ch of t) { if (ch === '(') d++; if (ch === ')') d = Math.max(0, d - 1); if (ch === sep && d === 0) { out.push(cur); cur = ''; } else cur += ch; }
+  out.push(cur);
+  let xs = out.map(x => x.trim().replace(/^(and|or)\s+/i, '').replace(/[.;]$/, '')).filter(x => x && !/^etc\.?$/i.test(x));
+  if (xs.length < (semi ? 2 : 3) || xs.some(x => x.length > 110)) return null;
+  if (/\.\s+[A-Z]/.test(t.replace(/\([^)]*\)/g, '').replace(/\b(e\.g|i\.e|vs|etc|Dr|re)\./gi, ''))) return null;   // prose, not a list
+  if (xs.slice(1).some(x => /^(which|that|not|if|may|but|then|so|as|because|who|where|when|is|are)\b/i.test(x))) return null;
+  return xs.map(x => x[0].toUpperCase() + x.slice(1));
+}
 function fxRow(it, key, ticks, tickable){
   const lv = Math.min(it.lv || 0, 3);
   if (it.k === 'h') return `<div class="qh l${lv}">${esc(it.x)}</div>`;
   if (it.k === 't') return `<div class="qt l${lv}">${gtable({rows: it.rows, hdr: true})}</div>`;
   if (it.k === 'x') return `<div class="qx gbody">${it.blk[0] === 't' ? gtable(it.blk[1]) : gblocks([it.blk])}</div>`;
-  const lab = it.lab ? (it.lab.length <= 24 && it.k !== 'n' ? `<span class="pill">${esc(it.lab)}</span>` : `<b>${esc(it.lab)}:</b> `) : '';
-  const body = lab + fxText(it.x) + (it.flag && !/red flag/i.test(it.x) ? ' <span class="rf">Red flag</span>' : '');
+  let x = it.x.replace(/\s*Relevant clinical scores:?\s*$/i, ''), labt = it.lab;
+  if (labt && /^(Cardiac|Respiratory|Renal|Liver|Endocrine)$/i.test(labt) && /^Diseases?\b/.test(x)) { labt += ' diseases'; x = x.replace(/^Diseases?\s*/, ''); }
+  const wc = t => t.trim().split(/\s+/).length, dm = labt && labt.match(/^(.{2,40}?)(\s[–-]\s?)(.*)$/);
+  const lab = !labt ? '' : labt.length <= 26 && it.k !== 'n' ? `<span class="pill">${esc(labt)}</span>`
+    : dm && wc(dm[1]) <= 4 ? `<b class="key">${esc(dm[1])}</b>${esc(dm[2] + dm[3])}: `
+    : wc(labt) <= 4 || it.k === 'n' || fxSplitList(x) ? `<b class="key">${esc(labt)}:</b> ` : `${esc(labt)}: `;
+  let km = !labt && x.match(/^([^–:?()]{2,70}?)(\s[–-]\s?|:\s)/);
+  if (km && km[1].trim().split(/\s+/).length > 4 && !(km[2].includes(':') && fxSplitList(x.slice(km[0].length)))) km = null;
+  let lead = lab, rest = x;
+  if (km) { lead += `<b class="key">${esc(km[1])}</b>${esc(km[2].replace(/^\s+/, ' '))}`; rest = x.slice(km[0].length); }
+  if (!km && !labt) {   // "Heart failure (common cause): a, b, c" -> bold name, then the list
+    let d = 0, cut = -1; for (let i = 0; i < rest.length - 1; i++) { const ch = rest[i]; if (ch === '(') d++; else if (ch === ')') d = Math.max(0, d - 1); else if (ch === ':' && d === 0 && rest[i + 1] === ' ') { cut = i; break; } }
+    if (cut > 1 && cut < 100 && fxSplitList(rest.slice(cut + 2))) { const head = rest.slice(0, cut), pi = head.indexOf('(');
+      lead += pi > 0 ? `<b class="key">${esc(head.slice(0, pi).trim())}</b> ${fxText(head.slice(pi))}:` : `<b class="key">${esc(head)}</b>:`; rest = rest.slice(cut + 2); } }
+  let parts = fxSplitList(rest);
+  if (parts) { const em = parts[0].match(/^(.*?\b(?:e\.g\.|such as|including))\s+(.+)$/i); if (em && (em[1].match(/\(/g) || []).length === (em[1].match(/\)/g) || []).length) { lead += fxText(rest.slice(0, rest.indexOf(em[1]) + em[1].length)); parts[0] = em[2][0].toUpperCase() + em[2].slice(1); rest = ''; } }
+  const body = parts ? lead + `<ul class="qul">${parts.map(t => `<li>${fxText(t)}</li>`).join('')}</ul>` : lead + fxText(rest) + (it.flag && !/red flag/i.test(it.x) ? ' <span class="rf">Red flag</span>' : '');
   if (it.k === 'n') return `<div class="qn l${lv}">${body}</div>`;
   const can = tickable && (it.k === 'q' || lv === 0 || it.ask);
   if (!can) return `<div class="qf l${lv}${it.k === 'q' ? ' isq' : ''}">${body}</div>`;
@@ -1142,6 +1176,27 @@ function fxMarkAsk(items){
   });
   return items;
 }
+// "Click for link" calculators and "Relevant equation" items go into one folded "Criteria & scoring" box
+const SCORE_RE = /score|criteria|scale|classification|calculator|equation|formula|index|rule|algorithm|anion gap|excretion|deficit|SIRS|NEWS|qSOFA|AIMS65|KDIGO/i;
+function fxSplitScores(items){
+  const keep = [], sc = []; let in_ = -1;
+  (items || []).forEach(it => {
+    const t = (it.lab || '') + ' ' + it.x, lv = it.lv || 0;
+    if (in_ >= 0 && lv > in_) { sc.push(it); return; }
+    in_ = -1;
+    if (it.k !== 'n' && ((/click for link/i.test(t) && SCORE_RE.test(t)) || /^Relevant (equation|clinical score)/i.test(it.lab || ''))) { in_ = lv; sc.push(it); return; }
+    keep.push(it);
+  });
+  const lv0 = sc.length ? Math.min(...sc.map(x => x.lv || 0)) : 0;
+  return [keep, sc.map(x => Object.assign({}, x, {lv: (x.lv || 0) - lv0, x: x.x.replace(/\s*[;–-]?\s*Click for link\.?/gi, '').trim(), lab: x.lab && /^Relevant/i.test(x.lab) ? null : x.lab, k: 'f'}))];
+}
+function fxBody(items, pre, ticks, tickable, pearls){
+  const [keep, sc] = fxSplitScores(items);
+  const ps = (pearls || []).filter(p => /score/i.test(p.t)), cw = (pearls || []).filter(p => !/score/i.test(p.t));
+  let h = fxList(keep, pre, ticks, tickable);
+  if (sc.length || ps.length) h += `<details class="fxmore fxscore"><summary>Criteria & scoring</summary>${sc.length ? fxList(sc, pre + ':s', ticks, false) : ''}${ps.map((p, k) => fxList(p.items.map(x => Object.assign({}, x, {x: x.x.replace(/\s*[–-]?\s*Click for link\.?/gi, '')})), pre + ':ps' + k, ticks, false)).join('')}</details>`;
+  return h + fxPearls(cw, pre, ticks);
+}
 function fxList(items, pre, ticks, tickable){ if (tickable) fxMarkAsk(items); return `<div class="qlist">${(items || []).map((it, i) => fxRow(it, pre + ':' + i, ticks, tickable)).join('')}</div>`; }
 function fxDone(ticks, pre){ const re = new RegExp('^' + pre.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ':\\d+$'); return Object.keys(ticks).filter(k => ticks[k] && re.test(k)).length; }
 function fxCountable(items){ fxMarkAsk(items); return (items || []).filter(it => it.k === 'q' || (it.k === 'f' && ((it.lv || 0) === 0 || it.ask))).length; }
@@ -1150,19 +1205,20 @@ function fxPearls(ps, pre, ticks){
   return `<details class="fxmore"><summary>${esc(ps.map(p => p.t.replace(/ Recommendations?.*$/, '').replace(/^Relevant /, '')).filter((x, i, a) => a.indexOf(x) === i).join(' & '))}</summary>${ps.map((p, k) => `<div class="qh">${esc(p.t)}</div>${fxList(p.items, pre + ':p' + k, ticks, false)}`).join('')}</details>`;
 }
 // one presenting complaint, as a section you can scroll through and tick off
+const fxShut = () => store.get('fx:shut') || {};
+function fxSetShut(ids, v){ const m = fxShut(); ids.forEach(id => { if (v) m[id] = 1; else delete m[id]; }); store.set('fx:shut', m); }
 function fxSection(c, cp, opt){
   opt = opt || {};
   const ticks = fxTicks(c.id), pre = cp.id;
   const n = fxCountable(cp.items), done = fxDone(ticks, pre);
-  let h = `<section class="fxs${cp.core ? ' core' : ''}" id="fx-${cp.id}" data-cp="${cp.id}" data-ch="${c.id}">
+  let h = `<section class="fxs${cp.core ? ' core' : ''}${fxShut()[cp.id] ? ' shut' : ''}" id="fx-${cp.id}" data-cp="${cp.id}" data-ch="${c.id}">
     <header class="fxh"><div class="fxt">${cp.core && !opt.noCoreTag ? `<span class="coretag">Ask for every ${esc(c.name.toLowerCase())} complaint</span>` : ''}<h2>${esc(cp.t)}</h2>${(cp.also || []).length ? `<p class="also">${cp.also.map(esc).join(' · ')}</p>` : ''}</div>
-    <div class="fxtools">${n ? `<span class="fxcount" data-count="${cp.id}">${Math.min(done, n)}/${n}</span>` : ''}${cp.pg ? `<button type="button" class="fxpg" data-page="${cp.pg}" title="See this page as printed">p. ${cp.pg}</button>` : ''}${opt.isolate !== false && !cp.core ? `<a class="fxiso" href="#cond-${cp.id}" data-goto="cond-${cp.id}" title="History and physical exam for this condition only">Isolate</a>` : ''}</div></header>`;
-  h += fxList(cp.items, pre, ticks, true);
-  (cp.bg || []).forEach((b, k) => { h += `<div class="qh fxbgh">${esc(b.cat)}</div>` + fxList(b.items, pre + ':b' + k, ticks, true); });
+    <div class="fxtools"><button type="button" class="fxfold" aria-label="Collapse or expand" title="Collapse / expand">▾</button>${n ? `<span class="fxcount" data-count="${cp.id}">${Math.min(done, n)}/${n}</span>` : ''}${cp.pg ? `<button type="button" class="fxpg" data-page="${cp.pg}" title="See this page as printed">p. ${cp.pg}</button>` : ''}${opt.isolate !== false && !cp.core ? `<a class="fxiso" href="#cond-${cp.id}" data-goto="cond-${cp.id}" title="History and physical exam for this condition only">Isolate</a>` : ''}</div></header>`;
+  h += `<div class="fxbody">` + fxBody(cp.items, pre, ticks, true, cp.pearls);
+  (cp.bg || []).forEach((b, k) => { h += `<div class="qh fxbgh">${esc(b.cat)}</div>` + fxBody(b.items, pre + ':b' + k, ticks, true); });
   if (cp.more && cp.more.length) h += `<details class="fxmore"><summary>${esc(cp.moret || 'More')}</summary>${fxList(cp.more, pre + ':m', ticks, false)}</details>`;
   if (cp.refs && cp.refs.length) h += `<details class="fxmore"><summary>${cp.refs.length === 1 ? esc(cp.refs[0].t) : 'Related: ' + esc(cp.refs.map(r => r.t.replace(/\s*\(.*$/, '')).slice(0, 3).join(', ')) + (cp.refs.length > 3 ? ` + ${cp.refs.length - 3} more` : '')}</summary>${cp.refs.map((r, k) => `<div class="qh">${esc(r.t)}${r.pg ? ` <span class="pg">p. ${r.pg}</span>` : ''}</div>${fxList(r.items, pre + ':r' + k, ticks, false)}`).join('')}</details>`;
-  h += fxPearls(cp.pearls, pre, ticks);
-  return h + `</section>`;
+  return h + `</div></section>`;
 }
 // the Big 6 part of the chapter: past medical, surgical, family, social, medications
 function fxBackground(c, open){
@@ -1172,7 +1228,7 @@ function fxBackground(c, open){
   return `<section class="fxs bgsec" id="fx-bg" data-cp="bg" data-ch="${c.id}"><header class="fxh"><div class="fxt"><h2>Background history</h2><p class="also">The guide’s ${esc(c.name.toLowerCase())}-specific past medical, surgical, family, social and medication questions</p></div></header>`
     + cats.map((b, j) => `<details class="fxcat"${open ? ' open' : ''}><summary>${esc(b.cat)} <span class="n">${b.cards.length}</span></summary>`
       + b.cards.map((cd, k) => { const same = b.cards.length === 1 && /^(past|family|social|medication)/i.test(cd.t);
-          return `${same ? '' : `<div class="qh fxcard-t">${esc(cd.t)}${cd.pg ? ` <span class="pg">p. ${cd.pg}</span>` : ''}</div>`}${fxList(cd.items, 'bg:' + j + ':' + k, ticks, true)}${fxPearls(cd.pearls, 'bg:' + j + ':' + k, ticks)}`; }).join('')
+          return `${same ? '' : `<div class="qh fxcard-t">${esc(cd.t)}${cd.pg ? ` <span class="pg">p. ${cd.pg}</span>` : ''}</div>`}${fxBody(cd.items, 'bg:' + j + ':' + k, ticks, true, cd.pearls)}`; }).join('')
       + `</details>`).join('') + `</section>`;
 }
 function fxSysPicker(cid, mode){
@@ -1188,7 +1244,7 @@ function renderFhx(tok){
   const exam = CH2EXAM[c.id];
   let h = `<div class="eyebrow">History · focused history${c.pg ? ` · guide pp. ${c.pg[0]}–${c.pg[1]}` : ''}</div><h1>${esc(c.name)}</h1>
     <div class="subtabs" role="tablist">${[['hpi','OPQRST / HPI'],['ros','Review of systems'],['big6','Big 6'],['fhx','Focused histories']].map(([k,l])=>`<button role="tab" aria-selected="${k==='fhx'}" data-h="${k}">${l}</button>`).join('')}</div>`;
-  h += `<div class="tools">${fxSysPicker(c.id, 'fhx')}<button class="btn" data-act="fxclear" data-ch="${c.id}">Clear ticks</button>`
+  h += `<div class="tools">${fxSysPicker(c.id, 'fhx')}<button class="btn" data-act="fxshutall">Collapse all</button><button class="btn" data-act="fxopenall">Expand all</button><button class="btn" data-act="fxclear" data-ch="${c.id}">Clear ticks</button>`
     + (exam ? `<a class="btn" href="#${exam}" data-goto="${exam}">Exam steps →</a>` : '')
     + `<a class="btn" href="#g-${c.id}" data-goto="g-${c.id}">Chapter in the guide →</a></div>`;
   h += `<p class="lead">Start open-ended, then work down each complaint. Tick questions as you ask them; grey text is what an answer points to. Tap <b>Isolate</b> to see one complaint with its physical exam.</p>`;
@@ -1650,9 +1706,13 @@ document.addEventListener('click', e => {
     if (document.activeElement !== ed) { ed.focus(); const r = lastRange[ed.dataset.note]; if (r && ed.contains(r.startContainer)) { const s = getSelection(); s.removeAllRanges(); s.addRange(r); } else caretEnd(ed); }
     if (fb.dataset.cmd) document.execCommand(fb.dataset.cmd, false, null); else document.execCommand('fontSize', false, fb.dataset.size);
     fmtState(ed); clearTimeout(saveT[ed.dataset.note]); saveT[ed.dataset.note] = setTimeout(()=>saveNote(ed), 300); return; }
+  const fh = t.closest('.fxs[data-cp] > .fxh');
+  if (fh && (t.closest('.fxfold') || (!t.closest('a, button, input, label') && fh.parentElement.classList.contains('shut')))){
+    const sec = fh.parentElement, v = !sec.classList.contains('shut'); sec.classList.toggle('shut', v); fxSetShut([sec.dataset.cp], v); return; }
   const act = t.closest('[data-act]');
   if (act){
     const a = act.dataset.act;
+    if (a==='fxshutall' || a==='fxopenall'){ const v = a === 'fxshutall', ss = [...document.querySelectorAll('.fxs[data-cp]')]; ss.forEach(x => x.classList.toggle('shut', v)); fxSetShut(ss.map(x => x.dataset.cp), v); }
     if (a==='open') document.querySelectorAll('.step').forEach(d => { if (!d.closest('[hidden]')) { d.open = true; fillStep(d); } });
     if (a==='close') document.querySelectorAll('.step').forEach(d => d.open = false);
     if (a==='fxclear' && confirm('Clear all ticked questions for this system?')){ store.set(fxKey(act.dataset.ch), {}); renderFhx('fhx-' + act.dataset.ch); }
