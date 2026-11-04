@@ -320,6 +320,13 @@ body.hl-erase mark.hl{cursor:pointer;outline:1px dashed currentColor;outline-off
 .fxmore>summary{cursor:pointer;padding:7px 10px;font-size:13px;font-weight:600;color:var(--muted)}
 .fxmore[open]>summary{border-bottom:1px dashed var(--line)}
 .fxmore>.qlist,.fxmore>.qh{padding-left:10px;padding-right:10px}
+.fxsub{margin:4px 0}
+.fxsub>summary{cursor:pointer;list-style:none;display:flex;gap:8px;align-items:center;padding:9px 16px 7px;font:600 14.5px var(--f-head);color:var(--ink)}
+.fxsub>summary::-webkit-details-marker{display:none}
+.fxsub>summary::before{content:"";width:7px;height:7px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(-45deg);transition:transform .15s;flex:none;margin-left:2px}
+.fxsub[open]>summary::before{transform:rotate(45deg)}
+.fxsub.fxbgsub{border-top:1px solid var(--line);margin-top:8px}
+.fxsub.fxbgsub>summary{color:var(--accent);font:600 12.5px var(--f-mono);text-transform:uppercase;letter-spacing:.05em;padding-top:10px}
 .fxbgh{color:var(--accent);font:600 12px var(--f-mono);text-transform:uppercase;letter-spacing:.05em;margin-top:6px}
 .fxcat{border-top:1px solid var(--line)}
 .fxcat:first-of-type{border-top:0}
@@ -1198,7 +1205,22 @@ function fxBody(items, pre, ticks, tickable, pearls){
   if (sc.length || ps.length) h += `<details class="fxmore fxscore"><summary>Criteria & scoring</summary>${sc.length ? fxList(sc, pre + ':s', ticks, false) : ''}${ps.map((p, k) => fxList(p.items.map(x => Object.assign({}, x, {x: x.x.replace(/\s*[–-]?\s*Click for link\.?/gi, '')})), pre + ':ps' + k, ticks, false)).join('')}</details>`;
   return h + fxPearls(cw, pre, ticks);
 }
-function fxList(items, pre, ticks, tickable){ if (tickable) fxMarkAsk(items); return `<div class="qlist">${(items || []).map((it, i) => fxRow(it, pre + ':' + i, ticks, tickable)).join('')}</div>`; }
+// a top-level heading inside a complaint (e.g. "Associated symptoms") becomes a section you can fold
+const fxFolds = () => store.get('fx:fold') || {};
+function fxFold(key, title, inner, cls){ const shut = fxFolds()[key]; return `<details class="fxsub${cls ? ' ' + cls : ''}" data-fold="${esc(key)}"${shut ? '' : ' open'}><summary>${title}</summary>${inner}</details>`; }
+function fxList(items, pre, ticks, tickable){
+  if (tickable) fxMarkAsk(items);
+  items = items || [];
+  if (!tickable) return `<div class="qlist">${items.map((it, i) => fxRow(it, pre + ':' + i, ticks, tickable)).join('')}</div>`;
+  let h = '', buf = '', head = null;
+  const flush = () => { if (head) h += fxFold(pre + ':h' + head[0], esc(head[1]), `<div class="qlist">${buf}</div>`); else if (buf) h += `<div class="qlist">${buf}</div>`; buf = ''; };
+  items.forEach((it, i) => {
+    if (it.k === 'h' && !(it.lv || 0)) { flush(); head = [i, it.x]; return; }
+    buf += fxRow(it, pre + ':' + i, ticks, tickable);
+  });
+  flush();
+  return h;
+}
 function fxDone(ticks, pre){ const re = new RegExp('^' + pre.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ':\\d+$'); return Object.keys(ticks).filter(k => ticks[k] && re.test(k)).length; }
 function fxCountable(items){ fxMarkAsk(items); return (items || []).filter(it => it.k === 'q' || (it.k === 'f' && ((it.lv || 0) === 0 || it.ask))).length; }
 function fxPearls(ps, pre, ticks){
@@ -1216,7 +1238,7 @@ function fxSection(c, cp, opt){
     <header class="fxh"><div class="fxt">${cp.core && !opt.noCoreTag ? `<span class="coretag">Ask for every ${esc(c.name.toLowerCase())} complaint</span>` : ''}<h2>${esc(cp.t)}</h2>${(cp.also || []).length ? `<p class="also">${cp.also.map(esc).join(' · ')}</p>` : ''}</div>
     <div class="fxtools"><button type="button" class="fxfold" aria-label="Collapse or expand" title="Collapse / expand">▾</button>${n ? `<span class="fxcount" data-count="${cp.id}">${Math.min(done, n)}/${n}</span>` : ''}${cp.pg ? `<button type="button" class="fxpg" data-page="${cp.pg}" title="See this page as printed">p. ${cp.pg}</button>` : ''}${opt.isolate !== false && !cp.core ? `<a class="fxiso" href="#cond-${cp.id}" data-goto="cond-${cp.id}" title="History and physical exam for this condition only">Isolate</a>` : ''}</div></header>`;
   h += `<div class="fxbody" data-hls="hl:f2:${c.id}:${cp.id}">` + fxBody(cp.items, pre, ticks, true, cp.pearls);
-  (cp.bg || []).forEach((b, k) => { h += `<div class="qh fxbgh">${esc(b.cat)}</div>` + fxBody(b.items, pre + ':b' + k, ticks, true); });
+  (cp.bg || []).forEach((b, k) => { h += fxFold(pre + ':b' + k, esc(b.cat), fxBody(b.items, pre + ':b' + k, ticks, true), 'fxbgsub'); });
   if (cp.more && cp.more.length) h += `<details class="fxmore"><summary>${esc(cp.moret || 'More')}</summary>${fxList(cp.more, pre + ':m', ticks, false)}</details>`;
   if (cp.refs && cp.refs.length) h += `<details class="fxmore"><summary>${cp.refs.length === 1 ? esc(cp.refs[0].t) : 'Related: ' + esc(cp.refs.map(r => r.t.replace(/\s*\(.*$/, '')).slice(0, 3).join(', ')) + (cp.refs.length > 3 ? ` + ${cp.refs.length - 3} more` : '')}</summary>${cp.refs.map((r, k) => `<div class="qh">${esc(r.t)}${r.pg ? ` <span class="pg">p. ${r.pg}</span>` : ''}</div>${fxList(r.items, pre + ':r' + k, ticks, false)}`).join('')}</details>`;
   return h + `</div></section>`;
@@ -1753,7 +1775,8 @@ document.addEventListener('selectionchange', () => {
   hl.onSelChange();
 });
 window.addEventListener('beforeunload', () => document.querySelectorAll('.rte[data-note]').forEach(ed => notes.set(ed.dataset.note, edVal(ed))));
-document.addEventListener('toggle', e => { if (e.target.classList && e.target.classList.contains('step') && e.target.open) fillStep(e.target); }, true);
+document.addEventListener('toggle', e => { const fd = e.target.dataset && e.target.dataset.fold; if (fd) { const m = fxFolds(); if (e.target.open) delete m[fd]; else m[fd] = 1; store.set('fx:fold', m); }
+  if (e.target.classList && e.target.classList.contains('fxcat') && e.target.dataset.cat) { const m = fxFolds(); if (e.target.open) delete m[e.target.dataset.cat]; else m[e.target.dataset.cat] = 1; store.set('fx:fold', m); } if (e.target.classList && e.target.classList.contains('step') && e.target.open) fillStep(e.target); }, true);
 document.addEventListener('change', e => {
   if (e.target.id==='importNotes' && e.target.files[0]){
     const r = new FileReader();

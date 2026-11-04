@@ -755,7 +755,8 @@ const hl = {
     clearTimeout(this.selT); this.selT = setTimeout(() => this.fromSelection(), 900);
   },
   pageKeys(){
-    const pre = view === 'hist' && histTab === 'fhx' ? ['hl:f2:' + (store.get('lastFhxCh') || 'c5')] : view === 'cond' ? ['hl:f2:'] : view === 'guide' ? ['hl:g:' + guideTok.slice(2) + ':'] : cur ? ['hl:x:' + cur, 'hl:s:' + cur + ':'] : ['hl:h:' + histTab];
+    const cc = view === 'cond' && FXCP[(store.get('lastCond') || '').slice(5)];
+    const pre = view === 'hist' && histTab === 'fhx' ? ['hl:f2:' + (store.get('lastFhxCh') || 'c5') + ':'] : view === 'cond' ? (cc ? ['hl:f2:' + cc.c.id + ':' + cc.cp.id, 'hl:f2:' + cc.c.id + ':bg', 'hl:s:' + (CH2EXAM[cc.c.id] || '-') + ':'] : ['hl:none']) : view === 'guide' ? ['hl:g:' + guideTok.slice(2) + ':'] : cur ? ['hl:x:' + cur, 'hl:s:' + cur + ':'] : ['hl:h:' + histTab];
     return Object.keys(notes.all()).filter(k => pre.some(p => k === p || (p.endsWith(':') && k.startsWith(p))));
   },
   set(mode){
@@ -1214,7 +1215,7 @@ function fxSection(c, cp, opt){
   let h = `<section class="fxs${cp.core ? ' core' : ''}${fxShut()[cp.id] ? ' shut' : ''}" id="fx-${cp.id}" data-cp="${cp.id}" data-ch="${c.id}">
     <header class="fxh"><div class="fxt">${cp.core && !opt.noCoreTag ? `<span class="coretag">Ask for every ${esc(c.name.toLowerCase())} complaint</span>` : ''}<h2>${esc(cp.t)}</h2>${(cp.also || []).length ? `<p class="also">${cp.also.map(esc).join(' · ')}</p>` : ''}</div>
     <div class="fxtools"><button type="button" class="fxfold" aria-label="Collapse or expand" title="Collapse / expand">▾</button>${n ? `<span class="fxcount" data-count="${cp.id}">${Math.min(done, n)}/${n}</span>` : ''}${cp.pg ? `<button type="button" class="fxpg" data-page="${cp.pg}" title="See this page as printed">p. ${cp.pg}</button>` : ''}${opt.isolate !== false && !cp.core ? `<a class="fxiso" href="#cond-${cp.id}" data-goto="cond-${cp.id}" title="History and physical exam for this condition only">Isolate</a>` : ''}</div></header>`;
-  h += `<div class="fxbody">` + fxBody(cp.items, pre, ticks, true, cp.pearls);
+  h += `<div class="fxbody" data-hls="hl:f2:${c.id}:${cp.id}">` + fxBody(cp.items, pre, ticks, true, cp.pearls);
   (cp.bg || []).forEach((b, k) => { h += `<div class="qh fxbgh">${esc(b.cat)}</div>` + fxBody(b.items, pre + ':b' + k, ticks, true); });
   if (cp.more && cp.more.length) h += `<details class="fxmore"><summary>${esc(cp.moret || 'More')}</summary>${fxList(cp.more, pre + ':m', ticks, false)}</details>`;
   if (cp.refs && cp.refs.length) h += `<details class="fxmore"><summary>${cp.refs.length === 1 ? esc(cp.refs[0].t) : 'Related: ' + esc(cp.refs.map(r => r.t.replace(/\s*\(.*$/, '')).slice(0, 3).join(', ')) + (cp.refs.length > 3 ? ` + ${cp.refs.length - 3} more` : '')}</summary>${cp.refs.map((r, k) => `<div class="qh">${esc(r.t)}${r.pg ? ` <span class="pg">p. ${r.pg}</span>` : ''}</div>${fxList(r.items, pre + ':r' + k, ticks, false)}`).join('')}</details>`;
@@ -1226,10 +1227,10 @@ function fxBackground(c, open){
   const cats = c.background.map(b => ({cat: b.cat, cards: b.cards.filter(cd => !cd.for)})).filter(b => b.cards.length);
   if (!cats.length) return '';
   return `<section class="fxs bgsec" id="fx-bg" data-cp="bg" data-ch="${c.id}"><header class="fxh"><div class="fxt"><h2>Background history</h2><p class="also">The guide’s ${esc(c.name.toLowerCase())}-specific past medical, surgical, family, social and medication questions</p></div></header>`
-    + cats.map((b, j) => `<details class="fxcat"${open ? ' open' : ''}><summary>${esc(b.cat)} <span class="n">${b.cards.length}</span></summary>`
+    + `<div data-hls="hl:f2:${c.id}:bg">` + cats.map((b, j) => `<details class="fxcat"${open ? ' open' : ''}><summary>${esc(b.cat)} <span class="n">${b.cards.length}</span></summary>`
       + b.cards.map((cd, k) => { const same = b.cards.length === 1 && /^(past|family|social|medication)/i.test(cd.t);
           return `${same ? '' : `<div class="qh fxcard-t">${esc(cd.t)}${cd.pg ? ` <span class="pg">p. ${cd.pg}</span>` : ''}</div>`}${fxBody(cd.items, 'bg:' + j + ':' + k, ticks, true, cd.pearls)}`; }).join('')
-      + `</details>`).join('') + `</section>`;
+      + `</details>`).join('') + `</div></section>`;
 }
 function fxSysPicker(cid, mode){
   return `<label class="syspick"><span>System</span><select data-sys="${mode}">${FX.map(([g, xs]) => `<optgroup label="${esc(g)}">${xs.map(([id, n]) => `<option value="${id}"${id === cid ? ' selected' : ''}>${esc(n)}</option>`).join('')}</optgroup>`).join('')}</select></label>`;
@@ -1261,7 +1262,7 @@ function renderFhx(tok){
   if (core.length && rest.length) body += `<div class="fxgroup">Then the presenting complaint</div>`;
   body += rest.map(cp => fxSection(c, cp)).join('');
   body += fxBackground(c, true);
-  h += `<div data-hls="hl:f2:${c.id}">${body}</div>`;
+  h += `<div class="fxall">${body}</div>`;
   h += `<p class="tip" style="margin-top:28px">Source: McMaster Clinical Skills Guide, 6e (2026–27), ${esc(gchLab(c.id))}. Use the page buttons to check any card against the printed page.</p>`;
   delete main.dataset.hls;
   main.innerHTML = h; syncBadge(); hl.paintAll(); markRail('fhx-' + c.id); window.scrollTo(0, 0); fxWatch();
@@ -1321,7 +1322,7 @@ function renderCondList(){
 // a step that matches a rule is shown only for conditions whose title matches. Steps with no rule are shown for every condition.
 // Everything else stays one tap away under "Rest of the exam".
 const CONDEX = {
-  volume: [[/^Hypervolemia$/, /hyper/i], [/^Hypovolemia$/, /hypo/i], [/^Orthostatic/, /hypo/i], [/^Listening to breathing|^Precordial auscultation/, /hyper/i]],
+  volume: [[/\(hypervolemia\)$/, /hyper/i], [/\(hypovolemia\)$/, /hypo/i], [/^Orthostatic/, /hypo/i], [/^Listening to breathing|^Precordial auscultation/, /hyper/i]],
   resp: [[/Forced Expiratory/, /short|wheez|cough/i]],
   cardiac: [[/Pulsus Paradoxus/, /chest|short/i]],
   headneck: [[/Mallampati/, /sleep/i], [/Outer Ear|Otoscopy/, /ear|hearing|tinnitus|dizz/i], [/Hearing Loss/, /hearing|tinnitus|dizz/i],
