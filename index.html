@@ -321,6 +321,14 @@ body.hl-erase mark.hl{cursor:pointer;outline:1px dashed currentColor;outline-off
 .fxmore>summary{cursor:pointer;padding:7px 10px;font-size:13px;font-weight:600;color:var(--muted)}
 .fxmore[open]>summary{border-bottom:1px dashed var(--line)}
 .fxmore>.qlist,.fxmore>.qh{padding-left:10px;padding-right:10px}
+.step>summary:has(.mvbox){grid-template-columns:auto auto minmax(0,1fr) auto auto}
+.mvbox{display:inline-flex;gap:4px;grid-column:4;grid-row:1}
+.mv{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:6px;width:34px;height:30px;font-size:16px;cursor:pointer}
+.mv:hover{border-color:var(--accent);color:var(--accent)}
+.btn.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+details.step.moved{outline:2px solid var(--accent);outline-offset:1px;transition:outline-color .6s}
+.orderpick{display:inline-flex;align-items:center;margin:4px 0 10px}
+.orderpick>span{font-size:13px;color:var(--muted);padding:0 6px 0 10px}
 .fxsub{margin:4px 0}
 .fxsub>summary{cursor:pointer;list-style:none;display:flex;gap:8px;align-items:center;padding:9px 16px 7px;font:600 14.5px var(--f-head);color:var(--ink)}
 .fxsub>summary::-webkit-details-marker{display:none}
@@ -1341,6 +1349,58 @@ function renderCondList(){
   markRail('cond'); window.scrollTo(0, 0);
   if (matchMedia('(pointer: fine)').matches) $('#condq').focus();
 }
+// "Head to toe" order: group steps by technique (inspection, palpation…), then within each go head → neck → chest → abdomen → arms → legs
+let condOrder = store.get('condOrder') || 'guide';
+const H2T_PHASES = [['vitals', 'Vitals & general'], ['inspect', 'Inspection'], ['palpate', 'Palpation'], ['percuss', 'Percussion'], ['auscultate', 'Auscultation'], ['rom', 'Range of motion'], ['power', 'Power'], ['special', 'Special tests']];
+const H2T_REGION = [
+  [/jugular|JVP|AJR|Abdominojugular|Hepatojugular/i, 2],
+  [/^vitals|general|body habitus|habitus|mental status|confusion|work of breathing|rhythm of breathing|assistive|scars|cachexia|sarcopenia|coagulopathy|xanthoma|skin\b|skinfold|waist|hirsut|central (and|&) peripheral pulses|level of consciousness|behaviour|appearance/i, 0],
+  [/head|eye|sclera|pupil|fundoscop|lid lag|nose|ear\b|otoscop|hearing|mouth|tongue|tonsil|oropharyn|mucous|central cyanosis|face|facial|sinus|mallampati|\bCN\b|olfactory|optic|trigeminal|facial|vestibulo|glossophar|hypoglossal|accessory|visual|ocular|intraocular|slit-lamp|confrontation/i, 1],
+  [/neck|thyroid|goiter|pemberton|carotid|trache|laryngeal|lymph nodes?/i, 2],
+  [/chest|thora|precordial|PMI|heave|thrill|breath|lung|fremitus|expansion|diaphragm|pectus|barrel|scoliosis|kyphosis|intercostal|consolidation|egophony|expiratory|breast|axilla|cardiac|S1|murmur/i, 3],
+  [/abdom|liver|spleen|splenic|kidney|CVA|costovertebral|bladder|bowel|murphy|mcburney|rovsing|psoas|obturator|ascites|fluid wave|shifting|castell|traube|hernia|rectal|cullen|peritoni|rebound|shake|palpation$|light palpation|deep palpation|venous hum|friction rub|bruits/i, 4],
+  [/hand|finger|nail|clubbing|tar stain|arm\b|arms|upper limb|radial|wrist|elbow|shoulder|tremor|peripheral cyanosis|capillary refill|allen|tinel|phalen|finkelstein|piano key|MCP|IP\)/i, 5],
+  [/leg|edema|pedal|ankle|foot|feet|sole|calf|knee|hip|lower limb|femoral|popliteal|buerger|brachial index|ABI|varicose|brodie|heel|toe|plantar|extremit|temperature to touch|gait|pretibial|thompson/i, 6],
+];
+const h2tRegion = s => { for (const [re, r] of H2T_REGION) if (re.test(s.name)) return r; for (const [re, r] of H2T_REGION) if (re.test(s.sec || '')) return r; return 3.5; };
+function h2tPhase(s){
+  if (s.phase) return s.phase;
+  const t = s.sec || '';
+  if (/inspect/i.test(t)) return 'inspect'; if (/palpat/i.test(t)) return 'palpate'; if (/percuss/i.test(t)) return 'percuss';
+  if (/auscult/i.test(t)) return 'auscultate'; if (/vital|before measuring|general/i.test(t)) return 'vitals'; if (/range of motion/i.test(t)) return 'rom';
+  if (/power|strength|motor/i.test(t)) return 'power'; return 'special';
+}
+const examH2tOk = ex => new Set(ex.steps.map(h2tPhase).filter(p => /inspect|palpate|percuss|auscultate/.test(p))).size >= 2;
+// the full head-to-toe list for an exam: [{k, name, items}], with any order you saved applied
+function examH2tAll(exId){
+  const ex = D.exams[exId], idx = ex.steps.map((s, i) => i);
+  const gk = i => ex.steps[i].tags.includes('extra') ? 'extra' : h2tPhase(ex.steps[i]);
+  const groups = [...H2T_PHASES, ['extra', 'Non-routine tests']].map(([k, name]) => ({k, name, items: idx.filter(i => gk(i) === k)
+    .map((i, o) => [i, k === 'extra' ? 0 : h2tRegion(ex.steps[i]), o]).sort((a, b) => a[1] - b[1] || a[2] - b[2]).map(x => x[0])}));
+  const mine = store.get('h2t:' + exId);
+  if (mine && Array.isArray(mine.list)) {
+    const seen = new Set();
+    groups.forEach(g => g.items = []);
+    mine.list.forEach(([i, k]) => { const g = groups.find(x => x.k === k); if (g && ex.steps[i] && !seen.has(i)) { g.items.push(i); seen.add(i); } });
+    idx.forEach(i => { if (!seen.has(i)) groups.find(x => x.k === gk(i)).items.push(i); });   // steps added since you saved
+  }
+  return groups;
+}
+function examH2tSecs(ex, keep){
+  const exId = Object.keys(D.exams).find(k => D.exams[k] === ex);
+  return examH2tAll(exId).map(g => ({name: g.name, k: g.k, items: g.items.filter(i => keep[i])})).filter(g => g.items.length);
+}
+let h2tEdit = false;
+function h2tMove(exId, i, dir){
+  const groups = examH2tAll(exId).filter(g => g.items.length || true);
+  const gi = groups.findIndex(g => g.items.includes(i)); if (gi < 0) return;
+  const g = groups[gi], p = g.items.indexOf(i);
+  if (dir < 0) { if (p > 0) [g.items[p - 1], g.items[p]] = [g.items[p], g.items[p - 1]];
+    else { let t = gi - 1; while (t >= 0 && groups[t].k === 'extra') t--; if (t < 0) return; g.items.splice(p, 1); groups[t].items.push(i); } }
+  else { if (p < g.items.length - 1) [g.items[p + 1], g.items[p]] = [g.items[p], g.items[p + 1]];
+    else { let t = gi + 1; while (t < groups.length && groups[t].k === 'extra') t++; if (t >= groups.length) return; g.items.splice(p, 1); groups[t].items.unshift(i); } }
+  store.set('h2t:' + exId, {list: groups.flatMap(x => x.items.map(j => [j, x.k]))});
+}
 // Which exam steps belong to which condition. Each rule is [step name pattern, condition title pattern]:
 // a step that matches a rule is shown only for conditions whose title matches. Steps with no rule are shown for every condition.
 // Everything else stays one tap away under "Rest of the exam".
@@ -1387,14 +1447,17 @@ function examStepsHtml(exId, cp){
   const ex = D.exams[exId]; if (!ex) return '';
   const ticks = store.get('t:' + exId) || {};
   const keep = ex.steps.map(s => condStepOk(exId, s, cp)), rest = keep.filter(k => !k).length;
-  const secs = [];
-  ex.steps.forEach((s, i) => { if (!keep[i]) return; if (!secs.length || secs[secs.length - 1].name !== s.sec) secs.push({name: s.sec, items: []}); secs[secs.length - 1].items.push(i); });
+  let secs = [];
+  if (condOrder === 'h2t' && examH2tOk(ex)) secs = examH2tSecs(ex, keep);
+  else ex.steps.forEach((s, i) => { if (!keep[i]) return; if (!secs.length || secs[secs.length - 1].name !== s.sec) secs.push({name: s.sec, items: []}); secs[secs.length - 1].items.push(i); });
   let n = 0, h = '';
   if (rest) h += `<p class="tip">Showing the steps for ${esc(cp.t.toLowerCase())}. Steps for other conditions are folded away at the bottom.</p>`;
   secs.forEach(sec => {
     const isExtra = ex.steps[sec.items[0]].tags.includes('extra');
     h += `<div class="sec sm"${isExtra && !showExtra ? ' hidden' : ''} data-extra="${isExtra ? 1 : 0}"><h3>${esc(sec.name)}</h3><span class="n">${sec.items.length}</span></div><div class="steps"${isExtra && !showExtra ? ' hidden' : ''} data-extra="${isExtra ? 1 : 0}">`;
-    sec.items.forEach(i => { const s = ex.steps[i]; n++; h += stepHtml(exId, s, i, n, !!ticks[i]); });
+    sec.items.forEach(i => { const s = ex.steps[i]; n++; let sh = stepHtml(exId, s, i, n, !!ticks[i]);
+      if (h2tEdit && condOrder === 'h2t' && sec.k) sh = sh.replace('</summary>', `<span class="mvbox"><button type="button" class="mv" data-mv="-1" data-mvi="${i}" data-mvx="${exId}" aria-label="Move up">↑</button><button type="button" class="mv" data-mv="1" data-mvi="${i}" data-mvx="${exId}" aria-label="Move down">↓</button></span></summary>`);
+      h += sh; });
     h += `</div>`;
   });
   if (rest) {
@@ -1426,6 +1489,9 @@ function renderCond(tok){
   let px = `<div class="condpart" data-part="px"><h2 class="partttl"><span>2</span>Physical exam${ex ? ` · ${esc(ex.title)}` : ''}</h2>`;
   if (ex) {
     const extra = ex.steps.filter(s => s.tags.includes('extra')).length;
+    if (examH2tOk(ex)) px += `<div class="gview orderpick" role="group" aria-label="Order of exam steps"><span>Order:</span>${[['guide', 'As in the guide'], ['h2t', 'Head to toe']].map(([k, l]) => `<button type="button" data-corder="${k}" aria-pressed="${condOrder === k}">${l}</button>`).join('')}</div>`
+      + (condOrder === 'h2t' ? ` <button type="button" class="btn${h2tEdit ? ' on' : ''}" data-h2tedit>${h2tEdit ? 'Done rearranging' : 'Rearrange'}</button>${store.get('h2t:' + exam) ? ` <button type="button" class="btn" data-h2treset>Reset order</button>` : ''}` : '')
+      + (h2tEdit && condOrder === 'h2t' ? `<p class="tip">Use ↑ and ↓ to move a step. Moving past the top or bottom of a group moves it into the next group. Your order is saved for every condition that uses this exam.</p>` : '');
     px += `<div class="tools"><button class="btn" data-act="open">Expand all</button><button class="btn" data-act="close">Collapse all</button>${extra ? `<label class="toggle"><input type="checkbox" id="xtra" ${showExtra ? 'checked' : ''}> Show non-routine tests (${extra})</label>` : ''}<a class="btn" href="#${exam}" data-goto="${exam}">Open full exam page →</a></div>`;
     if (ex.notes && ex.notes.length) px += `<details class="box notes"><summary>Setup & tips from the guide</summary><div class="inner">${list(ex.notes)}</div></details>`;
     px += examStepsHtml(exam, cp);
@@ -1730,6 +1796,12 @@ document.addEventListener('click', e => {
     if (document.activeElement !== ed) { ed.focus(); const r = lastRange[ed.dataset.note]; if (r && ed.contains(r.startContainer)) { const s = getSelection(); s.removeAllRanges(); s.addRange(r); } else caretEnd(ed); }
     if (fb.dataset.cmd) document.execCommand(fb.dataset.cmd, false, null); else document.execCommand('fontSize', false, fb.dataset.size);
     fmtState(ed); clearTimeout(saveT[ed.dataset.note]); saveT[ed.dataset.note] = setTimeout(()=>saveNote(ed), 300); return; }
+  const mvb = t.closest('[data-mv]');
+  if (mvb){ e.preventDefault(); e.stopPropagation(); h2tMove(mvb.dataset.mvx, +mvb.dataset.mvi, +mvb.dataset.mv); const el = mvb.closest('details'), off = el ? el.getBoundingClientRect().top : 0; go(location.hash.slice(1)); const again = document.querySelector(`[data-mvi="${mvb.dataset.mvi}"]`); if (again) { const d = again.closest('details'); window.scrollBy(0, d.getBoundingClientRect().top - off); d.classList.add('moved'); setTimeout(() => d.classList.remove('moved'), 700); } return; }
+  if (t.closest('[data-h2tedit]')){ h2tEdit = !h2tEdit; const y = scrollY; go(location.hash.slice(1)); window.scrollTo(0, y); return; }
+  if (t.closest('[data-h2treset]')){ const ex = CH2EXAM[(FXCP[(store.get('lastCond') || '').slice(5)] || {c: {}}).c.id]; if (ex) store.set('h2t:' + ex, null); const y = scrollY; go(location.hash.slice(1)); window.scrollTo(0, y); return; }
+  const co = t.closest('[data-corder]');
+  if (co){ condOrder = co.dataset.corder; store.set('condOrder', condOrder); const y = scrollY; go(location.hash.slice(1)); window.scrollTo(0, y); return; }
   const fh = t.closest('.fxs[data-cp] > .fxh');
   if (fh && (t.closest('.fxfold') || (!t.closest('a, button, input, label') && fh.parentElement.classList.contains('shut')))){
     const sec = fh.parentElement, v = !sec.classList.contains('shut'); sec.classList.toggle('shut', v); fxSetShut([sec.dataset.cp], v); return; }
