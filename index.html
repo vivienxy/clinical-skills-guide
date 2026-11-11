@@ -1391,6 +1391,13 @@ function examH2tSecs(ex, keep){
   return examH2tAll(exId).map(g => ({name: g.name, k: g.k, items: g.items.filter(i => keep[i])})).filter(g => g.items.length);
 }
 let h2tEdit = false;
+function h2tControls(exId){
+  if (!examH2tOk(D.exams[exId])) return '';
+  return `<div class="gview orderpick" role="group" aria-label="Order of exam steps"><span>Order:</span>${[['guide', 'As in the guide'], ['h2t', 'Head to toe']].map(([k, l]) => `<button type="button" data-corder="${k}" aria-pressed="${condOrder === k}">${l}</button>`).join('')}</div>`
+    + (condOrder === 'h2t' ? ` <button type="button" class="btn${h2tEdit ? ' on' : ''}" data-h2tedit>${h2tEdit ? 'Done rearranging' : 'Rearrange'}</button>${store.get('h2t:' + exId) ? ` <button type="button" class="btn" data-h2treset="${exId}">Reset order</button>` : ''}` : '')
+    + (h2tEdit && condOrder === 'h2t' ? `<p class="tip">Use ↑ and ↓ to move a step. Moving past the top or bottom of a group moves it into the next group. Your order is saved for this exam everywhere it appears.</p>` : '');
+}
+const mvCtl = (exId, i) => `<span class="mvbox"><button type="button" class="mv" data-mv="-1" data-mvi="${i}" data-mvx="${exId}" aria-label="Move up">↑</button><button type="button" class="mv" data-mv="1" data-mvi="${i}" data-mvx="${exId}" aria-label="Move down">↓</button></span></summary>`;
 function h2tMove(exId, i, dir){
   const groups = examH2tAll(exId).filter(g => g.items.length || true);
   const gi = groups.findIndex(g => g.items.includes(i)); if (gi < 0) return;
@@ -1456,7 +1463,7 @@ function examStepsHtml(exId, cp){
     const isExtra = ex.steps[sec.items[0]].tags.includes('extra');
     h += `<div class="sec sm"${isExtra && !showExtra ? ' hidden' : ''} data-extra="${isExtra ? 1 : 0}"><h3>${esc(sec.name)}</h3><span class="n">${sec.items.length}</span></div><div class="steps"${isExtra && !showExtra ? ' hidden' : ''} data-extra="${isExtra ? 1 : 0}">`;
     sec.items.forEach(i => { const s = ex.steps[i]; n++; let sh = stepHtml(exId, s, i, n, !!ticks[i]);
-      if (h2tEdit && condOrder === 'h2t' && sec.k) sh = sh.replace('</summary>', `<span class="mvbox"><button type="button" class="mv" data-mv="-1" data-mvi="${i}" data-mvx="${exId}" aria-label="Move up">↑</button><button type="button" class="mv" data-mv="1" data-mvi="${i}" data-mvx="${exId}" aria-label="Move down">↓</button></span></summary>`);
+      if (h2tEdit && condOrder === 'h2t' && sec.k) sh = sh.replace('</summary>', mvCtl(exId, i));
       h += sh; });
     h += `</div>`;
   });
@@ -1489,9 +1496,7 @@ function renderCond(tok){
   let px = `<div class="condpart" data-part="px"><h2 class="partttl"><span>2</span>Physical exam${ex ? ` · ${esc(ex.title)}` : ''}</h2>`;
   if (ex) {
     const extra = ex.steps.filter(s => s.tags.includes('extra')).length;
-    if (examH2tOk(ex)) px += `<div class="gview orderpick" role="group" aria-label="Order of exam steps"><span>Order:</span>${[['guide', 'As in the guide'], ['h2t', 'Head to toe']].map(([k, l]) => `<button type="button" data-corder="${k}" aria-pressed="${condOrder === k}">${l}</button>`).join('')}</div>`
-      + (condOrder === 'h2t' ? ` <button type="button" class="btn${h2tEdit ? ' on' : ''}" data-h2tedit>${h2tEdit ? 'Done rearranging' : 'Rearrange'}</button>${store.get('h2t:' + exam) ? ` <button type="button" class="btn" data-h2treset>Reset order</button>` : ''}` : '')
-      + (h2tEdit && condOrder === 'h2t' ? `<p class="tip">Use ↑ and ↓ to move a step. Moving past the top or bottom of a group moves it into the next group. Your order is saved for every condition that uses this exam.</p>` : '');
+    px += h2tControls(exam);
     px += `<div class="tools"><button class="btn" data-act="open">Expand all</button><button class="btn" data-act="close">Collapse all</button>${extra ? `<label class="toggle"><input type="checkbox" id="xtra" ${showExtra ? 'checked' : ''}> Show non-routine tests (${extra})</label>` : ''}<a class="btn" href="#${exam}" data-goto="${exam}">Open full exam page →</a></div>`;
     if (ex.notes && ex.notes.length) px += `<details class="box notes"><summary>Setup & tips from the guide</summary><div class="inner">${list(ex.notes)}</div></details>`;
     px += examStepsHtml(exam, cp);
@@ -1581,10 +1586,12 @@ function renderRail(mode, force){
 function renderExam(id){
   const ex = D.exams[id]; cur = id; view = 'exam';
   const ticks = store.get('t:'+id) || {};
-  const secs = [];
-  ex.steps.forEach((s,i) => { if (!secs.length || secs[secs.length-1].name !== s.sec) secs.push({name:s.sec, items:[]}); secs[secs.length-1].items.push(i); });
+  let secs = [];
+  if (condOrder === 'h2t' && examH2tOk(ex)) secs = examH2tSecs(ex, ex.steps.map(() => true));
+  else ex.steps.forEach((s,i) => { if (!secs.length || secs[secs.length-1].name !== s.sec) secs.push({name:s.sec, items:[]}); secs[secs.length-1].items.push(i); });
   const extraCount = ex.steps.filter(s=>s.tags.includes('extra')).length;
   let h = `<div class="eyebrow">Physical exam · guide pp. ${ex.pg[0]}–${ex.pg[1]}</div><h1>${esc(ex.title)}</h1>`;
+  h += h2tControls(id);
   h += `<div class="order" aria-label="Exam order">` + secs.map((s,k) => `${k?'<i>→</i>':''}<a href="#${id}" data-jump="s${k}">${esc(s.name)}</a>`).join('') + `</div>`;
   h += `<div class="tools"><button class="btn" data-act="open">Expand all</button><button class="btn" data-act="close">Collapse all</button><button class="btn" data-act="reset">Clear ticks</button>`;
   if (extraCount) h += `<label class="toggle"><input type="checkbox" id="xtra" ${showExtra?'checked':''}> Show non-routine tests (${extraCount})</label>`;
@@ -1598,7 +1605,7 @@ function renderExam(id){
   secs.forEach((sec,k) => {
     const isExtra = ex.steps[sec.items[0]].tags.includes('extra');
     h += `<div class="sec" id="s${k}" ${isExtra&&!showExtra?'hidden':''} data-extra="${isExtra?1:0}"><h2>${esc(sec.name)}</h2><span class="n">${sec.items.length} step${sec.items.length>1?'s':''}</span></div><div class="steps" ${isExtra&&!showExtra?'hidden':''} data-extra="${isExtra?1:0}">`;
-    sec.items.forEach(i => { n++; h += stepHtml(id, ex.steps[i], i, n, !!ticks[i]); });
+    sec.items.forEach(i => { n++; let sh = stepHtml(id, ex.steps[i], i, n, !!ticks[i]); if (h2tEdit && condOrder === 'h2t' && sec.k) sh = sh.replace('</summary>', mvCtl(id, i)); h += sh; });
     h += `</div>`;
   });
   h += `<p class="tip" style="margin-top:28px">Source: McMaster Clinical Skills Guide, 6e (2026–27). Check the guide for full likelihood ratios and references.</p>`;
@@ -1799,7 +1806,7 @@ document.addEventListener('click', e => {
   const mvb = t.closest('[data-mv]');
   if (mvb){ e.preventDefault(); e.stopPropagation(); h2tMove(mvb.dataset.mvx, +mvb.dataset.mvi, +mvb.dataset.mv); const el = mvb.closest('details'), off = el ? el.getBoundingClientRect().top : 0; go(location.hash.slice(1)); const again = document.querySelector(`[data-mvi="${mvb.dataset.mvi}"]`); if (again) { const d = again.closest('details'); window.scrollBy(0, d.getBoundingClientRect().top - off); d.classList.add('moved'); setTimeout(() => d.classList.remove('moved'), 700); } return; }
   if (t.closest('[data-h2tedit]')){ h2tEdit = !h2tEdit; const y = scrollY; go(location.hash.slice(1)); window.scrollTo(0, y); return; }
-  if (t.closest('[data-h2treset]')){ const ex = CH2EXAM[(FXCP[(store.get('lastCond') || '').slice(5)] || {c: {}}).c.id]; if (ex) store.set('h2t:' + ex, null); const y = scrollY; go(location.hash.slice(1)); window.scrollTo(0, y); return; }
+  if (t.closest('[data-h2treset]')){ store.set('h2t:' + t.closest('[data-h2treset]').dataset.h2treset, null); const y = scrollY; go(location.hash.slice(1)); window.scrollTo(0, y); return; }
   const co = t.closest('[data-corder]');
   if (co){ condOrder = co.dataset.corder; store.set('condOrder', condOrder); const y = scrollY; go(location.hash.slice(1)); window.scrollTo(0, y); return; }
   const fh = t.closest('.fxs[data-cp] > .fxh');

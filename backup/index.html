@@ -1,0 +1,1899 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Clinical Skills Pocket</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600&display=swap">
+<style>
+/* Layout: sticky top bar with Exam | History switch; exam list rail on the left (drawer on phones); step cards in guide order. */
+:root{
+  --bg:#f5f7f7; --panel:#ffffff; --ink:#14222b; --muted:#5b6b73; --line:#dbe3e5; --soft:#eaf0f1;
+  --accent:#0d6b62; --accent-ink:#ffffff; --accent-soft:#dcefeb; --mark:#fff3c8;
+  --report:#f1f6fb; --report-line:#9fbdd6; --note-bg:#fffbea; --note-line:#e6d48a; --note-ink:#7a5a00;
+  --p-vitals:#7a5c9e; --p-inspect:#0d6b62; --p-palpate:#b0601b; --p-percuss:#8a6a12; --p-auscultate:#2c5e9e; --p-special:#a33b4b; --p-other:#5b6b73;
+  --f-body:"Segoe UI",-apple-system,BlinkMacSystemFont,system-ui,Roboto,"Helvetica Neue",Arial,sans-serif;
+  --f-head:"IBM Plex Sans Condensed","Segoe UI",-apple-system,BlinkMacSystemFont,system-ui,Roboto,"Helvetica Neue",Arial,sans-serif;
+  --f-mono:"Segoe UI",-apple-system,BlinkMacSystemFont,system-ui,Roboto,"Helvetica Neue",Arial,sans-serif;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1719; --panel:#162124; --ink:#e3ecee; --muted:#93a6ab; --line:#2a3a3e; --soft:#1d2b2f;
+  --accent:#4cc2b0; --accent-ink:#06211d; --accent-soft:#173a36; --mark:#4a3f12;
+  --report:#172a38; --report-line:#3d6788; --note-bg:#25220f; --note-line:#6b5d22; --note-ink:#e8cf6a;
+  --p-vitals:#b79be0; --p-inspect:#4cc2b0; --p-palpate:#e59a59; --p-percuss:#d6b44e; --p-auscultate:#7fb0ee; --p-special:#ec8494; --p-other:#93a6ab;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1719; --panel:#162124; --ink:#e3ecee; --muted:#93a6ab; --line:#2a3a3e; --soft:#1d2b2f;
+  --accent:#4cc2b0; --accent-ink:#06211d; --accent-soft:#173a36; --mark:#4a3f12;
+  --report:#172a38; --report-line:#3d6788; --note-bg:#25220f; --note-line:#6b5d22; --note-ink:#e8cf6a;
+  --p-vitals:#b79be0; --p-inspect:#4cc2b0; --p-palpate:#e59a59; --p-percuss:#d6b44e; --p-auscultate:#7fb0ee; --p-special:#ec8494; --p-other:#93a6ab;
+  color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--f-body);margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--panel)}
+button,input{font:inherit;color:inherit}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--panel);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:12px;padding-block:10px;flex-wrap:wrap}
+.brand{font:600 17px/1 var(--f-head);letter-spacing:.01em;display:flex;align-items:center;gap:8px;white-space:nowrap}
+.brand svg{flex:none}
+.seg{display:inline-flex;background:var(--soft);border-radius:999px;padding:3px}
+.seg button{border:0;background:none;padding:6px 14px;border-radius:999px;cursor:pointer;font-weight:500;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.search{flex:1;min-width:180px;position:relative}
+.search input{width:100%;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:8px 10px 8px 32px}
+.search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.results{position:absolute;left:0;right:0;top:calc(100% + 4px);background:var(--panel);border:1px solid var(--line);border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,.18);max-height:60vh;overflow:auto;z-index:40}
+.results button{display:block;width:100%;text-align:left;border:0;background:none;padding:8px 12px;cursor:pointer;border-bottom:1px solid var(--line)}
+.results button:hover,.results button:focus{background:var(--soft)}
+.results small{color:var(--muted);display:block;font-size:12px}
+.menu-btn{display:none;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:7px 10px;cursor:pointer;font-weight:500}
+
+/* shell */
+.shell{display:grid;grid-template-columns:250px minmax(0,1fr);gap:28px;max-width:1240px;margin:0 auto;padding-block:20px 80px}
+.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 70px);align-self:start;max-height:calc(100vh - 90px);overflow:auto;padding-right:4px}
+.rail h4{font:600 11px/1 var(--f-mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:18px 0 6px}
+.rail h4:first-child{margin-top:0}
+.rail a{display:flex;justify-content:space-between;gap:8px;padding:6px 10px;border-radius:7px;text-decoration:none;color:var(--ink)}
+.rail a span{color:var(--muted);font:12px var(--f-mono)}
+.rail a:hover{background:var(--soft)}
+.rail a[aria-current="page"]{background:var(--accent-soft);color:var(--ink);font-weight:600}
+main{min-width:0}
+
+/* exam header */
+.eyebrow{font:500 12px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+h1{font:600 30px/1.15 var(--f-head);margin:6px 0 10px;text-wrap:balance}
+h2{font:600 20px/1.2 var(--f-head);margin:0;text-wrap:balance}
+.order{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:4px 0 14px}
+.order a{font-size:13px;text-decoration:none;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
+.order a:hover{border-color:var(--accent)}
+.order i{color:var(--muted);font-style:normal;font-size:12px}
+.tools{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px;align-items:center}
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:6px 11px;cursor:pointer;font-size:13px;font-weight:500}
+.btn:hover{border-color:var(--accent)}
+.toggle{display:inline-flex;gap:6px;align-items:center;font-size:13px;color:var(--muted);cursor:pointer}
+.progress{font:12px var(--f-mono);color:var(--muted);margin-left:auto}
+details.box{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);margin:0 0 12px}
+details.box>summary{cursor:pointer;padding:10px 14px;font-weight:600;list-style:none;display:flex;gap:8px;align-items:center}
+details.box>summary::-webkit-details-marker{display:none}
+details.box>summary::before{content:"";width:7px;height:7px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(-45deg);transition:transform .15s;flex:none}
+details.box[open]>summary::before{transform:rotate(45deg)}
+details.box .inner{padding:0 14px 14px}
+
+/* sections & steps */
+.sec{margin:26px 0 10px;display:flex;align-items:baseline;gap:10px;scroll-margin-top:90px}
+.sec .n{font:12px var(--f-mono);color:var(--muted)}
+.steps{display:flex;flex-direction:column;gap:8px}
+.step{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);scroll-margin-top:90px}
+.step>summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;gap:10px;align-items:center;padding:11px 12px}
+.step>summary::-webkit-details-marker{display:none}
+.step.done>summary .name{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--line)}
+.num{font:500 12px var(--f-mono);color:var(--muted);min-width:22px;text-align:right}
+.tick{width:18px;height:18px;accent-color:var(--accent);margin:0;cursor:pointer}
+.name{font-weight:600;min-width:0}
+.name .tags{display:inline-flex;gap:4px;margin-left:6px;vertical-align:2px}
+.tag{font:500 10.5px/1 var(--f-mono);text-transform:uppercase;letter-spacing:.04em;padding:3px 6px;border-radius:4px;background:var(--soft);color:var(--muted);white-space:nowrap}
+.tag.cond{background:var(--mark);color:var(--ink)}
+.chev{width:9px;height:9px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);margin:0 4px;transition:transform .15s}
+.step[open] .chev{transform:rotate(225deg)}
+.ph{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:1px;background:var(--p-other)}
+.ph.vitals{background:var(--p-vitals)}.ph.inspect{background:var(--p-inspect)}.ph.palpate{background:var(--p-palpate)}.ph.percuss{background:var(--p-percuss)}.ph.auscultate{background:var(--p-auscultate)}.ph.special,.ph.rom,.ph.power{background:var(--p-special)}
+.body{padding:0 14px 14px 14px;border-top:1px solid var(--line);display:grid;gap:12px;padding-top:12px}
+.lab{font:600 11px/1 var(--f-mono);text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:0 0 5px}
+.body ul{margin:0;padding-left:0;list-style:none}
+.body li{margin:3px 0;padding-left:14px;position:relative}
+.body li::before{content:"";position:absolute;left:2px;top:.62em;width:5px;height:5px;border-radius:50%;background:var(--muted)}
+.body li.sub{margin-left:16px}
+.body li.sub::before{background:none;border:1px solid var(--muted)}
+.body li.sub2{margin-left:32px}
+.body li.sub2::before{border-radius:0;width:4px;height:4px}
+.body li.plain::before{display:none}
+.body li.plain{padding-left:0}
+.body li.hd{font-weight:600;padding-left:0;margin-top:6px}
+.body li.hd::before{display:none}
+.report{background:var(--report);border-left:3px solid var(--report-line);border-radius:6px;padding:9px 12px}
+.report p{margin:0}
+.more{border:1px solid var(--line);border-radius:8px}
+.more>summary{cursor:pointer;padding:7px 10px;font-size:13px;font-weight:600;color:var(--muted)}
+.more .in{padding:0 10px 10px;font-size:14px}
+.figs{display:flex;flex-wrap:wrap;gap:8px}
+.figs button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:4px;cursor:zoom-in;max-width:100%}
+.figs img{display:block;max-height:150px;max-width:100%;height:auto;width:auto}
+.pg{font:12px var(--f-mono);color:var(--muted)}
+.notes ul{margin:0;padding-left:18px}
+.notes li{margin:3px 0}
+
+/* reference cards */
+.refs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px;margin:0 0 12px}
+.ref{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;min-width:0}
+.ref h3{font:600 15px var(--f-head);margin:0 0 8px}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{text-align:left;padding:5px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 11px var(--f-mono);text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+td.k{font-family:var(--f-mono);white-space:nowrap}
+.ref svg{display:block;width:100%;height:auto;max-width:360px;margin:0 auto}
+.ref svg text{fill:var(--ink);font:11px var(--f-body)}
+.ref svg .small{font-size:9.5px;fill:var(--muted)}
+
+/* history */
+.subtabs{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 18px;border-bottom:1px solid var(--line)}
+.subtabs button{border:0;background:none;padding:9px 12px;cursor:pointer;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+.subtabs button[aria-selected="true"]{color:var(--ink);border-color:var(--accent)}
+.hgrid{display:grid;gap:10px}
+.hcard{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;display:grid;grid-template-columns:52px minmax(0,1fr);gap:4px 14px}
+.hcard .big{font:600 30px/1 var(--f-head);color:var(--accent)}
+.hcard h3{font:600 16px var(--f-head);margin:2px 0 4px}
+.q{margin:0;padding:0;list-style:none}
+.q li{padding:3px 0 3px 18px;position:relative}
+.q li::before{content:"“";position:absolute;left:2px;top:1px;color:var(--accent);font:600 18px/1 var(--f-head)}
+.q li.n::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--muted);top:.65em;left:4px}
+.tip{font-size:13.5px;color:var(--muted);margin:6px 0 0}
+.ros{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:10px}
+.ros .sys{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:10px 12px}
+.ros h3{font:600 15px var(--f-head);margin:0 0 6px;display:flex;justify-content:space-between}
+.ros label{display:flex;gap:8px;align-items:flex-start;padding:3px 0;cursor:pointer}
+.ros label input{margin-top:4px;accent-color:var(--accent)}
+.ros .hy{font-weight:600}
+.ros .oth{color:var(--muted)}
+.intro{background:var(--accent-soft);border-radius:var(--r);padding:10px 14px;margin:0 0 14px}
+.big6{display:grid;gap:10px}
+.lead{max-width:68ch;color:var(--muted);margin:0 0 14px}
+
+/* lightbox */
+.note{background:var(--panel);border:1px solid var(--note-line);border-radius:var(--r);margin:0 0 14px}
+.note>summary{cursor:pointer;padding:10px 14px;font-weight:600;list-style:none;display:flex;gap:8px;align-items:center}
+.note>summary::-webkit-details-marker{display:none}
+.note .inner{padding:0 14px 12px}
+.fmt{display:flex;flex-wrap:wrap;align-items:center;gap:2px;border:1px solid var(--line);border-bottom:0;border-radius:8px 8px 0 0;background:var(--panel);padding:3px}
+.fmt button{border:0;background:none;min-width:34px;height:32px;padding:0 6px;border-radius:6px;cursor:pointer;font-size:14px;line-height:1;color:var(--ink);display:inline-grid;place-items:center}
+.fmt button:hover{background:var(--soft)}
+.fmt button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent)}
+.fmt .fs2{font-size:11px}.fmt .fs5{font-size:18px;font-weight:600}
+.fmt .sep{width:1px;height:20px;background:var(--line);margin:0 3px}
+.rte{min-height:120px;border:1px solid var(--line);border-radius:0 0 8px 8px;background:var(--note-bg);color:var(--ink);padding:9px 11px;font:14px/1.5 var(--f-body);outline:none;overflow-wrap:anywhere;cursor:text}
+.rte:focus{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.snote .rte{min-height:70px}
+.rte:empty::before{content:attr(data-ph);color:var(--muted);pointer-events:none}
+.rte ul,.rte ol,.nview ul,.nview ol{list-style:disc!important;padding-left:22px!important;margin:4px 0!important}
+.rte ol,.nview ol{list-style:decimal!important}
+.rte ul ul,.nview ul ul{list-style:circle!important}
+.rte li,.nview li{padding-left:0!important;margin:2px 0!important;position:static!important}
+.rte li::before,.nview li::before{content:none!important}
+.rte p,.nview p{margin:0}
+.rte font[size="1"],.nview font[size="1"]{font-size:.75em}.rte font[size="2"],.nview font[size="2"]{font-size:.85em}.rte font[size="3"],.nview font[size="3"]{font-size:1em}
+.rte font[size="4"],.nview font[size="4"]{font-size:1.15em}.rte font[size="5"],.nview font[size="5"]{font-size:1.3em}.rte font[size="6"],.nview font[size="6"]{font-size:1.5em}.rte font[size="7"],.nview font[size="7"]{font-size:1.8em}
+.nview{font:14px/1.5 var(--f-body);margin:6px 0 0;overflow-wrap:anywhere}
+
+/* highlighter */
+mark.hl{color:inherit;border-radius:2px}
+mark.hl[data-c="0"]{background:rgba(255,210,0,.5)}mark.hl[data-c="1"]{background:rgba(60,200,110,.4)}mark.hl[data-c="2"]{background:rgba(255,100,170,.38)}mark.hl[data-c="3"]{background:rgba(70,150,255,.38)}mark.hl[data-c="4"]{background:rgba(255,140,30,.45)}
+.hlpanel .custom{display:flex;gap:8px;align-items:center}
+.hlpanel .custom input[type=color]{width:38px;height:34px;padding:0;border:1px solid var(--line);border-radius:8px;background:none;cursor:pointer}
+.hlpanel .custom input[type=text]{width:96px;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:6px 8px;font:13px var(--f-mono)}
+.hlpanel .custom .btn{padding:6px 10px}
+.hlpanel .custom.on input[type=color]{box-shadow:0 0 0 2px var(--ink)}
+.sw-0{background:#ffd400}.sw-1{background:#3cc86e}.sw-2{background:#ff64aa}.sw-3{background:#4696ff}.sw-4{background:#ff8c1e}
+body.hl-erase mark.hl{cursor:pointer;outline:1px dashed currentColor;outline-offset:1px}
+.hlfab{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:max(16px,env(safe-area-inset-bottom,0px));z-index:35;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.hlbtn{width:50px;height:50px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--ink);box-shadow:0 4px 16px rgba(0,0,0,.18);display:grid;place-items:center;cursor:pointer;position:relative}
+.hlbtn[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.hlbtn .dot{position:absolute;right:3px;bottom:3px;width:14px;height:14px;border-radius:50%;border:2px solid var(--panel)}
+.hlpanel{width:min(250px,calc(100vw - 32px));background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.2);padding:12px;display:grid;gap:10px}
+.hlpanel .hd{font:600 14px var(--f-head);display:flex;justify-content:space-between;align-items:center}
+.hlpanel .hd span{font:500 11px var(--f-mono);color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.hlpanel .sw{display:flex;gap:8px;flex-wrap:wrap}
+.hlpanel .sw button{width:34px;height:34px;border-radius:50%;border:2px solid var(--panel);box-shadow:0 0 0 1px var(--line);cursor:pointer;padding:0}
+.hlpanel .sw button[aria-pressed="true"]{box-shadow:0 0 0 2px var(--ink)}
+.hlpanel .sw .er{background:var(--soft);display:grid;place-items:center;color:var(--ink)}
+.hlpanel p{margin:0;font-size:13px;color:var(--muted)}
+.hlpanel .row{display:flex;gap:6px;flex-wrap:wrap}
+.nrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px;font-size:12px;color:var(--muted)}
+.sync{color:var(--accent);font-weight:500}
+.acct{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.acct .btn{padding:5px 10px}
+.nrow .btn{padding:4px 9px;font-size:12px}
+.pen{display:inline-flex;align-items:center;gap:3px;font:500 10.5px/1 var(--f-mono);color:var(--note-ink);background:var(--note-bg);border:1px solid var(--note-line);padding:3px 6px;border-radius:4px;margin-left:6px;vertical-align:2px}
+.nlist{display:grid;gap:10px}
+.nitem{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:10px 14px}
+.nitem a{font-weight:600;text-decoration:none}
+.nitem small{color:var(--muted);font:12px var(--f-mono)}
+.lb{position:fixed;inset:0;background:rgba(8,14,16,.86);z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));cursor:zoom-out}
+.lb img{max-width:100%;max-height:82vh;background:#fff;border-radius:6px}
+.lb p{color:#dfe7e9;font-size:13px;margin:10px 0 0;text-align:center}
+
+/* guide */
+.rail a[data-g]{justify-content:flex-start;gap:6px}
+.rail a .gl{flex:none;min-width:42px}
+.gpart{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);margin:0 0 10px;scroll-margin-top:90px}
+.gpart>summary{list-style:none;cursor:pointer;padding:12px 14px;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}
+.gpart>summary::-webkit-details-marker{display:none}
+.gpart>summary::after{content:"";width:9px;height:9px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);margin-left:auto;align-self:center;transition:transform .15s}
+.gpart[open]>summary::after{transform:rotate(225deg)}
+.gpart>summary h2{font-size:18px;flex:1 1 260px}
+.gpn{font:500 12px var(--f-mono);color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.gbody{padding:0 16px 16px;border-top:1px solid var(--line);max-width:100%;overflow-wrap:anywhere}
+.gbody h3{font:600 16px var(--f-head);margin:18px 0 6px}
+.gbody p{margin:8px 0}
+.gbody ul.gl{list-style:none;margin:6px 0;padding:0}
+.gbody ul.gl li{position:relative;padding-left:16px;margin:3px 0}
+.gbody ul.gl li::before{content:"";position:absolute;left:3px;top:.62em;width:5px;height:5px;border-radius:50%;background:var(--muted)}
+.gbody ul.gl li.lv1{margin-left:18px}.gbody ul.gl li.lv1::before{background:none;border:1px solid var(--muted)}
+.gbody ul.gl li.lv2{margin-left:36px}.gbody ul.gl li.lv2::before{border-radius:0;width:4px;height:4px}
+.gbody ul.gl li.lv3{margin-left:54px}
+.gt{margin:10px 0}
+.gt table{font-size:13.5px}
+.gt th{background:var(--soft);color:var(--ink);font:600 12px var(--f-body);text-transform:none;letter-spacing:0}
+.gt td,.gt th{border:1px solid var(--line);min-width:70px}
+.gt td.cc,.gt th.cc{background:color-mix(in srgb,var(--cc) 55%,var(--panel))}
+.gpg{display:flex;align-items:center;gap:10px;margin:16px 0 6px;color:var(--muted);font:12px var(--f-mono)}
+.gpg::before,.gpg::after{content:"";flex:1;height:1px;background:var(--line)}
+.gpg button{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:3px 10px;cursor:pointer;font:12px var(--f-mono);color:var(--muted)}
+.gpg button:hover{border-color:var(--accent);color:var(--ink)}
+/* focused histories & conditions */
+.syspick{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.syspick select{font:inherit;font-size:14px;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 28px 6px 10px;max-width:62vw}
+.fxnav{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--toph,61px));z-index:8;background:var(--bg);margin:0 -4px 12px;padding:8px 4px;border-bottom:1px solid var(--line)}
+.fxnav-in{display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin;padding-bottom:2px}
+.fxnav a{flex:none;font-size:13px;text-decoration:none;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px 11px;white-space:nowrap}
+.fxnav a.core{border-style:dashed}
+.fxnav a.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.fxgroup{font:600 12px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin:22px 0 8px}
+.fxs{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);margin:0 0 14px;padding:0 0 10px;scroll-margin-top:130px}
+.fxs.core{border-left:3px solid var(--accent)}
+.fxfold{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:6px;width:28px;height:26px;cursor:pointer;font-size:14px;line-height:1;transition:transform .15s}
+.fxs.shut .fxfold{transform:rotate(-90deg)}
+.fxs.shut>.fxbody{display:none}
+.fxs.shut{padding-bottom:0}.fxs.shut>.fxh{border-bottom:0;margin-bottom:0;cursor:pointer}
+.fxscore>summary{color:var(--accent)}
+.fxh{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;padding:12px 16px 8px;border-bottom:1px solid var(--line);margin-bottom:6px;flex-wrap:wrap}
+.fxh h2{font-size:19px}
+.fxt{min-width:0;flex:1 1 240px}
+.also{margin:3px 0 0;font-size:12.5px;color:var(--muted)}
+.coretag{display:block;font:600 11px var(--f-mono);text-transform:uppercase;letter-spacing:.05em;color:var(--accent);margin-bottom:3px}
+.fxtools{display:flex;gap:6px;align-items:center;flex:none}
+.fxcount{font:500 12px var(--f-mono);color:var(--muted);background:var(--soft);border-radius:999px;padding:2px 8px}
+.fxcount.all{background:var(--accent-soft);color:var(--accent)}
+.fxpg{font:500 11px var(--f-mono);color:var(--muted);background:none;border:1px solid var(--line);border-radius:999px;padding:2px 8px;cursor:pointer}
+.fxpg:hover{color:var(--accent);border-color:var(--accent)}
+.fxiso{font-size:12.5px;font-weight:600;text-decoration:none;border:1px solid var(--accent);color:var(--accent);border-radius:999px;padding:2px 10px}
+.fxiso:hover{background:var(--accent);color:var(--accent-ink)}
+.qlist{padding:0 16px}
+.qq,.qf,.qn,.qh,.qt,.qx{display:block;margin:0;line-height:1.5}
+.qq{display:grid;grid-template-columns:22px minmax(0,1fr);gap:8px;align-items:start;padding:6px 0;border-top:1px solid var(--soft);cursor:pointer}
+.qlist>.qq:first-child,.qh+.qq{border-top:0}
+.qq input{width:17px;height:17px;margin:2px 0 0;accent-color:var(--accent);cursor:pointer}
+.qq.isq>span{font-size:15.5px}
+.qq.done>span{color:var(--muted)}
+.qq.done>span .pill{opacity:.6}
+.qf{padding:3px 0 3px 30px;color:var(--ink);font-size:14px;position:relative}
+.qf::before{content:"";position:absolute;left:12px;top:.72em;width:5px;height:5px;border-radius:50%;background:var(--muted)}
+.qf.isq{font-size:15px}
+.qn{padding:3px 0 3px 30px;font-size:13.5px;color:var(--muted)}
+.qn b{color:var(--ink);font-weight:600}
+.qh{font:600 14.5px/1.4 var(--f-head);color:var(--ink);padding:12px 0 4px}
+.qh .pg{text-transform:none}
+.l1{margin-left:22px}.l2{margin-left:44px}.l3{margin-left:62px}
+.qf.l1,.qf.l2,.qf.l3{font-size:13.8px}
+.qt,.qx{padding:6px 0 6px 30px}
+.qx.gbody{border:0}
+.pill{display:inline-block;font:600 13.5px/1.55 var(--f-body);background:var(--accent-soft);color:var(--accent);border-radius:6px;padding:1px 8px;margin-right:7px;vertical-align:1px;white-space:nowrap}
+.hint{color:var(--muted);font-size:.92em;font-weight:400}
+.qq b.key,.qf b.key,.qn b.key{font-weight:650}
+.qul{margin:4px 0 2px;padding-left:20px;list-style:disc}.qul li{margin:1px 0;padding-left:2px}.qul li::marker{color:var(--muted)}
+.pill+.qul{margin-top:6px}
+.qq.done b.key{font-weight:500}
+.body b.lead{font-weight:650;color:var(--ink)}
+.rf{display:inline-block;font:600 10.5px/1.6 var(--f-mono);text-transform:uppercase;letter-spacing:.03em;background:#fde4e4;color:#a1232b;border-radius:4px;padding:0 5px;margin-left:2px;white-space:nowrap}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .rf{background:#4a1c20;color:#ff9ea4}}
+:root[data-theme="dark"] .rf{background:#4a1c20;color:#ff9ea4}
+.fxmore{margin:10px 16px 0;border:1px dashed var(--line);border-radius:8px}
+.fxmore>summary{cursor:pointer;padding:7px 10px;font-size:13px;font-weight:600;color:var(--muted)}
+.fxmore[open]>summary{border-bottom:1px dashed var(--line)}
+.fxmore>.qlist,.fxmore>.qh{padding-left:10px;padding-right:10px}
+.step>summary:has(.mvbox){grid-template-columns:auto auto minmax(0,1fr) auto auto}
+.mvbox{display:inline-flex;gap:4px;grid-column:4;grid-row:1}
+.mv{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:6px;width:34px;height:30px;font-size:16px;cursor:pointer}
+.mv:hover{border-color:var(--accent);color:var(--accent)}
+.btn.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+details.step.moved{outline:2px solid var(--accent);outline-offset:1px;transition:outline-color .6s}
+.orderpick{display:inline-flex;align-items:center;margin:4px 0 10px}
+.orderpick>span{font-size:13px;color:var(--muted);padding:0 6px 0 10px}
+.fxsub{margin:4px 0}
+.fxsub>summary{cursor:pointer;list-style:none;display:flex;gap:8px;align-items:center;padding:9px 16px 7px;font:600 14.5px var(--f-head);color:var(--ink)}
+.fxsub>summary::-webkit-details-marker{display:none}
+.fxsub>summary::before{content:"";width:7px;height:7px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(-45deg);transition:transform .15s;flex:none;margin-left:2px}
+.fxsub[open]>summary::before{transform:rotate(45deg)}
+.fxsub.fxbgsub{border-top:1px solid var(--line);margin-top:8px}
+.fxsub.fxbgsub>summary{color:var(--accent);font:600 12.5px var(--f-mono);text-transform:uppercase;letter-spacing:.05em;padding-top:10px}
+.fxbgh{color:var(--accent);font:600 12px var(--f-mono);text-transform:uppercase;letter-spacing:.05em;margin-top:6px}
+.fxcat{border-top:1px solid var(--line)}
+.fxcat:first-of-type{border-top:0}
+.fxcat>summary{cursor:pointer;padding:10px 16px;font-weight:600;list-style:none;display:flex;gap:8px;align-items:center}
+.fxcat>summary::-webkit-details-marker{display:none}
+.fxcat>summary::before{content:"";width:7px;height:7px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(-45deg);transition:transform .15s;flex:none}
+.fxcat[open]>summary::before{transform:rotate(45deg)}
+.fxcat .n{font:12px var(--f-mono);color:var(--muted)}
+.fxcard-t{padding-left:16px;color:var(--ink);text-transform:none;font:600 14.5px var(--f-head);letter-spacing:0}
+.fxcat .qlist{padding-left:16px}
+.fxintro{border:0;padding:0;margin:0 0 10px;color:var(--muted);font-size:14px}
+.fxbgwrap{padding:0}
+.fxbgwrap>summary{cursor:pointer;list-style:none;padding:12px 16px;display:block}
+.fxbgwrap>summary::-webkit-details-marker{display:none}
+.fxbgwrap>summary h2{font-size:17px;display:inline}
+.fxbgwrap>summary .also{display:block}
+.fxbgwrap>summary h2::after{content:"  ▾";color:var(--muted);font-size:13px}
+.fxbgwrap[open]>summary h2::after{content:"  ▴"}
+.condsearch{position:relative;max-width:640px;margin:0 0 16px}
+.condsearch svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.condsearch input{width:100%;font-size:17px;border:2px solid var(--accent);background:var(--panel);border-radius:12px;padding:12px 14px 12px 40px}
+.condsearch.sm{margin:0;flex:1 1 260px;max-width:420px}
+.condsearch.sm input{font-size:14px;border-width:1px;border-color:var(--line);border-radius:8px;padding:7px 10px 7px 32px}
+.condsearch.sm svg{left:10px}
+.condsys{font:600 12px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:18px 0 8px}
+.condgrid{display:flex;flex-wrap:wrap;gap:8px}
+.condbtn{text-decoration:none;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:14.5px}
+.condbtn:hover{border-color:var(--accent);color:var(--accent)}
+.condbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 12px}
+.partttl{display:flex;align-items:center;gap:10px;font-size:22px;margin:24px 0 12px}
+.partttl span{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font:600 14px var(--f-mono)}
+.sec.sm{margin:16px 0 8px}.sec.sm h3{font:600 16px var(--f-head);margin:0}
+.railsys>summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;padding:6px 10px;border-radius:7px}
+.railsys>summary::-webkit-details-marker{display:none}
+.railsys>summary:hover{background:var(--soft)}
+.railsys>summary span{color:var(--muted);font:12px var(--f-mono)}
+.railsys[open]>summary{font-weight:600}
+.railsys a{padding-left:20px;font-size:13.5px}
+.nhint{font-weight:400;font-size:12.5px;color:var(--muted)}
+.gedbar{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end;padding:8px 16px 0}
+.gedbar .btn{padding:4px 10px;font-size:12.5px}
+.gedtag{font:500 11px/1 var(--f-mono);color:var(--note-ink);background:var(--note-bg);border:1px solid var(--note-line);padding:4px 7px;border-radius:4px;margin-right:auto}
+.gedbar.on{position:sticky;z-index:6;background:var(--panel);padding-bottom:8px;border-bottom:1px solid var(--line)}
+.gedbar .fmt{border-radius:8px;border:1px solid var(--line);margin-right:auto}
+.gbody.editing{outline:2px dashed var(--accent);outline-offset:-6px;background:var(--note-bg);cursor:text}
+.gbody.editing [contenteditable="false"]{opacity:.6}
+.gwarn{display:flex;gap:12px;align-items:center;background:var(--mark);border-radius:8px;padding:8px 10px;margin:6px 0 10px;font-size:13.5px}
+.gwarn button{flex:none;border:1px solid var(--line);background:#fff;border-radius:6px;padding:3px;cursor:zoom-in}
+.gwarn img{display:block;width:72px;height:auto}
+.gwarn b{display:block}
+.gview{display:inline-flex;background:var(--soft);border-radius:999px;padding:3px}
+.gview button{border:0;background:none;padding:5px 12px;border-radius:999px;cursor:pointer;font-size:13px;font-weight:500;color:var(--muted)}
+.gview button[aria-pressed="true"]{background:var(--panel);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.gpages{display:grid;gap:14px;justify-items:center}
+.gpages figure{margin:0;width:100%;max-width:900px;scroll-margin-top:90px}
+.gpages figure button{display:block;width:100%;border:1px solid var(--line);background:#fff;border-radius:8px;padding:0;cursor:zoom-in;overflow:hidden}
+.gpages img{display:block;width:100%;height:auto;aspect-ratio:612/792}
+.gpages figcaption{font:12px var(--f-mono);color:var(--muted);text-align:center;margin-top:4px}
+.gfig{display:inline-block;border:1px solid var(--line);background:#fff;border-radius:8px;padding:4px;margin:6px 6px 6px 0;cursor:zoom-in;max-width:100%;vertical-align:top}
+.gfig img{display:block;max-width:100%;height:auto;max-height:340px;width:auto}
+.pager{display:flex;justify-content:space-between;gap:10px;margin-top:22px;flex-wrap:wrap}
+.pager a{text-decoration:none;border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:8px 12px;max-width:48%}
+.pager small{display:block;color:var(--muted);font:12px var(--f-mono)}
+.evq{flex:1;min-width:200px;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:8px 10px}
+.evch{margin:22px 0 8px;font-size:18px}
+.evitem{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);margin:0 0 8px}
+.evitem>summary{cursor:pointer;padding:10px 14px;font-weight:600;list-style:none}
+.evitem>summary::-webkit-details-marker{display:none}
+.evitem .in{padding:0 14px 12px}
+.evitem small{color:var(--muted);font:12px var(--f-mono);margin-right:6px}
+.legend{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px;font-size:12.5px}
+.legend span{padding:3px 8px;border-radius:4px;border:1px solid var(--line);background:color-mix(in srgb,var(--cc) 55%,var(--panel))}
+.lb.page{overflow:auto;justify-content:flex-start}
+.lb.page img{max-height:none;width:min(100%,980px);height:auto}
+.tabs-sm{display:none}
+@media (max-width:520px){.gt td,.gt th{min-width:120px}.gbody{padding:0 12px 14px}.tabs-lg{display:none}.tabs-sm{display:inline}.seg button{padding:6px 11px}}
+
+/* drawer for phones */
+.scrim{display:none}
+@media (max-width:860px){
+  .shell{grid-template-columns:minmax(0,1fr);padding-top:14px}
+  .menu-btn{display:inline-block}
+  .rail{position:fixed;top:0;bottom:0;left:0;width:min(84vw,320px);max-height:none;background:var(--panel);z-index:50;padding:calc(env(safe-area-inset-top,0px) + 16px) 14px 30px max(14px,env(safe-area-inset-left,0px));transform:translateX(-105%);transition:transform .2s;box-shadow:0 0 40px rgba(0,0,0,.25)}
+  .rail.open{transform:none}
+  .scrim.open{display:block;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:45}
+  h1{font-size:25px}
+  .search{order:5;flex-basis:100%}
+  .hcard{grid-template-columns:minmax(0,1fr)}
+  .top .wrap{gap:8px;padding-block:8px}
+}
+@media (max-width:520px){
+  .brand span{display:none}
+  .hcard .big{font-size:22px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <button class="menu-btn" id="menuBtn" aria-label="Open the list of pages">☰ <span id="menuLab">Exams</span></button>
+    <div class="brand">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 3v6a4 4 0 0 0 8 0V3"/><path d="M10 13v3a5 5 0 0 0 10 0v-2"/><circle cx="20" cy="12" r="2"/></svg>
+      <span>Clinical Skills Pocket</span>
+    </div>
+    <div class="seg" role="group" aria-label="Section">
+      <button id="tabExam" aria-pressed="true"><span class="tabs-lg">Physical exam</span><span class="tabs-sm">Exam</span></button>
+      <button id="tabHist" aria-pressed="false">History</button>
+      <button id="tabCond" aria-pressed="false"><span class="tabs-lg">Conditions</span><span class="tabs-sm">Find</span></button>
+      <button id="tabGuide" aria-pressed="false">Guide</button>
+    </div>
+    <div class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+      <input id="q" type="search" placeholder="Search conditions, tests, guide… (e.g. chest pain, Lachman, JVP)" autocomplete="off" aria-label="Search tests and history">
+      <div class="results" id="results" hidden></div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="shell" id="shell">
+    <nav class="rail" id="rail" aria-label="Exams"></nav>
+    <main id="main"></main>
+  </div>
+</div>
+<div class="scrim" id="scrim"></div>
+<div class="lb" id="lb" hidden><img id="lbImg" alt=""><p id="lbCap"></p></div>
+
+<script src="assets/data.js"></script>
+<script src="assets/img.js"></script>
+<script src="assets/fhx.js"></script>
+<script>
+(function(){
+const D = window.CS, IMG = window.CSIMG || {};
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const store = {
+  get(k){ try{ return JSON.parse(localStorage.getItem('csp:'+k)); }catch(e){ return null; } },
+  set(k,v){ try{ localStorage.setItem('csp:'+k, JSON.stringify(v)); }catch(e){} }
+};
+const PHASE_LABEL = {vitals:'Vitals', inspect:'Inspection', palpate:'Palpation', percuss:'Percussion', auscultate:'Auscultation', special:'Special test', rom:'Range of motion', power:'Power'};
+
+/* ---------- reference diagrams per exam ---------- */
+const REFS = {
+  approach: `<div class="ref"><h3>Every exam, every time</h3><div class="tbl"><table>
+    <tr><td class="k">Start</td><td>Wash hands → introduce yourself & role → confirm name/pronouns → explain exam → ask consent → offer chaperone/support person → drape</td></tr>
+    <tr><td class="k">Order</td><td>Vitals → general inspection → inspection → palpation → percussion → auscultation → special tests <br><small>(abdomen: auscultate before percussing/palpating)</small></td></tr>
+    <tr><td class="k">During</td><td>Tell the patient what you'll do before touching; check in for discomfort; compare sides</td></tr>
+    <tr><td class="k">End</td><td>Thank, re-cover, discuss findings, invite questions, plan follow-up, wash hands</td></tr></table></div></div>`,
+  abdo: `<div class="ref"><h3>Regions & quadrants</h3>
+    <svg viewBox="0 0 320 300" role="img" aria-label="Nine abdominal regions">
+      <path d="M60 20 Q160 -5 260 20 L270 270 Q160 300 50 270 Z" fill="none" stroke="currentColor" stroke-opacity=".35" stroke-width="2"/>
+      <g stroke="var(--accent)" stroke-width="1.4" stroke-dasharray="4 3"><line x1="125" y1="12" x2="125" y2="285"/><line x1="195" y1="12" x2="195" y2="285"/><line x1="55" y1="105" x2="265" y2="105"/><line x1="55" y1="190" x2="265" y2="190"/></g>
+      <circle cx="160" cy="150" r="5" fill="var(--p-palpate)"/>
+      <text x="90" y="62" text-anchor="middle">R hypo-</text><text x="90" y="76" text-anchor="middle">chondriac</text>
+      <text x="160" y="68" text-anchor="middle">Epigastric</text>
+      <text x="230" y="62" text-anchor="middle">L hypo-</text><text x="230" y="76" text-anchor="middle">chondriac</text>
+      <text x="90" y="152" text-anchor="middle">R lumbar</text><text x="160" y="140" text-anchor="middle">Umbilical</text><text x="230" y="152" text-anchor="middle">L lumbar</text>
+      <text x="90" y="235" text-anchor="middle">R iliac</text><text x="160" y="235" text-anchor="middle">Hypogastric</text><text x="230" y="235" text-anchor="middle">L iliac</text>
+      <text class="small" x="160" y="298" text-anchor="middle">Lines: midclavicular (vertical); subcostal & intertubercular (horizontal)</text>
+    </svg>
+    <p class="tip">Quadrants: RUQ, LUQ, RLQ, LLQ split at the umbilicus. Start palpating away from the painful area.</p></div>`,
+  neuro: `<div class="ref"><h3>Glasgow Coma Scale (3–15)</h3><div class="tbl"><table>
+      <tr><th>Score</th><th>Eyes (E4)</th><th>Verbal (V5)</th><th>Motor (M6)</th></tr>
+      <tr><td class="k">6</td><td></td><td></td><td>Obeys commands</td></tr>
+      <tr><td class="k">5</td><td></td><td>Oriented</td><td>Localises to pain</td></tr>
+      <tr><td class="k">4</td><td>Spontaneous</td><td>Confused</td><td>Withdraws from pain</td></tr>
+      <tr><td class="k">3</td><td>To voice</td><td>Inappropriate words</td><td>Abnormal flexion (decorticate)</td></tr>
+      <tr><td class="k">2</td><td>To pain</td><td>Incomprehensible sounds</td><td>Extension (decerebrate)</td></tr>
+      <tr><td class="k">1</td><td>None</td><td>None</td><td>None</td></tr></table></div>
+      <p class="tip">TBI severity: mild 13–15, moderate 9–12, severe ≤8.</p></div>
+    <div class="ref"><h3>Reflexes: roots & grading</h3><div class="tbl"><table>
+      <tr><th>Reflex</th><th>Root</th><th>Memory hook</th></tr>
+      <tr><td>Ankle (Achilles)</td><td class="k">S1–S2</td><td>One-two, tie my shoe</td></tr>
+      <tr><td>Patellar</td><td class="k">L3–L4</td><td>Three-four, open the door</td></tr>
+      <tr><td>Biceps</td><td class="k">C5–C6</td><td>Five-six, pick up sticks</td></tr>
+      <tr><td>Brachioradialis</td><td class="k">C5–C6</td><td>Five-six, pick up sticks</td></tr>
+      <tr><td>Triceps</td><td class="k">C7–C8</td><td>Seven-eight, lay them straight</td></tr></table></div>
+      <div class="tbl"><table><tr><td class="k">0</td><td>Absent</td><td class="k">1+</td><td>Reduced / needs reinforcement</td></tr><tr><td class="k">2+</td><td>Normal</td><td class="k">3+</td><td>Brisk, no clonus</td></tr><tr><td class="k">4+</td><td colspan="3">Brisk with clonus</td></tr></table></div></div>
+    <div class="ref"><h3>MRC power grading</h3><div class="tbl"><table>
+      <tr><td class="k">5</td><td>Normal power</td></tr><tr><td class="k">4</td><td>Moves against gravity and some resistance</td></tr>
+      <tr><td class="k">3</td><td>Moves against gravity, not resistance</td></tr><tr><td class="k">2</td><td>Moves with gravity eliminated</td></tr>
+      <tr><td class="k">1</td><td>Flicker of contraction only</td></tr><tr><td class="k">0</td><td>No contraction</td></tr></table></div>
+      <p class="tip">UMN: ↑ tone, ↑ reflexes, upgoing plantar. LMN: ↓ tone, ↓ reflexes, wasting, fasciculations.</p></div>
+    <div class="ref"><h3>Cranial nerves at a glance</h3><div class="tbl"><table>
+      <tr><td class="k">I</td><td>Smell (each nostril)</td></tr>
+      <tr><td class="k">II</td><td>Acuity, fields, pupils (direct/consensual), fundoscopy</td></tr>
+      <tr><td class="k">III IV VI</td><td>Eye movements (H pattern), ptosis, nystagmus</td></tr>
+      <tr><td class="k">V</td><td>Facial sensation V1–V3; jaw clench (masseter)</td></tr>
+      <tr><td class="k">VII</td><td>Raise eyebrows, close eyes tight, smile, puff cheeks</td></tr>
+      <tr><td class="k">VIII</td><td>Whispered voice / finger rub; Weber & Rinne</td></tr>
+      <tr><td class="k">IX X</td><td>Say “ahh” (uvula midline, palate rises), swallow, voice</td></tr>
+      <tr><td class="k">XI</td><td>Shrug shoulders, turn head against resistance</td></tr>
+      <tr><td class="k">XII</td><td>Tongue out (deviates toward lesion), wasting, fasciculations</td></tr></table></div></div>`,
+  msk: `<div class="ref"><h3>MSK pattern for every joint</h3><div class="tbl"><table>
+      <tr><td class="k">Look</td><td>Gait (lower limb) → SEADS: Swelling, Erythema, Atrophy, Deformity, Skin changes/Scars. Compare sides; expose adequately.</td></tr>
+      <tr><td class="k">Feel</td><td>TESTCA: Tenderness, Effusion, Swelling, Temperature, Crepitus, Atrophy</td></tr>
+      <tr><td class="k">Move</td><td>Active ROM, then passive ROM if active is limited</td></tr>
+      <tr><td class="k">Power</td><td>Resisted isometric testing, MRC grade /5</td></tr>
+      <tr><td class="k">Special</td><td>Targeted tests for the suspected structure</td></tr>
+      <tr><td class="k">Then</td><td>Neurovascular check; examine joint above and below</td></tr></table></div></div>`
+};
+['shoulder','elbow','hand','back','hip','knee','ankle'].forEach(k=>REFS[k]=REFS.msk);
+
+/* ---------- history content (McMaster Clinical Skills Guide, Ch 1) ---------- */
+const HIST = {
+  hpi: {
+    lead: 'Open with the patient’s own words, then characterise each chief complaint. One HPI per complaint.',
+    intro: `<div class="intro"><b>Opening:</b> “What brings you in today?” … “What else did you want to discuss today?” (repeat until the list is exhausted). Let the patient finish the opening statement without interrupting, then agree on the agenda.</div>`,
+    cards: [
+      ['O','Onset',['When did it first begin?','Was it sudden or gradual?','Has this happened before?']],
+      ['P','Provoking / palliating',['Is it constant, or does it come and go?','What brings it on?','What makes it better? What makes it worse?','What treatments have you tried so far?']],
+      ['Q','Quality',['What does it feel like? Can you describe it?','Is it sharp, dull, cramping, throbbing…?']],
+      ['R','Region / radiation',['Where is the pain? Can you point to it?','Does it spread anywhere?'],'Describe radiation with anatomical terms, where it starts and ends (learn your dermatomes).'],
+      ['S','Severity',['On a scale of 1 to 10, with 10 the worst discomfort you’ve ever had, how bad is it?','Is it better or worse than last time?'],'A number only means something against the patient’s own baseline.'],
+      ['T','Timing',['How long does it last?','How often does it happen?']],
+      ['+','Associated symptoms',['Targeted yes/no questions for your top differentials (pertinent positives and negatives).'],'Start the differential with VINDICATE: Vascular, Infection, Neoplastic, Drugs, Iatrogenic, Congenital, Autoimmune, Toxic/Trauma, Endocrine.'],
+      ['FIFE','Patient perspective',['Feelings: What worries do you have about your illness?','Ideas: What do you think might be causing your symptoms?','Function: How has this affected your day-to-day life?','Expectations: What are you hoping for from today’s visit?']]
+    ]
+  },
+  ros: {
+    lead: 'High-sensitivity sweep, head to toe. Bold = high-yield. Tick as you go; ticks stay on this device until you reset.',
+    intro: `<div class="intro">“I’m going to ask you a series of rapid questions, head to toe, to make sure I didn’t miss anything.”</div>`,
+    systems: [
+      ['Constitutional',['Weight gain or loss','Loss of appetite','Fever','Chills','Night sweats','Fatigue'],[]],
+      ['Skin',['Rashes','Lumps or bumps','Bruises'],['New or changing moles (ABCDE)']],
+      ['Head',['Headaches','Dizziness'],['Head trauma','Fainting (syncope)']],
+      ['Eyes',['Changes in vision (blurring, double vision)'],['Glasses','Last eye exam']],
+      ['Ears',['Changes in hearing'],['Ringing (tinnitus)','Noise exposure','Last ear exam']],
+      ['Nose',['Nosebleeds'],['Discharge','Snoring at night']],
+      ['Mouth & throat',['Sore throat','Mouth ulcers','Trouble swallowing'],['Teeth / last dental exam','Lumps','Voice changes']],
+      ['Respiratory',['Cough','Shortness of breath'],['Sputum: amount, colour, blood, odour','Last TB test']],
+      ['Cardiovascular',['Chest pain','Palpitations'],['Breathless lying flat (orthopnea)','Waking up gasping (PND)','Light-headedness','Previous ECG / stress test']],
+      ['Peripheral vascular',['Leg pain on walking (claudication)','Swelling (edema)','Ulcers','Hair loss on legs','Skin discolouration'],[]],
+      ['Breast',['Lumps','Nipple discharge'],['Tenderness','Last mammogram']],
+      ['Gastrointestinal',['Constipation or diarrhea','Nausea or vomiting'],['Heartburn / reflux','Abdominal pain','Black stools (melena)','Cancer screening']],
+      ['Genitourinary',['Pain on urination (dysuria)','Frequency / urgency','Waking at night to urinate (nocturia)','Blood in urine (hematuria)'],['Incontinence','Discharge','Erectile dysfunction']],
+      ['Obs / Gyn',['Discharge','Last menstrual period','Any chance you could be pregnant?'],[]],
+      ['Endocrine',['Passing a lot of urine (polyuria)','Very thirsty (polydipsia)','Skin changes','Hair changes','Heat or cold intolerance'],[]],
+      ['Musculoskeletal (GALS)',['Any pain or stiffness in your muscles, joints or back?','Can you dress yourself completely without difficulty?','Can you walk up and down stairs without difficulty?'],[]],
+      ['Neurological',['Numbness','Tingling','Memory loss','Change in balance'],['Seizures']],
+      ['Psychiatric',['Changes in mood'],['Stress / distress','Depression','Anxiety or panic attacks','Psychosis / mania','Substance use','Thoughts of harming yourself (SI) or others (HI)']]
+    ]
+  },
+  big6: {
+    lead: 'In the McMaster guide the Big 6 are: past medical history, past surgical history, family history, social/functional history, medications, and allergies. Gather them at the start, after the HPI, or after the ROS.',
+    sections: [
+      ['1','Past medical history',[['q','Do you have any medical conditions, short- or long-term?'],['q','Have you ever been in hospital? What for?'],['q','Have you had any major tests, like a CT or MRI?']]],
+      ['2','Past surgical history',[['q','Have you ever had surgery? What was done, when, and at which hospital?']]],
+      ['3','Family history',[['q','Does anyone in your family have heart disease, stroke, diabetes, high blood pressure or high cholesterol?'],['q','Any cancers, asthma/COPD, autoimmune conditions, mental illness or addictions in the family?'],['q','Have any close relatives died? At what age, and of what?'],['n','Note age of onset. Heart attack in a male relative under 55 or female relative under 65 raises the patient’s risk.']]],
+      ['4','Medications',[['q','What medications do you take? Name, dose, route, how often, and for how long?'],['q','Any over-the-counter medicines, vitamins or supplements?'],['q','How is it going with your medicines? Any side effects or trouble taking them?'],['n','Polypharmacy (more than 5 meds) matters especially in older adults; ask how they actually take them.']]],
+      ['5','Allergies',[['q','Do you have any allergies to medications, foods or anything else?'],['q','What happens when you react?'],['n','Document the reaction (rash, anaphylaxis) or NKDA.'],['q','Are your immunizations up to date? Flu shot this year? Last tetanus? COVID vaccines?']]],
+      ['6','Social & functional history (IF-IT-HELPS)',null]
+    ],
+    social: [
+      ['Identity',['Tell me about yourself.','What language are you most comfortable speaking in?','What pronouns do you use?','What is your sexual orientation?','Is spirituality or faith an important part of your life?']],
+      ['Family & friends',['Are there people in your life you can count on for support?','Who lives with you at home?']],
+      ['Function',['ADLs (DEATH): Dressing, Eating, Ambulating/transferring, Toileting, Hygiene','IADLs (SHAFT): Shopping, Housework, Accounting, Food prep, Transport/telephone','Does anyone help you with these? Has that changed recently?']],
+      ['Income',['Do you ever have difficulty making ends meet at the end of the month?']],
+      ['Travel',['Have you travelled in the past year? Where, for how long, and with whom?','Did you see a travel doctor before? Any illness while away?']],
+      ['Trauma',['Because traumatic events are so common, I ask all my patients: have you had any significant negative experiences that have left a lasting emotional impact on you?']],
+      ['Housing',['Where are you staying right now? What is your housing like?','When did you last have a stable place to stay?']],
+      ['Employment',['Are you working right now? What do you do?','Do you have benefits through work, like drug coverage?']],
+      ['Education',['How far did you go in school?','Is it hard for you to read the things you get here at the clinic?']],
+      ['Legal',['Do you have any legal issues you need help with?']],
+      ['Physical activity',['How many days a week do you do moderate-to-strenuous exercise?','How many minutes each time?']],
+      ['Personal safety',['Do you feel safe in your relationship?','Has your partner ever hurt you?','Do you feel safe at home and in your neighbourhood?']],
+      ['Substances',['Do you smoke? How many packs a day, for how many years? Have you thought about quitting?','Would it be all right to talk about alcohol? How many drinks a week? What kind?','In the past year, how often have you had more than 4 (F) / 5 (M) drinks on one occasion?','Do you use, or have you used, cannabis, non-prescribed medications or street drugs?']],
+      ['Sexual health',['Is it okay if I ask a few questions about your sexual health? I ask everyone these.','Have you been sexually active in the past year? With how many partners?','What gender or genders are your partners?','Do you have any sexual concerns you’d like to discuss?']],
+      ['Diet',['Can you walk me through what you ate and drank yesterday, from waking up to bed?','Do you ever run out of money to buy food?']]
+    ]
+  }
+};
+
+/* ---------- rendering helpers ---------- */
+function liClass(t){
+  if (t.startsWith('◦')) return ['sub', t.slice(1).trim()];
+  if (t.startsWith('▪')) return ['sub2', t.slice(1).trim()];
+  if (t.startsWith('•')) return ['', t.slice(1).trim()];
+  if (/^\d+\./.test(t)) return ['plain', t];
+  if (/:$/.test(t) && t.length < 70) return ['hd', t];
+  return ['plain', t];
+}
+// main (top-level) points get a bold lead: the text before the first colon or dash, or the whole line if it's short
+function boldLead(x){
+  const m = x.match(/^(.{3,70}?)(:\s| – | - )/);
+  if (m && m[1].split(/\s+/).length <= 6 && !/\(/.test(m[1].replace(/\([^)]*\)/g, ''))) return `<b class="lead">${esc(m[1])}</b>${esc(x.slice(m[1].length))}`;
+  if (/:$/.test(x) && x.split(/\s+/).length <= 6) return `<b class="lead">${esc(x)}</b>`;
+  return esc(x);
+}
+function list(arr, bold){
+  if (!arr || !arr.length) return '';
+  return '<ul>' + arr.map(t => { const [c,x] = liClass(t); return `<li class="${c}">${bold && c === '' ? boldLead(x) : esc(x)}</li>`; }).join('') + '</ul>';
+}
+function para(arr){ return (arr||[]).map(t => `<p>${esc(t.replace(/^•\s*/,''))}</p>`).join(''); }
+
+let cur = null, showExtra = true, histTab = 'hpi';
+function stepPhase(s){ return s.phase || ''; }
+function examKey(id,i){ return id+':'+i; }
+
+/* ---------- my notes (saved in this browser) ---------- */
+const notes = {
+  all(){ return store.get('notes') || {}; },
+  get(k){ const n = this.all()[k]; return n ? n.text : ''; },
+  set(k, text){ const a = this.all(); const old = a[k] ? a[k].text : ''; if (old === text) return; if (text.trim()) a[k] = {text, at: Date.now()}; else delete a[k]; store.set('notes', a); cloud.push(k); },
+};
+
+const isHl = k => k.startsWith('hl:') || k.startsWith('ed:');
+const noteKeys = () => Object.keys(notes.all()).filter(k => !isHl(k));
+
+/* ---------- rich-text notes: stored as a small, cleaned subset of HTML ---------- */
+const looksHtml = t => /<(div|p|br|b|i|u|ul|ol|li|span|strong|em|font)\b/i.test(t);
+function cleanHtml(html){
+  const tpl = document.createElement('template'); tpl.innerHTML = html;
+  const OK = {B:1, STRONG:1, I:1, EM:1, U:1, UL:1, OL:1, LI:1, BR:1, DIV:1, P:1, SPAN:1, FONT:1};
+  (function walk(el){
+    [...el.childNodes].forEach(n => {
+      if (n.nodeType === 3) return;
+      if (n.nodeType !== 1 || /^(script|style|iframe|object|embed|template|svg|math|img|video|audio)$/i.test(n.nodeName)) { n.remove(); return; }
+      walk(n);
+      if (!OK[n.nodeName]) { n.replaceWith(...n.childNodes); return; }
+      const keep = {};
+      if (n.nodeName === 'FONT' && /^[1-7]$/.test(n.getAttribute('size') || '')) keep.size = n.getAttribute('size');
+      if (n.nodeName === 'SPAN') {
+        const st = [], cs = n.style;
+        if (/bold|[6-9]00/.test(cs.fontWeight)) st.push('font-weight:bold');
+        if (cs.fontStyle === 'italic') st.push('font-style:italic');
+        if (/underline/.test(cs.textDecorationLine || cs.textDecoration || '')) st.push('text-decoration:underline');
+        if (st.length) keep.style = st.join(';');
+      }
+      [...n.attributes].forEach(a => n.removeAttribute(a.name));
+      Object.entries(keep).forEach(([k, v]) => n.setAttribute(k, v));
+      if ((n.nodeName === 'FONT' && !keep.size) || (n.nodeName === 'SPAN' && !keep.style)) n.replaceWith(...n.childNodes);
+    });
+  })(tpl.content);
+  return tpl.innerHTML;
+}
+// older notes were plain text; show them with their line breaks
+function noteHtml(text){ return looksHtml(text) ? cleanHtml(text) : esc(text).replace(/\n/g, '<br>'); }
+function edVal(ed){ return ed.textContent.trim() ? cleanHtml(ed.innerHTML) : ''; }
+// plain-text version for the .md export
+function noteText(text){
+  if (!looksHtml(text)) return text;
+  const tpl = document.createElement('template'); tpl.innerHTML = cleanHtml(text);
+  let out = '';
+  (function walk(n, depth){
+    for (const c of n.childNodes) {
+      if (c.nodeType === 3) { out += c.data.replace(/\s+/g, ' '); continue; }
+      const t = c.nodeName;
+      if (t === 'BR') { out += '\n'; continue; }
+      if (t === 'LI') { out += '\n' + '  '.repeat(depth) + '- '; walk(c, depth + 1); continue; }
+      const block = /^(DIV|P|UL|OL)$/.test(t);
+      if (block && out && !out.endsWith('\n')) out += '\n';
+      const w = (t === 'B' || t === 'STRONG') ? '**' : (t === 'I' || t === 'EM') ? '_' : '';
+      out += w; walk(c, depth); out += w;
+      if (block && !out.endsWith('\n')) out += '\n';
+    }
+  })(tpl.content, 0);
+  return out.replace(/\n{3,}/g, '\n\n').trim();
+}
+function editor(k, ph){
+  return `<div class="fmt" role="toolbar" aria-label="Formatting" data-for="${k}">
+    <button type="button" data-cmd="bold" title="Bold" aria-label="Bold"><b>B</b></button>
+    <button type="button" data-cmd="italic" title="Italic" aria-label="Italic"><i>I</i></button>
+    <button type="button" data-cmd="underline" title="Underline" aria-label="Underline"><u>U</u></button><span class="sep"></span>
+    <button type="button" data-size="2" class="fs2" title="Small text" aria-label="Small text">A</button>
+    <button type="button" data-size="3" title="Normal text" aria-label="Normal text">A</button>
+    <button type="button" data-size="5" class="fs5" title="Large text" aria-label="Large text">A</button><span class="sep"></span>
+    <button type="button" data-cmd="insertUnorderedList" title="Bullet list" aria-label="Bullet list"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="5" cy="6" r="1.3" fill="currentColor"/><circle cx="5" cy="12" r="1.3" fill="currentColor"/><circle cx="5" cy="18" r="1.3" fill="currentColor"/><path d="M10 6h10M10 12h10M10 18h10"/></svg></button>
+  </div><div class="rte" contenteditable="true" role="textbox" aria-multiline="true" aria-label="${esc(ph)}" data-note="${k}" data-ph="${esc(ph)}">${noteHtml(notes.get(k))}</div>`;
+}
+
+/* ---------- highlighter: ranges are character offsets within a page section, synced like notes under "hl:" keys ---------- */
+const HL_NAMES = ['Yellow', 'Green', 'Pink', 'Blue', 'Orange'];
+const isHex = c => typeof c === 'string' && /^#[0-9a-f]{6}$/i.test(c);
+// a hex code typed or picked by the viewer: accepts "abc", "#abc", "aabbcc" or "#aabbcc"
+function toHex(v){ v = String(v || '').trim().replace(/^#/, ''); if (/^[0-9a-f]{3}$/i.test(v)) v = v.replace(/./g, '$&$&'); return /^[0-9a-f]{6}$/i.test(v) ? '#' + v.toLowerCase() : null; }
+const NOHL = '.gpg,.gfig,.gwarn,.gview,.gpages,.pager,.note,.snote,.tools,.nrow,.pen,.progress,.tag,[data-sync],[data-saved],button,input,textarea,svg,.fmt,.subtabs,.order,[contenteditable]';
+const hl = {
+  mode: null, // null = off, 0–4 = colour, 'erase'
+  color: (() => { const c = store.get('hlc'); return (Number.isInteger(c) && c >= 0 && c < HL_NAMES.length) || isHex(c) ? c : 0; })(),
+  custom: (() => { const c = store.get('hlcustom'); return isHex(c) ? c : '#b388ff'; })(),
+  get(key){ try { const v = JSON.parse(notes.get(key) || '[]'); return Array.isArray(v) ? v : []; } catch(e){ return []; } },
+  put(key, list){ notes.set(key, list.length ? JSON.stringify(list) : ''); },
+  // the text nodes that belong to this section (not nested sections, notes, buttons or counters)
+  nodes(scope){
+    const out = [], w = document.createTreeWalker(scope, NodeFilter.SHOW_TEXT);
+    for (let n; (n = w.nextNode());) { const p = n.parentElement; if (p && p.closest('[data-hls]') === scope && !p.closest(NOHL)) out.push(n); }
+    return out;
+  },
+  paint(scope){
+    if (!scope || !scope.dataset.hls) return;
+    scope.querySelectorAll('mark.hl').forEach(m => { if (m.closest('[data-hls]') === scope) m.replaceWith(...m.childNodes); });
+    scope.normalize();
+    this.get(scope.dataset.hls).forEach(([s, e, c], idx) => {
+      let pos = 0; const segs = [];
+      for (const n of this.nodes(scope)) { const L = n.length, a = Math.max(s, pos), b = Math.min(e, pos + L); if (b > a && n.data.trim()) segs.push([n, a - pos, b - pos]); pos += L; if (pos >= e) break; }
+      segs.forEach(([n, a, b]) => { if (a > 0) n = n.splitText(a); if (b - a < n.length) n.splitText(b - a);
+        const m = document.createElement('mark'); m.className = 'hl'; m.dataset.r = idx;
+        if (isHex(c)) m.style.background = c + '73'; else m.dataset.c = c; n.replaceWith(m); m.appendChild(n); });
+    });
+  },
+  paintAll(){ document.querySelectorAll('[data-hls]').forEach(sc => this.paint(sc)); },
+  merge(list, s, e, mode){
+    const out = [];
+    list.forEach(([a, b, c]) => { if (b <= s || a >= e) out.push([a, b, c]); else { if (a < s) out.push([a, s, c]); if (b > e) out.push([e, b, c]); } });
+    if (mode !== 'erase') out.push([s, e, mode]);
+    return out.sort((x, y) => x[0] - y[0]);
+  },
+  fromSelection(){
+    if (this.mode == null) return;
+    const sel = getSelection(); if (!sel.rangeCount || sel.isCollapsed) return;
+    const r = sel.getRangeAt(0), main = $('#main');
+    if (!main.contains(r.commonAncestorContainer)) return;
+    const anc = r.commonAncestorContainer.nodeType === 1 ? r.commonAncestorContainer : r.commonAncestorContainer.parentElement;
+    if (anc.closest('[contenteditable],input,textarea')) return;
+    let did = false;
+    [main, ...main.querySelectorAll('[data-hls]')].filter(sc => sc.dataset.hls && r.intersectsNode(sc)).forEach(sc => {
+      let pos = 0, s = -1, e = -1;
+      for (const n of this.nodes(sc)) { const L = n.length;
+        if (r.intersectsNode(n)) { const a = n === r.startContainer ? r.startOffset : 0, b = n === r.endContainer ? r.endOffset : L; if (b > a && n.data.slice(a, b).trim()) { if (s < 0) s = pos + a; e = pos + b; } }
+        pos += L; }
+      if (s < 0 || e <= s) return;
+      this.put(sc.dataset.hls, this.merge(this.get(sc.dataset.hls), s, e, this.mode)); this.paint(sc); did = true;
+    });
+    if (did) { sel.removeAllRanges(); this.panel(false); }
+  },
+  selT: 0, down: false,
+  onSelChange(){
+    // phones have no mouseup after adjusting the selection handles, so wait for the selection to settle
+    if (this.mode == null || this.down || !matchMedia('(pointer: coarse)').matches) return;
+    clearTimeout(this.selT); this.selT = setTimeout(() => this.fromSelection(), 900);
+  },
+  pageKeys(){
+    const cc = view === 'cond' && FXCP[(store.get('lastCond') || '').slice(5)];
+    const pre = view === 'hist' && histTab === 'fhx' ? ['hl:f2:' + (store.get('lastFhxCh') || 'c5') + ':'] : view === 'cond' ? (cc ? ['hl:f2:' + cc.c.id + ':' + cc.cp.id, 'hl:f2:' + cc.c.id + ':bg', 'hl:s:' + (CH2EXAM[cc.c.id] || '-') + ':'] : ['hl:none']) : view === 'guide' ? ['hl:g:' + guideTok.slice(2) + ':'] : cur ? ['hl:x:' + cur, 'hl:s:' + cur + ':'] : ['hl:h:' + histTab];
+    return Object.keys(notes.all()).filter(k => pre.some(p => k === p || (p.endsWith(':') && k.startsWith(p))));
+  },
+  set(mode){
+    this.mode = mode;
+    if (mode != null && mode !== 'erase') { this.color = mode; store.set('hlc', mode); if (isHex(mode)) { this.custom = mode; store.set('hlcustom', mode); } }
+    document.body.classList.toggle('hl-erase', mode === 'erase');
+    const b = $('#hlbtn'); b.setAttribute('aria-pressed', mode != null);
+    const dot = b.querySelector('.dot'); dot.className = isHex(this.color) ? 'dot' : 'dot sw-' + this.color; dot.style.background = isHex(this.color) ? this.color : ''; dot.hidden = mode == null;
+    document.querySelectorAll('#hlpanel [data-hlc]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.hlc) === String(mode)));
+    $('#hlcol').value = this.custom; $('#hlhex').value = this.custom; $('#hlcustom').classList.toggle('on', isHex(mode));
+    $('#hlstate').textContent = mode == null ? 'Off' : mode === 'erase' ? 'Eraser' : isHex(mode) ? mode : HL_NAMES[mode];
+    $('#hlhint').textContent = mode == null ? 'Pick a colour, then select words on the page to highlight them.'
+      : mode === 'erase' ? 'Tap a highlight, or select over it, to remove it.' : 'Select words on the page to highlight them. Highlights sync with your notes.';
+  },
+  panel(open){ $('#hlpanel').hidden = !open; $('#hlbtn').setAttribute('aria-expanded', open); },
+  ui(){
+    document.body.insertAdjacentHTML('beforeend', `<div class="hlfab" id="hlfab">
+      <div class="hlpanel" id="hlpanel" role="dialog" aria-label="Highlighter" hidden>
+        <div class="hd">Highlighter <span id="hlstate">Off</span></div>
+        <div class="sw">${HL_NAMES.map((n, i) => `<button type="button" class="sw-${i}" data-hlc="${i}" aria-label="${n}" title="${n}"></button>`).join('')}
+          <button type="button" class="er" data-hlc="erase" aria-label="Eraser" title="Eraser"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 21-4-4a2 2 0 0 1 0-2.8L13.2 4a2 2 0 0 1 2.8 0l4 4a2 2 0 0 1 0 2.8L11 20"/><path d="M7 21h14M9 10l5 5"/></svg></button></div>
+        <div class="custom" id="hlcustom"><input type="color" id="hlcol" aria-label="Pick any colour" title="Pick any colour"><input type="text" id="hlhex" placeholder="#ff00aa" maxlength="7" spellcheck="false" autocomplete="off" aria-label="Hex colour code"><button type="button" class="btn" data-hlact="hex">Use</button></div>
+        <p id="hlhint"></p>
+        <div class="row"><button type="button" class="btn" data-hlact="off">Turn off</button><button type="button" class="btn" data-hlact="clear">Clear this page</button></div>
+      </div>
+      <button type="button" class="hlbtn" id="hlbtn" aria-pressed="false" aria-expanded="false" aria-label="Highlighter" title="Highlighter"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></svg><span class="dot" hidden></span></button></div>`);
+    this.set(null);
+  }
+};
+
+/* ---------- account sync (claude.ai only; the local folder version stays on-device) ---------- */
+const cloud = {
+  col: null, mode: null, state: 'local', timers: {}, busy: {}, again: {}, seen: {}, user: null,
+  // merge notes from the account into this device; newest edit wins, blank text = deleted
+  apply(remote, first){
+    const a = notes.all(); let changed = false;
+    for (const [k, v] of Object.entries(remote)) {
+      if (!v || typeof v.text !== 'string') continue;
+      this.seen[k] = v.at || 0;
+      if (!a[k] || (v.at || 0) > a[k].at) { if (v.text.trim()) a[k] = {text: v.text, at: v.at || 0}; else delete a[k]; changed = true; }
+    }
+    if (changed) { store.set('notes', a); refreshNoteViews(); }
+    if (first) Object.keys(notes.all()).forEach(k => { if (!(k in this.seen) || notes.all()[k].at > this.seen[k]) this.push(k, 0); });
+    this.state = 'synced'; syncBadge();
+  },
+  async init(){
+    if (window.claude && window.claude.use) return this.initClaude();
+    if (location.protocol === 'http:' || location.protocol === 'https:') return this.initServer();
+  },
+  async initClaude(){
+    try {
+      const [db, user] = await Promise.all([window.claude.use('db'), window.claude.use('user')]);
+      const uid = user ? await user.id() : null;
+      if (!db || !uid) return;
+      this.col = db.collection('data/users/' + uid); this.mode = 'claude';
+      this.state = 'syncing'; syncBadge();
+      let first = true;
+      this.col.onSnapshot(snap => {
+        const remote = {};
+        snap.docs.forEach(d => { const v = d.data() || {}; remote[v.k || d.id] = v; });
+        this.apply(remote, first); first = false;
+      }, () => { this.state = 'error'; syncBadge(); });
+    } catch (e) { this.state = 'local'; syncBadge(); }
+  },
+  async initServer(){
+    try {
+      const me = await fetch('/api/me', {credentials: 'same-origin'}).then(r => r.ok ? r.json() : null);
+      if (!me || !me.username) return;
+      this.mode = 'server'; this.user = me.username; accountBar();
+      this.state = 'syncing'; syncBadge();
+      await this.pull(true);
+      const again = () => { if (document.visibilityState === 'visible') this.pull(false); };
+      document.addEventListener('visibilitychange', again);
+      window.addEventListener('focus', again);
+      setInterval(again, 30000);
+    } catch (e) { this.state = 'local'; syncBadge(); }
+  },
+  async pull(first){
+    try {
+      const r = await fetch('/api/notes', {credentials: 'same-origin', cache: 'no-store'});
+      if (r.status === 401) { location.href = '/login.html'; return; }
+      if (!r.ok) throw 0;
+      this.apply((await r.json()).notes || {}, first);
+    } catch (e) { this.state = 'error'; syncBadge(); }
+  },
+  docId(k){ return k.replace(/[^A-Za-z0-9_\-.~:@+]/g, '_'); },
+  push(k, delay){
+    if (!this.mode) return;
+    clearTimeout(this.timers[k]);
+    this.timers[k] = setTimeout(() => this.write(k), delay == null ? 900 : delay);
+  },
+  async write(k){
+    if (this.busy[k]) { this.again[k] = true; return; }
+    this.busy[k] = true; this.state = 'syncing'; syncBadge();
+    const n = notes.all()[k];
+    // an emptied note is kept as a blank entry so other devices drop it too
+    const rec = {k, text: n ? n.text : '', at: n ? n.at : Date.now()};
+    try {
+      if (this.mode === 'claude') await this.col.doc(this.docId(k)).set(rec);
+      else {
+        const r = await fetch('/api/notes', {method: 'PUT', credentials: 'same-origin', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(rec)});
+        if (r.status === 401) { this.state = 'error'; syncBadge(); this.busy[k] = false; location.href = '/login.html'; return; }
+        if (!r.ok) throw {code: r.status >= 500 ? 'unavailable' : 'error'};
+      }
+      this.seen[k] = rec.at; this.state = 'synced';
+    } catch (e) {
+      this.state = (e && e.code === 'quota_exceeded') ? 'full' : 'error';
+      if (e && e.code === 'unavailable') setTimeout(() => this.push(k, 0), 1500 + Math.random() * 1500);
+    }
+    this.busy[k] = false; syncBadge();
+    if (this.again[k]) { this.again[k] = false; this.write(k); }
+  }
+};
+function accountBar(){
+  const w = document.querySelector('.top .wrap');
+  if (!w || document.getElementById('acct')) return;
+  w.insertAdjacentHTML('beforeend', `<div id="acct" class="acct"><span>${esc(cloud.user)}</span><button class="btn" id="logout">Log out</button></div>`);
+  document.getElementById('logout').addEventListener('click', async () => {
+    const pending = Object.keys(cloud.timers); await Promise.all(pending.map(k => cloud.write(k)));
+    await fetch('/api/logout', {method: 'POST', credentials: 'same-origin'}).catch(() => {});
+    store.set('notes', {});
+    location.href = '/login.html';
+  });
+}
+function syncBadge(){
+  const t = {local:'', syncing:'Syncing…', synced:'✓ Synced to your account', error:'Couldn’t sync right now – saved on this device', full:'Account storage full – saved on this device'}[cloud.state] || '';
+  document.querySelectorAll('[data-sync]').forEach(el => { el.textContent = t; el.hidden = !t; });
+}
+function refreshNoteViews(){
+  document.querySelectorAll('.rte[data-note]').forEach(ed => { if (document.activeElement !== ed) { const v = noteHtml(notes.get(ed.dataset.note)); if (ed.innerHTML !== v) ed.innerHTML = v; } });
+  if ((location.hash || '').slice(1) === 'notes') renderNotes();
+  if (view === 'guide' && G) document.querySelectorAll('.gpart[data-gk]').forEach(det => { if (det === gEditing) return; const [cid, k] = det.dataset.gk.split(':'); const a = notes.all()['ed:g:' + cid + ':' + k]; if ((a ? String(a.at) : 'o') !== det.dataset.sig) replacePart(det); });
+  hl.paintAll();
+  updateCount();
+}
+function noteLabel(k){
+  const [kind, a, b] = k.split(':');
+  if (kind === 'guide') { const c = gch(a); return {title: 'Guide · ' + (c ? c.lab + ' ' + c.title : 'chapter'), href: 'g-' + a}; }
+  if (kind === 'fhx') return {title: 'Focused history · ' + (FXNAME[a] || a), href: 'fhx-' + a};
+  if (kind === 'cond') { const x = FXCP[a]; return {title: 'Condition · ' + (x ? x.cp.t + ' (' + x.c.name + ')' : a), href: 'cond-' + a}; }
+  if (kind === 'hist') return {title: 'History · ' + ({hpi:'OPQRST / HPI', ros:'Review of systems', big6:'Big 6'}[a] || a), href: a};
+  const ex = D.exams[a]; if (!ex) return {title: k, href: ''};
+  if (kind === 'exam') return {title: ex.title + ' · session notes', href: a};
+  return {title: ex.title + ' · ' + (ex.steps[+b] ? ex.steps[+b].name : 'step'), href: a, step: +b};
+}
+function fmtTime(t){ try { return new Date(t).toLocaleString(undefined, {dateStyle:'medium', timeStyle:'short'}); } catch(e){ return ''; } }
+function today(){ try { return new Date().toLocaleDateString(undefined, {weekday:'short', day:'numeric', month:'short', year:'numeric'}); } catch(e){ return ''; } }
+function noteBox(k, title){
+  const a = notes.all()[k];
+  return `<details class="note"${a ? ' open' : ''}><summary><span class="pen">✎ notes</span> ${esc(title)}${a ? '' : ' <span class="nhint">tap to add</span>'}</summary><div class="inner">
+    ${editor(k, 'What did your preceptor say? Tips, corrections, things to practise…')}
+    <div class="nrow"><button class="btn" data-date="${k}">Add today’s date</button><span data-saved="${k}">${a?'Saved '+fmtTime(a.at):'Saves automatically as you type'}</span><span class="sync" data-sync hidden></span></div></div></details>`;
+}
+async function download(name, text, type){
+  try { const dl = window.claude && window.claude.use ? await window.claude.use('downloads') : null;
+    if (dl) { await dl.save({filename: name, data: new Blob([text], {type})}); return; } } catch (e) { if (e && e.code !== 'unavailable') return; }
+  const blob = new Blob([text], {type}); const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+function notesMarkdown(){
+  const all = notes.all(); const keys = noteKeys();
+  let md = `# Clinical skills notes\n\nExported ${fmtTime(Date.now())}\n`;
+  keys.sort().forEach(k => { const l = noteLabel(k); md += `\n## ${l.title}\n_Last edited ${fmtTime(all[k].at)}_\n\n${noteText(all[k].text)}\n`; });
+  return md;
+}
+function renderNotes(){
+  cur = null; view = 'notes'; setTop(railMode === 'guide' ? 'guide' : 'exam');
+  const all = notes.all();
+  const keys = noteKeys().sort((x,y)=>all[y].at-all[x].at);
+  let h = `<div class="eyebrow">Saved on this computer, in this browser</div><h1>My notes</h1>
+    <p class="lead">${cloud.mode ? 'Everything you’ve written under exams, steps and history, newest first. These sync to your account, so the same notes show on your phone and computer when you’re signed in.' : 'Everything you’ve written under exams, steps and history, newest first. Export a backup now and then: notes live in this browser only, so clearing browser data or switching browsers loses them.'}</p>
+    <div class="tools"><button class="btn" data-act="exportmd">Export as text (.md)</button><button class="btn" data-act="exportjson">Back up (.json)</button>
+    <label class="btn" style="cursor:pointer">Restore backup<input type="file" id="importNotes" accept=".json,application/json" hidden></label>
+    <span class="sync" data-sync hidden></span><span class="progress">${keys.length} note${keys.length===1?'':'s'}</span></div>`;
+  h += keys.length ? `<div class="nlist">` + keys.map(k => { const l = noteLabel(k);
+      return `<div class="nitem"><a href="#${l.href}" data-goto="${l.href}" ${l.step!=null?`data-step="${l.step}"`:''}>${esc(l.title)}</a> <small>${fmtTime(all[k].at)}</small><div class="nview">${noteHtml(all[k].text)}</div></div>`; }).join('') + `</div>`
+    : `<div class="intro">No notes yet. Open any exam or history tab and use the yellow <b>notes</b> box at the top, or the notes field inside each step.</div>`;
+  delete $('#main').dataset.hls;
+  $('#main').innerHTML = h; syncBadge();
+  document.querySelectorAll('.rail a').forEach(a => { if (a.dataset.h==='notes') a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current'); });
+}
+
+/* ---------- the whole guide, chapter by chapter (guide.js is loaded on demand) ---------- */
+const ASSET = (() => { const sc = [...document.scripts].find(x => /(^|\/)data\.js(\?|$)/.test(x.getAttribute('src') || '')); return sc ? sc.getAttribute('src').replace(/data\.js.*$/, '') : ''; })();
+const EXAM2CH = {approach:'c4', vitals:'c4', resp:'c5', cardiac:'c6', headneck:'c7', pv:'c8', volume:'c9', renal:'c10', lymph:'c11', abdo:'c13', diabetes:'c14', thyroid:'c15', adrenal:'c16', breast:'c21', shoulder:'c23', elbow:'c24', hand:'c25', knee:'c26', hip:'c27', ankle:'c28', back:'c29', gals:'c30', neuro:'c31', mse:'c32', eye:'c40'};
+let G = null, gLoading = null, railMode = null, view = 'exam', guideTok = 'g-c1', evFilter = '';
+function loadGuide(){
+  if (G) return Promise.resolve(G);
+  if (!gLoading) gLoading = new Promise((ok, no) => {
+    const sc = document.createElement('script'); sc.src = ASSET + 'guide.js';
+    sc.onload = () => { G = window.CSG; indexGuide(); if (railMode === 'guide') renderRail('guide', true); if (view === 'notes') renderNotes(); ok(G); };
+    sc.onerror = () => { gLoading = null; sc.remove(); no(new Error('load')); };
+    document.head.appendChild(sc);
+  });
+  return gLoading;
+}
+const gch = id => G ? G.chapters.find(c => c.id === id) : null;
+const pageSrc = n => ASSET + 'pages/p' + String(+n).padStart(3, '0') + '.webp';
+let gMode = store.get('gmode') === 'pages' ? 'pages' : 'text';
+const unesc = h => { const t = document.createElement('textarea'); t.innerHTML = h; return t.value; };
+function shortPart(t){ const x = t.split(/ – | \(|: /)[0]; return x.length > 44 ? x.slice(0, 42) + '…' : x; }
+function indexGuide(){
+  G.chapters.forEach(c => {
+    const sub = 'Guide · ' + c.lab + ' ' + c.title;
+    INDEX.push({t: c.lab + ': ' + c.title, sub: 'Guide chapter', g: 'g-' + c.id, hay: (c.lab + ' ' + c.title + ' chapter guide').toLowerCase()});
+    c.parts.forEach((p, k) => {
+      INDEX.push({t: p.t, sub, g: 'g-' + c.id, part: k, hay: (p.t + ' ' + c.title).toLowerCase()});
+      p.b.forEach(x => { if (x[0] === 'h') { const t = unesc(x[1]).replace(/:$/, ''); INDEX.push({t, sub, g: 'g-' + c.id, part: k, hay: (t + ' ' + c.title).toLowerCase()}); } });
+    });
+  });
+  G.evidence.forEach(e => { const c = gch(e.ch); INDEX.push({t: e.q, sub: 'LR table · ' + (c ? c.lab + ' ' + c.title : ''), g: 'g-evidence', evq: e.q, hay: (e.q + ' likelihood ratio lr ' + (c ? c.title : '')).toLowerCase()}); });
+}
+const okCol = c => /^#[0-9a-f]{6}$/i.test(c || '');
+function gtable(t){
+  const cell = (c, th) => { const [txt, col] = Array.isArray(c) ? c : [c, null]; const tag = th ? 'th' : 'td';
+    return `<${tag}${okCol(col) ? ` class="cc" style="--cc:${col}"` : ''}>${esc(txt).replace(/\n/g, '<br>')}</${tag}>`; };
+  return `<div class="tbl gt"><table>${t.rows.map((r, i) => `<tr>${r.map(c => cell(c, t.hdr && i === 0)).join('')}</tr>`).join('')}</table></div>`;
+}
+function gblocks(b){
+  return b.map(x => {
+    if (x[0] === 'pg') return `<div class="gpg" data-keep="pg:${+x[1]}${x[2] ? ':1' : ''}"><button type="button" data-page="${+x[1]}" title="See this page as it appears in the PDF">Guide p. ${+x[1]} · original page</button></div>`
+      + (x[2] ? `<div class="gwarn" data-keep="skip"><button type="button" data-page="${+x[1]}" aria-label="Open page ${+x[1]} as printed"><img src="${pageSrc(x[1])}" alt="" loading="lazy" width="72" height="93"></button><span><b>Layout check: p. ${+x[1]}</b>This page has diagrams, formulas or side-by-side boxes that may read oddly below. Tap the page to see it as printed.</span></div>` : '');
+    if (x[0] === 'h') return `<h3>${x[1]}</h3>`;
+    if (x[0] === 'p') return `<p>${x[1]}</p>`;
+    if (x[0] === 'ul') return `<ul class="gl">${x[1].map(([lv, t]) => `<li class="lv${Math.min(+lv, 3)}">${t}</li>`).join('')}</ul>`;
+    if (x[0] === 't') return gtable(x[1]);
+    if (x[0] === 'f') return `<button type="button" class="gfig" data-keep="f:${esc(x[1])}:${+x[2]}:${+x[3]}" data-gimg="${esc(x[1])}" aria-label="Enlarge figure"><img src="${ASSET}gfig/${esc(x[1])}" width="${+x[2]}" height="${+x[3]}" alt="Figure from the guide" loading="lazy"></button>`;
+    return '';
+  }).join('');
+}
+function renderGuide(tok, part){
+  gEditing = null;
+  view = 'guide'; cur = null; setTop('guide'); guideTok = tok; store.set('lastGuide', tok);
+  const main = $('#main'); delete main.dataset.hls;
+  if (!G) {
+    main.innerHTML = `<div class="eyebrow">Guide</div><h1>Loading the guide…</h1>`;
+    loadGuide().then(() => { if (view === 'guide' && guideTok === tok) renderGuide(tok, part); })
+      .catch(() => { if (view === 'guide') main.innerHTML = `<div class="eyebrow">Guide</div><h1>Couldn’t load the guide</h1><p class="lead">Check your connection, then open the Guide tab again.</p>`; });
+    return;
+  }
+  if (tok === 'g-evidence') { renderEvidence(); markRail(tok); return; }
+  const c = gch(tok.slice(2)) || G.chapters[0]; const ci = G.chapters.indexOf(c);
+  const quick = c.exam && (D.exams[c.exam] || HIST[c.exam]) ? c.exam : null;
+  let h = `<div class="eyebrow">Guide · ${esc(G.sections[c.sec] || '')} · pp. ${c.pg[0]}–${c.pg[1]}</div><h1>${esc(c.lab)}: ${esc(c.title)}</h1>`;
+  if (c.parts.length > 1) h += `<div class="order" aria-label="Parts of this chapter">` + c.parts.map((p, k) => `${k ? '<i>·</i>' : ''}<a href="#g-${c.id}" data-gpart="${k}">${esc(shortPart(p.t))}</a>`).join('') + `</div>`;
+  h += `<div class="tools"><div class="gview" role="group" aria-label="How to show this chapter"><button type="button" data-gmode="text" aria-pressed="${gMode === 'text'}">Text</button><button type="button" data-gmode="pages" aria-pressed="${gMode === 'pages'}">Original pages</button></div>`
+    + (gMode === 'text' ? `<button class="btn" data-act="gopen">Expand all</button><button class="btn" data-act="gclose">Collapse all</button>` : '')
+    + (quick ? `<a class="btn" href="#${quick}" data-goto="${quick}">${D.exams[quick] ? 'Quick exam steps' : 'Quick history questions'} →</a>` : '') + `</div>`;
+  h += noteBox('guide:' + c.id, 'My notes – ' + c.lab + ' ' + c.title);
+  const openAll = c.parts.length <= 2;
+  if (gMode === 'pages') {
+    const nums = []; for (let n = c.pg[0]; n <= c.pg[1]; n++) nums.push(n);
+    h += `<p class="tip">Every page of this chapter exactly as printed. Tap a page to zoom in. The part buttons above jump to where each part starts. Switch back to <b>Text</b> to highlight.</p><div class="gpages">` + nums.map(n => `<figure id="pp${n}"><button type="button" data-page="${n}" aria-label="Zoom page ${n}"><img src="${pageSrc(n)}" alt="Guide page ${n}" loading="lazy" width="612" height="792"></button><figcaption>Guide p. ${n}</figcaption></figure>`).join('') + `</div>`;
+  } else
+  h += c.parts.map((p, k) => { const g = gPart(c, k);
+    return `<details class="gpart" id="gp${k}" data-gk="${c.id}:${k}" data-sig="${g.sig}"${openAll || k === part ? ' open' : ''}><summary>${p.n ? `<span class="gpn">Part ${esc(p.n)}</span>` : ''}<h2>${esc(p.t)}</h2></summary><div class="gedbar">${gedbar(g.edited)}</div><div class="gbody" data-hls="${g.hls}">${g.html}</div></details>`; }).join('');
+  const prev = G.chapters[ci - 1], next = G.chapters[ci + 1];
+  h += `<div class="pager">${prev ? `<a href="#g-${prev.id}" data-goto="g-${prev.id}"><small>← Previous</small>${esc(prev.lab)}: ${esc(prev.title)}</a>` : '<span></span>'}${next ? `<a href="#g-${next.id}" data-goto="g-${next.id}" style="text-align:right"><small>Next →</small>${esc(next.lab)}: ${esc(next.title)}</a>` : ''}</div>`;
+  main.innerHTML = h; syncBadge(); hl.paintAll(); markRail(tok);
+  if (part != null) {
+    const el = gMode === 'pages' ? document.getElementById('pp' + partPage(c, part)) : document.getElementById('gp' + part);
+    if (el) { if (el.tagName === 'DETAILS') el.open = true; el.scrollIntoView({block: 'start'}); return; }
+  }
+  window.scrollTo(0, 0);
+}
+/* ---------- your own fixes to the guide text: saved like notes under "ed:" keys ---------- */
+const GOK = {P:1, H3:1, H4:1, UL:1, OL:1, LI:1, B:1, STRONG:1, I:1, EM:1, U:1, BR:1, DIV:1, SPAN:1, FONT:1, TABLE:1, THEAD:1, TBODY:1, TR:1, TD:1, TH:1, HR:1, SUB:1, SUP:1};
+const GCLS = {gl:1, lv0:1, lv1:1, lv2:1, lv3:1, tbl:1, gt:1, cc:1};
+const KEEP = /^(pg:\d{1,3}(:1)?|f:[\w.-]{1,40}:\d{1,5}:\d{1,5})$/;
+function cleanGuideHtml(html){
+  const tpl = document.createElement('template'); tpl.innerHTML = html;
+  tpl.content.querySelectorAll('[data-keep]').forEach(x => { const k = x.getAttribute('data-keep'); if (KEEP.test(k)) { const hr = document.createElement('hr'); hr.setAttribute('data-k', k); x.replaceWith(hr); } else x.remove(); });
+  tpl.content.querySelectorAll('mark.hl').forEach(m => m.replaceWith(...m.childNodes));
+  (function walk(el){
+    [...el.childNodes].forEach(n => {
+      if (n.nodeType === 3) return;
+      if (n.nodeType !== 1 || /^(script|style|iframe|object|embed|template|svg|math|img|video|audio|button|input|textarea|select|form|link|meta)$/i.test(n.nodeName)) { n.remove(); return; }
+      walk(n);
+      if (!GOK[n.nodeName]) { n.replaceWith(...n.childNodes); return; }
+      const keep = {};
+      const cls = [...n.classList].filter(c => GCLS[c]); if (cls.length) keep.class = cls.join(' ');
+      if (n.nodeName === 'FONT' && /^[1-7]$/.test(n.getAttribute('size') || '')) keep.size = n.getAttribute('size');
+      if ((n.nodeName === 'TD' || n.nodeName === 'TH')) {
+        const m = (n.getAttribute('style') || '').match(/--cc:\s*(#[0-9a-f]{6})/i); if (m) keep.style = '--cc:' + m[1];
+        ['colspan', 'rowspan'].forEach(a => { if (/^\d{1,2}$/.test(n.getAttribute(a) || '')) keep[a] = n.getAttribute(a); });
+      }
+      if (n.nodeName === 'SPAN') { const st = [], cs = n.style;
+        if (/bold|[6-9]00/.test(cs.fontWeight)) st.push('font-weight:bold');
+        if (cs.fontStyle === 'italic') st.push('font-style:italic');
+        if (/underline/.test(cs.textDecorationLine || cs.textDecoration || '')) st.push('text-decoration:underline');
+        if (st.length) keep.style = st.join(';'); }
+      if (n.nodeName === 'HR' && KEEP.test(n.getAttribute('data-k') || '')) keep['data-k'] = n.getAttribute('data-k');
+      [...n.attributes].forEach(a => n.removeAttribute(a.name));
+      Object.entries(keep).forEach(([k, v]) => n.setAttribute(k, v));
+      if ((n.nodeName === 'FONT' && !keep.size) || (n.nodeName === 'SPAN' && !keep.style)) n.replaceWith(...n.childNodes);
+    });
+  })(tpl.content);
+  return tpl.innerHTML;
+}
+// put page dividers and figures back where the saved text has their placeholders
+function expandGuide(html){
+  const tpl = document.createElement('template'); tpl.innerHTML = cleanGuideHtml(html);
+  tpl.content.querySelectorAll('hr[data-k]').forEach(hr => { const k = hr.getAttribute('data-k').split(':');
+    const blk = k[0] === 'pg' ? ['pg', +k[1], k[2] ? 1 : 0] : ['f', k[1], +k[2], +k[3]];
+    const t = document.createElement('template'); t.innerHTML = gblocks([blk]); hr.replaceWith(t.content); });
+  return tpl.innerHTML;
+}
+function gPart(c, k){
+  const key = 'ed:g:' + c.id + ':' + k, a = notes.all()[key];
+  return a ? {html: expandGuide(a.text), edited: true, hls: 'hl:g:' + c.id + ':' + k + 'e', sig: String(a.at)}
+           : {html: gblocks(c.parts[k].b), edited: false, hls: 'hl:g:' + c.id + ':' + k, sig: 'o'};
+}
+function gedbar(edited){
+  return (edited ? `<span class="gedtag">✎ Edited by you</span><button type="button" class="btn" data-ged="reset">Reset to original</button>` : '')
+    + `<button type="button" class="btn" data-ged="edit" title="Fix the text or formatting of this part">✎ Edit text</button>`;
+}
+let gEditing = null;
+function replacePart(det){
+  const [cid, k] = det.dataset.gk.split(':'), c = gch(cid), g = gPart(c, +k);
+  const body = det.querySelector('.gbody'), bar = det.querySelector('.gedbar');
+  body.removeAttribute('contenteditable'); body.classList.remove('editing'); bar.classList.remove('on'); bar.style.top = '';
+  body.dataset.hls = g.hls; body.innerHTML = g.html; bar.innerHTML = gedbar(g.edited); det.dataset.sig = g.sig;
+  if (gEditing === det) gEditing = null;
+  hl.paint(body);
+}
+function startEdit(det){
+  if (gEditing && gEditing !== det) { if (!confirm('Stop editing the other part without saving?')) return; replacePart(gEditing); }
+  if (hl.mode != null) { hl.set(null); hl.panel(false); }
+  const body = det.querySelector('.gbody'), bar = det.querySelector('.gedbar');
+  body.querySelectorAll('mark.hl').forEach(m => m.replaceWith(...m.childNodes)); body.normalize();
+  delete body.dataset.hls;
+  body.querySelectorAll('[data-keep]').forEach(x => x.setAttribute('contenteditable', 'false'));
+  body.setAttribute('contenteditable', 'true'); body.classList.add('editing');
+  bar.classList.add('on'); bar.style.top = $('.top').offsetHeight + 'px';
+  bar.innerHTML = `<div class="fmt" role="toolbar" aria-label="Formatting">
+    <button type="button" data-gcmd="bold" title="Bold" aria-label="Bold"><b>B</b></button>
+    <button type="button" data-gcmd="italic" title="Italic" aria-label="Italic"><i>I</i></button>
+    <button type="button" data-gcmd="underline" title="Underline" aria-label="Underline"><u>U</u></button><span class="sep"></span>
+    <button type="button" data-gsize="2" class="fs2" title="Small text" aria-label="Small text">A</button>
+    <button type="button" data-gsize="3" title="Normal text" aria-label="Normal text">A</button>
+    <button type="button" data-gsize="5" class="fs5" title="Large text" aria-label="Large text">A</button><span class="sep"></span>
+    <button type="button" data-gcmd="insertUnorderedList" title="Bullet list" aria-label="Bullet list">• List</button>
+    <button type="button" data-gblock="h3" title="Make this line a heading" aria-label="Heading">H</button>
+    <button type="button" data-gblock="p" title="Make this line normal text" aria-label="Normal paragraph">¶</button>
+  </div><button type="button" class="btn" data-ged="cancel">Cancel</button><button type="button" class="btn" data-ged="save" style="border-color:var(--accent);color:var(--accent)">Save</button>`;
+  gEditing = det; det.open = true; body.focus();
+}
+/* ---------- focused histories & conditions (assets/fhx.js: each chapter's focused history, cleaned and checked against the guide) ---------- */
+const FXD = window.CSFX || [];
+const FXC = Object.fromEntries(FXD.map(c => [c.id, c]));
+const FXCP = {}; FXD.forEach(c => c.complaints.forEach(cp => { FXCP[cp.id] = {c, cp}; }));
+const FXNAME = Object.fromEntries(FXD.map(c => [c.id, c.name]));
+const FX = []; FXD.forEach(c => { let g = FX.find(x => x[0] === c.group); if (!g) FX.push(g = [c.group, []]); g[1].push([c.id, c.name]); });
+const CH2EXAM = Object.fromEntries(Object.entries(EXAM2CH).filter(([e]) => e !== 'approach').map(([e, c]) => [c, e]));
+const fxKey = cid => 'fx:t:' + cid;
+const fxTicks = cid => store.get(fxKey(cid)) || {};
+
+// question text: grey out the "what it suggests" parts so the question itself stands out
+function fxText(t){
+  let h = esc(t);
+  h = h.replace(/\s*[–-]\s*(Red Flag[^.;,)]*)/gi, ' <span class="rf">$1</span>');
+  h = h.replace(/\((?:Consider|consider|e\.g\.|E\.g\.|i\.e\.|re[:.]|re |seen in|suggestive|suggests|associated|common|Cardiac|LR)[^()]*(?:\([^()]*\)[^()]*)*\)/g, m => `<span class="hint">${m}</span>`);
+  h = h.replace(/\s(→|&gt;|–&gt;)\s(.+)$/, (m, a, b) => ` <span class="hint">→ ${b}</span>`);
+  return h;
+}
+const ASKH = /associated|red flag|ask|symptom|screen|focus on|questions|history|risk factor/i;
+// "a, b, c, d" lists become vertical bullets (commas inside brackets don't count)
+function fxSplitList(t){
+  if (!t || /\?/.test(t)) return null;
+  const out = []; let d = 0, cur = '';
+  let semi = false; { let dd = 0; for (const ch of t) { if (ch === '(') dd++; if (ch === ')') dd = Math.max(0, dd - 1); if (ch === ';' && dd === 0) semi = true; } }
+  const sep = semi ? ';' : ',';
+  for (const ch of t) { if (ch === '(') d++; if (ch === ')') d = Math.max(0, d - 1); if (ch === sep && d === 0) { out.push(cur); cur = ''; } else cur += ch; }
+  out.push(cur);
+  let xs = out.map(x => x.trim().replace(/^(and|or)\s+/i, '').replace(/[.;]$/, '')).filter(x => x && !/^etc\.?$/i.test(x));
+  if (xs.length < (semi ? 2 : 3) || xs.some(x => x.length > 110)) return null;
+  if (/\.\s+[A-Z]/.test(t.replace(/\([^)]*\)/g, '').replace(/\b(e\.g|i\.e|vs|etc|Dr|re)\./gi, ''))) return null;   // prose, not a list
+  if (xs.slice(1).some(x => /^(which|that|not|if|may|but|then|so|as|because|who|where|when|is|are)\b/i.test(x))) return null;
+  return xs.map(x => x[0].toUpperCase() + x.slice(1));
+}
+function fxRow(it, key, ticks, tickable){
+  const lv = Math.min(it.lv || 0, 3);
+  if (it.k === 'h') return `<div class="qh l${lv}">${esc(it.x)}</div>`;
+  if (it.k === 't') return `<div class="qt l${lv}">${gtable({rows: it.rows, hdr: true})}</div>`;
+  if (it.k === 'x') return `<div class="qx gbody">${it.blk[0] === 't' ? gtable(it.blk[1]) : gblocks([it.blk])}</div>`;
+  let x = it.x.replace(/\s*Relevant clinical scores:?\s*$/i, ''), labt = it.lab;
+  if (labt && /^(Cardiac|Respiratory|Renal|Liver|Endocrine)$/i.test(labt) && /^Diseases?\b/.test(x)) { labt += ' diseases'; x = x.replace(/^Diseases?\s*/, ''); }
+  const wc = t => t.trim().split(/\s+/).length, dm = labt && labt.match(/^(.{2,40}?)(\s[–-]\s?)(.*)$/);
+  const lab = !labt ? '' : labt.length <= 26 && it.k !== 'n' ? `<span class="pill">${esc(labt)}</span>`
+    : dm && wc(dm[1]) <= 4 ? `<b class="key">${esc(dm[1])}</b>${esc(dm[2] + dm[3])}: `
+    : wc(labt) <= 4 || it.k === 'n' || fxSplitList(x) ? `<b class="key">${esc(labt)}:</b> ` : `${esc(labt)}: `;
+  let km = !labt && x.match(/^([^–:?()]{2,70}?)(\s[–-]\s?|:\s)/);
+  if (km && km[1].trim().split(/\s+/).length > 4 && !(km[2].includes(':') && fxSplitList(x.slice(km[0].length)))) km = null;
+  let lead = lab, rest = x;
+  if (km) { lead += `<b class="key">${esc(km[1])}</b>${esc(km[2].replace(/^\s+/, ' '))}`; rest = x.slice(km[0].length); }
+  if (!km && !labt) {   // "Heart failure (common cause): a, b, c" -> bold name, then the list
+    let d = 0, cut = -1; for (let i = 0; i < rest.length - 1; i++) { const ch = rest[i]; if (ch === '(') d++; else if (ch === ')') d = Math.max(0, d - 1); else if (ch === ':' && d === 0 && rest[i + 1] === ' ') { cut = i; break; } }
+    if (cut > 1 && cut < 100 && fxSplitList(rest.slice(cut + 2))) { const head = rest.slice(0, cut), pi = head.indexOf('(');
+      lead += pi > 0 ? `<b class="key">${esc(head.slice(0, pi).trim())}</b> ${fxText(head.slice(pi))}:` : `<b class="key">${esc(head)}</b>:`; rest = rest.slice(cut + 2); } }
+  let parts = fxSplitList(rest);
+  if (parts) { const em = parts[0].match(/^(.*?\b(?:e\.g\.|such as|including))\s+(.+)$/i); if (em && (em[1].match(/\(/g) || []).length === (em[1].match(/\)/g) || []).length) { lead += fxText(rest.slice(0, rest.indexOf(em[1]) + em[1].length)); parts[0] = em[2][0].toUpperCase() + em[2].slice(1); rest = ''; } }
+  const body = parts ? lead + `<ul class="qul">${parts.map(t => `<li>${fxText(t)}</li>`).join('')}</ul>` : lead + fxText(rest) + (it.flag && !/red flag/i.test(it.x) ? ' <span class="rf">Red flag</span>' : '');
+  if (it.k === 'n') return `<div class="qn l${lv}">${body}</div>`;
+  const can = tickable && (it.k === 'q' || lv === 0 || it.ask);
+  if (!can) return `<div class="qf l${lv}${it.k === 'q' ? ' isq' : ''}">${body}</div>`;
+  return `<label class="qq l${lv}${it.k === 'q' ? ' isq' : ''}${ticks[key] ? ' done' : ''}"><input type="checkbox" class="fxtick" data-fxq="${esc(key)}"${ticks[key] ? ' checked' : ''}><span>${body}</span></label>`;
+}
+// rows directly under an "Associated symptoms" / "Red flags" style heading are things to ask, so they get a tick box too
+function fxMarkAsk(items){
+  let hlv = -1;
+  (items || []).forEach(it => {
+    const lv = it.lv || 0;
+    if (it.k === 'h') { hlv = ASKH.test(it.x) ? lv : (lv <= hlv ? -1 : hlv); it.ask = false; return; }
+    if (hlv >= 0 && lv <= hlv) hlv = -1;
+    it.ask = hlv >= 0 && lv === hlv + 1 && (it.k === 'f' || it.k === 'q');
+    if (lv === 0 && it.lab && ASKH.test(it.lab) && it.k !== 'n') hlv = 0;
+  });
+  return items;
+}
+// "Click for link" calculators and "Relevant equation" items go into one folded "Criteria & scoring" box
+const SCORE_RE = /score|criteria|scale|classification|calculator|equation|formula|index|rule|algorithm|anion gap|excretion|deficit|SIRS|NEWS|qSOFA|AIMS65|KDIGO/i;
+function fxSplitScores(items){
+  const keep = [], sc = []; let in_ = -1;
+  (items || []).forEach(it => {
+    const t = (it.lab || '') + ' ' + it.x, lv = it.lv || 0;
+    if (in_ >= 0 && lv > in_) { sc.push(it); return; }
+    in_ = -1;
+    if (it.k !== 'n' && ((/click for link/i.test(t) && SCORE_RE.test(t)) || /^Relevant (equation|clinical score)/i.test(it.lab || ''))) { in_ = lv; sc.push(it); return; }
+    keep.push(it);
+  });
+  const lv0 = sc.length ? Math.min(...sc.map(x => x.lv || 0)) : 0;
+  return [keep, sc.map(x => Object.assign({}, x, {lv: (x.lv || 0) - lv0, x: x.x.replace(/\s*[;–-]?\s*Click for link\.?/gi, '').trim(), lab: x.lab && /^Relevant/i.test(x.lab) ? null : x.lab, k: 'f'}))];
+}
+function fxBody(items, pre, ticks, tickable, pearls){
+  const [keep, sc] = fxSplitScores(items);
+  const ps = (pearls || []).filter(p => /score/i.test(p.t)), cw = (pearls || []).filter(p => !/score/i.test(p.t));
+  let h = fxList(keep, pre, ticks, tickable);
+  if (sc.length || ps.length) h += `<details class="fxmore fxscore"><summary>Criteria & scoring</summary>${sc.length ? fxList(sc, pre + ':s', ticks, false) : ''}${ps.map((p, k) => fxList(p.items.map(x => Object.assign({}, x, {x: x.x.replace(/\s*[–-]?\s*Click for link\.?/gi, '')})), pre + ':ps' + k, ticks, false)).join('')}</details>`;
+  return h + fxPearls(cw, pre, ticks);
+}
+// a top-level heading inside a complaint (e.g. "Associated symptoms") becomes a section you can fold
+const fxFolds = () => store.get('fx:fold') || {};
+function fxFold(key, title, inner, cls){ const shut = fxFolds()[key]; return `<details class="fxsub${cls ? ' ' + cls : ''}" data-fold="${esc(key)}"${shut ? '' : ' open'}><summary>${title}</summary>${inner}</details>`; }
+function fxList(items, pre, ticks, tickable){
+  if (tickable) fxMarkAsk(items);
+  items = items || [];
+  if (!tickable) return `<div class="qlist">${items.map((it, i) => fxRow(it, pre + ':' + i, ticks, tickable)).join('')}</div>`;
+  let h = '', buf = '', head = null;
+  const flush = () => { if (head) h += fxFold(pre + ':h' + head[0], esc(head[1]), `<div class="qlist">${buf}</div>`); else if (buf) h += `<div class="qlist">${buf}</div>`; buf = ''; };
+  items.forEach((it, i) => {
+    if (it.k === 'h' && !(it.lv || 0)) { flush(); head = [i, it.x]; return; }
+    buf += fxRow(it, pre + ':' + i, ticks, tickable);
+  });
+  flush();
+  return h;
+}
+function fxDone(ticks, pre){ const re = new RegExp('^' + pre.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ':\\d+$'); return Object.keys(ticks).filter(k => ticks[k] && re.test(k)).length; }
+function fxCountable(items){ fxMarkAsk(items); return (items || []).filter(it => it.k === 'q' || (it.k === 'f' && ((it.lv || 0) === 0 || it.ask))).length; }
+function fxPearls(ps, pre, ticks){
+  if (!ps || !ps.length) return '';
+  return `<details class="fxmore"><summary>${esc(ps.map(p => p.t.replace(/ Recommendations?.*$/, '').replace(/^Relevant /, '')).filter((x, i, a) => a.indexOf(x) === i).join(' & '))}</summary>${ps.map((p, k) => `<div class="qh">${esc(p.t)}</div>${fxList(p.items, pre + ':p' + k, ticks, false)}`).join('')}</details>`;
+}
+// one presenting complaint, as a section you can scroll through and tick off
+const fxShut = () => store.get('fx:shut') || {};
+function fxSetShut(ids, v){ const m = fxShut(); ids.forEach(id => { if (v) m[id] = 1; else delete m[id]; }); store.set('fx:shut', m); }
+function fxSection(c, cp, opt){
+  opt = opt || {};
+  const ticks = fxTicks(c.id), pre = cp.id;
+  const n = fxCountable(cp.items), done = fxDone(ticks, pre);
+  let h = `<section class="fxs${cp.core ? ' core' : ''}${fxShut()[cp.id] ? ' shut' : ''}" id="fx-${cp.id}" data-cp="${cp.id}" data-ch="${c.id}">
+    <header class="fxh"><div class="fxt">${cp.core && !opt.noCoreTag ? `<span class="coretag">Ask for every ${esc(c.name.toLowerCase())} complaint</span>` : ''}<h2>${esc(cp.t)}</h2>${(cp.also || []).length ? `<p class="also">${cp.also.map(esc).join(' · ')}</p>` : ''}</div>
+    <div class="fxtools"><button type="button" class="fxfold" aria-label="Collapse or expand" title="Collapse / expand">▾</button>${n ? `<span class="fxcount" data-count="${cp.id}">${Math.min(done, n)}/${n}</span>` : ''}${cp.pg ? `<button type="button" class="fxpg" data-page="${cp.pg}" title="See this page as printed">p. ${cp.pg}</button>` : ''}${opt.isolate !== false && !cp.core ? `<a class="fxiso" href="#cond-${cp.id}" data-goto="cond-${cp.id}" title="History and physical exam for this condition only">Isolate</a>` : ''}</div></header>`;
+  h += `<div class="fxbody" data-hls="hl:f2:${c.id}:${cp.id}">` + fxBody(cp.items, pre, ticks, true, cp.pearls);
+  (cp.bg || []).forEach((b, k) => { h += fxFold(pre + ':b' + k, esc(b.cat), fxBody(b.items, pre + ':b' + k, ticks, true), 'fxbgsub'); });
+  if (cp.more && cp.more.length) h += `<details class="fxmore"><summary>${esc(cp.moret || 'More')}</summary>${fxList(cp.more, pre + ':m', ticks, false)}</details>`;
+  if (cp.refs && cp.refs.length) h += `<details class="fxmore"><summary>${cp.refs.length === 1 ? esc(cp.refs[0].t) : 'Related: ' + esc(cp.refs.map(r => r.t.replace(/\s*\(.*$/, '')).slice(0, 3).join(', ')) + (cp.refs.length > 3 ? ` + ${cp.refs.length - 3} more` : '')}</summary>${cp.refs.map((r, k) => `<div class="qh">${esc(r.t)}${r.pg ? ` <span class="pg">p. ${r.pg}</span>` : ''}</div>${fxList(r.items, pre + ':r' + k, ticks, false)}`).join('')}</details>`;
+  return h + `</div></section>`;
+}
+// the Big 6 part of the chapter: past medical, surgical, family, social, medications
+function fxBackground(c, open){
+  const ticks = fxTicks(c.id);
+  const cats = c.background.map(b => ({cat: b.cat, cards: b.cards.filter(cd => !cd.for)})).filter(b => b.cards.length);
+  if (!cats.length) return '';
+  return `<section class="fxs bgsec" id="fx-bg" data-cp="bg" data-ch="${c.id}"><header class="fxh"><div class="fxt"><h2>Background history</h2><p class="also">The guide’s ${esc(c.name.toLowerCase())}-specific past medical, surgical, family, social and medication questions</p></div></header>`
+    + `<div data-hls="hl:f2:${c.id}:bg">` + cats.map((b, j) => `<details class="fxcat"${open ? ' open' : ''}><summary>${esc(b.cat)} <span class="n">${b.cards.length}</span></summary>`
+      + b.cards.map((cd, k) => { const same = b.cards.length === 1 && /^(past|family|social|medication)/i.test(cd.t);
+          return `${same ? '' : `<div class="qh fxcard-t">${esc(cd.t)}${cd.pg ? ` <span class="pg">p. ${cd.pg}</span>` : ''}</div>`}${fxBody(cd.items, 'bg:' + j + ':' + k, ticks, true, cd.pearls)}`; }).join('')
+      + `</details>`).join('') + `</div></section>`;
+}
+function fxSysPicker(cid, mode){
+  return `<label class="syspick"><span>System</span><select data-sys="${mode}">${FX.map(([g, xs]) => `<optgroup label="${esc(g)}">${xs.map(([id, n]) => `<option value="${id}"${id === cid ? ' selected' : ''}>${esc(n)}</option>`).join('')}</optgroup>`).join('')}</select></label>`;
+}
+function fxNav(items){
+  return `<nav class="fxnav" id="fxnav" aria-label="Jump to a complaint"><div class="fxnav-in">${items.map(([id, t, core]) => `<a href="#" data-fxjump="${id}"${core ? ' class="core"' : ''}>${esc(t)}</a>`).join('')}</div></nav>`;
+}
+function renderFhx(tok){
+  view = 'hist'; cur = null; histTab = 'fhx'; setTop('hist'); store.set('lastFhx', tok);
+  const main = $('#main');
+  const cid = (tok || '').slice(4) || store.get('lastFhxCh') || 'c5'; const c = FXC[cid] || FXC.c5; store.set('lastFhxCh', c.id);
+  const exam = CH2EXAM[c.id];
+  let h = `<div class="eyebrow">History · focused history${c.pg ? ` · guide pp. ${c.pg[0]}–${c.pg[1]}` : ''}</div><h1>${esc(c.name)}</h1>
+    <div class="subtabs" role="tablist">${[['hpi','OPQRST / HPI'],['ros','Review of systems'],['big6','Big 6'],['fhx','Focused histories']].map(([k,l])=>`<button role="tab" aria-selected="${k==='fhx'}" data-h="${k}">${l}</button>`).join('')}</div>`;
+  h += `<div class="tools">${fxSysPicker(c.id, 'fhx')}<button class="btn" data-act="fxshutall">Collapse all</button><button class="btn" data-act="fxopenall">Expand all</button><button class="btn" data-act="fxclear" data-ch="${c.id}">Clear ticks</button>`
+    + (exam ? `<a class="btn" href="#${exam}" data-goto="${exam}">Exam steps →</a>` : '')
+    + `<a class="btn" href="#g-${c.id}" data-goto="g-${c.id}">Chapter in the guide →</a></div>`;
+  h += `<p class="lead">Start open-ended, then work down each complaint. Tick questions as you ask them; grey text is what an answer points to. Tap <b>Isolate</b> to see one complaint with its physical exam.</p>`;
+  if (c.intro) h += `<div class="intro">${esc(c.intro)}</div>`;
+  c.extras.filter(e => e.after === 0).forEach(e => { h += `<div class="gbody fxintro">${gblocks([e.blk])}</div>`; });
+  h += noteBox('fhx:' + c.id, 'My notes – ' + c.name + ' history');
+  const navItems = c.complaints.filter(cp => !cp.all).map(cp => [cp.id, cp.t, cp.core]);
+  if (c.background.some(b => b.cards.some(cd => !cd.for))) navItems.push(['bg', 'Background history']);
+  h += fxNav(navItems);
+  let body = '';
+  const core = c.complaints.filter(cp => cp.core), rest = c.complaints.filter(cp => !cp.core && !cp.all);
+  if (core.length && rest.length) body += `<div class="fxgroup">Ask for every ${esc(c.name.toLowerCase())} complaint</div>`;
+  body += core.map(cp => fxSection(c, cp, {noCoreTag: true})).join('');
+  if (core.length && rest.length) body += `<div class="fxgroup">Then the presenting complaint</div>`;
+  body += rest.map(cp => fxSection(c, cp)).join('');
+  body += fxBackground(c, true);
+  h += `<div class="fxall">${body}</div>`;
+  h += `<p class="tip" style="margin-top:28px">Source: McMaster Clinical Skills Guide, 6e (2026–27), ${esc(gchLab(c.id))}. Use the page buttons to check any card against the printed page.</p>`;
+  delete main.dataset.hls;
+  main.innerHTML = h; syncBadge(); hl.paintAll(); markRail('fhx-' + c.id); window.scrollTo(0, 0); fxWatch();
+}
+const CHLAB = {c4:'Ch 4',c5:'Ch 5',c6:'Ch 6',c7:'Ch 7',c8:'Ch 8',c9:'Ch 9',c10:'Ch 10',c11:'Ch 11',c12:'Ch 12',c13:'Ch 13',c14:'Ch 14',c15:'Ch 15',c16:'Ch 16',c17:'Ch 17',c18:'Ch 18',c19:'Ch 19',c20:'Ch 20',c21:'Ch 21',c23:'Ch 23',c24:'Ch 24',c25:'Ch 25',c26:'Ch 26',c27:'Ch 27',c28:'Ch 28',c29:'Ch 29',c31:'Ch 31',c32:'Ch 32',c37:'Ch 37',c40:'Ch 40',c41:'Ch 41'};
+const gchLab = id => CHLAB[id] || '';
+// highlight the complaint you're scrolled to in the sticky jump bar
+let fxObs = null;
+function fxWatch(){
+  if (fxObs) fxObs.disconnect();
+  const nav = $('#fxnav'); if (!nav || !('IntersectionObserver' in window)) return;
+  const secs = [...document.querySelectorAll('.fxs[data-cp]')];
+  const vis = new Map();
+  fxObs = new IntersectionObserver(es => {
+    es.forEach(e => vis.set(e.target, e.isIntersecting ? e.boundingClientRect.top : null));
+    const top = secs.find(s => vis.get(s) != null);
+    nav.querySelectorAll('a').forEach(a => { const on = top && a.dataset.fxjump === top.dataset.cp; a.classList.toggle('on', !!on); if (on) { const r = a.getBoundingClientRect(), nr = nav.getBoundingClientRect(); if (r.left < nr.left || r.right > nr.right) a.scrollIntoView({block: 'nearest', inline: 'center'}); } });
+  }, {rootMargin: '-140px 0px -55% 0px'});
+  secs.forEach(s => fxObs.observe(s));
+}
+function fxUpdateCount(cpid){
+  const hit = FXCP[cpid]; if (!hit) return;
+  const t = fxTicks(hit.c.id), n = fxCountable(hit.cp.items);
+  const done = fxDone(t, cpid);
+  document.querySelectorAll(`[data-count="${cpid}"]`).forEach(el => { el.textContent = Math.min(done, n) + '/' + n; el.classList.toggle('all', done >= n); });
+}
+
+/* ---------- conditions: pick one presenting complaint, see only its history and physical exam ---------- */
+let condQ = '', condMode = store.get('condMode') || 'both';
+FXD.forEach(c => { if (c.complaints.length && c.complaints.every(cp => cp.core)) { const all = {id: c.id + '-all', t: c.name + ' (whole history)', pg: c.pg && c.pg[0], items: [], all: 1}; c.complaints.push(all); FXCP[all.id] = {c, cp: all}; } });
+const CONDS = FXD.flatMap(c => c.complaints.filter(cp => !cp.core).map(cp => ({id: cp.id, t: cp.t, ch: c.id, sys: c.name, hay: (cp.t + ' ' + (cp.also || []).join(' ') + ' ' + c.name + ' ' + c.title + ' ' + (cp.refs || []).map(r => r.t).join(' ')).toLowerCase()})));
+const SYN = {sob:'shortness of breath', dyspnea:'shortness of breath', dyspnoea:'shortness of breath', cp:'chest pain', ha:'headache', uti:'urinary', dvt:'claudication', pe:'shortness of breath', abdo:'abdominal', gi:'abdominal', n:'nausea', v:'vomiting', tia:'stroke', cva:'stroke', ms:'weakness', loc:'seizure', syncope:'dizziness', vertigo:'dizziness', ent:'head & neck', std:'sti', sti:'stbbi', pregnant:'pregnancy', ob:'obstetrics', ankle:'ankle', acl:'knee', rash:'rash', eczema:'rash', psych:'psychiatric', mood:'psychiatric', depression:'depression', etoh:'substance', alcohol:'substance', drugs:'substance', thyroid:'thyroid', dm:'diabetes', sugar:'diabetes'};
+function condMatch(q){
+  const words = q.toLowerCase().split(/\s+/).filter(Boolean).map(w => SYN[w] || w);
+  if (!words.length) return CONDS;
+  return CONDS.filter(x => words.every(w => x.hay.includes(w)));
+}
+function condListHtml(q){
+  const hits = condMatch(q);
+  if (!hits.length) return `<div class="intro">No condition matches “${esc(q)}”. Try a symptom like “cough”, “knee”, “headache” or “bleeding”.</div>`;
+  let h = '', last = null;
+  hits.forEach(x => { if (x.ch !== last) { if (last) h += `</div>`; h += `<h3 class="condsys">${esc(x.sys)}</h3><div class="condgrid">`; last = x.ch; }
+    h += `<a class="condbtn" href="#cond-${x.id}" data-goto="cond-${x.id}">${esc(x.t)}</a>`; });
+  return h + `</div>`;
+}
+function renderCondList(){
+  view = 'cond'; cur = null; setTop('cond');
+  const main = $('#main'); delete main.dataset.hls;
+  main.innerHTML = `<div class="eyebrow">Conditions · ${CONDS.length} presenting complaints from the guide</div><h1>Find a condition</h1>
+    <p class="lead">Search for a presenting complaint or condition, then pick it to see only its focused history questions and the physical exam for that system.</p>
+    <div class="condsearch"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="condq" type="search" placeholder="e.g. chest pain, cough, knee, seizure, nipple discharge" autocomplete="off" aria-label="Search conditions" value="${esc(condQ)}"></div>
+    <div id="condlist">${condListHtml(condQ)}</div>`;
+  markRail('cond'); window.scrollTo(0, 0);
+  if (matchMedia('(pointer: fine)').matches) $('#condq').focus();
+}
+// "Head to toe" order: group steps by technique (inspection, palpation…), then within each go head → neck → chest → abdomen → arms → legs
+let condOrder = store.get('condOrder') || 'guide';
+const H2T_PHASES = [['vitals', 'Vitals & general'], ['inspect', 'Inspection'], ['palpate', 'Palpation'], ['percuss', 'Percussion'], ['auscultate', 'Auscultation'], ['rom', 'Range of motion'], ['power', 'Power'], ['special', 'Special tests']];
+const H2T_REGION = [
+  [/jugular|JVP|AJR|Abdominojugular|Hepatojugular/i, 2],
+  [/^vitals|general|body habitus|habitus|mental status|confusion|work of breathing|rhythm of breathing|assistive|scars|cachexia|sarcopenia|coagulopathy|xanthoma|skin\b|skinfold|waist|hirsut|central (and|&) peripheral pulses|level of consciousness|behaviour|appearance/i, 0],
+  [/head|eye|sclera|pupil|fundoscop|lid lag|nose|ear\b|otoscop|hearing|mouth|tongue|tonsil|oropharyn|mucous|central cyanosis|face|facial|sinus|mallampati|\bCN\b|olfactory|optic|trigeminal|facial|vestibulo|glossophar|hypoglossal|accessory|visual|ocular|intraocular|slit-lamp|confrontation/i, 1],
+  [/neck|thyroid|goiter|pemberton|carotid|trache|laryngeal|lymph nodes?/i, 2],
+  [/chest|thora|precordial|PMI|heave|thrill|breath|lung|fremitus|expansion|diaphragm|pectus|barrel|scoliosis|kyphosis|intercostal|consolidation|egophony|expiratory|breast|axilla|cardiac|S1|murmur/i, 3],
+  [/abdom|liver|spleen|splenic|kidney|CVA|costovertebral|bladder|bowel|murphy|mcburney|rovsing|psoas|obturator|ascites|fluid wave|shifting|castell|traube|hernia|rectal|cullen|peritoni|rebound|shake|palpation$|light palpation|deep palpation|venous hum|friction rub|bruits/i, 4],
+  [/hand|finger|nail|clubbing|tar stain|arm\b|arms|upper limb|radial|wrist|elbow|shoulder|tremor|peripheral cyanosis|capillary refill|allen|tinel|phalen|finkelstein|piano key|MCP|IP\)/i, 5],
+  [/leg|edema|pedal|ankle|foot|feet|sole|calf|knee|hip|lower limb|femoral|popliteal|buerger|brachial index|ABI|varicose|brodie|heel|toe|plantar|extremit|temperature to touch|gait|pretibial|thompson/i, 6],
+];
+const h2tRegion = s => { for (const [re, r] of H2T_REGION) if (re.test(s.name)) return r; for (const [re, r] of H2T_REGION) if (re.test(s.sec || '')) return r; return 3.5; };
+function h2tPhase(s){
+  if (s.phase) return s.phase;
+  const t = s.sec || '';
+  if (/inspect/i.test(t)) return 'inspect'; if (/palpat/i.test(t)) return 'palpate'; if (/percuss/i.test(t)) return 'percuss';
+  if (/auscult/i.test(t)) return 'auscultate'; if (/vital|before measuring|general/i.test(t)) return 'vitals'; if (/range of motion/i.test(t)) return 'rom';
+  if (/power|strength|motor/i.test(t)) return 'power'; return 'special';
+}
+const examH2tOk = ex => new Set(ex.steps.map(h2tPhase).filter(p => /inspect|palpate|percuss|auscultate/.test(p))).size >= 2;
+// the full head-to-toe list for an exam: [{k, name, items}], with any order you saved applied
+function examH2tAll(exId){
+  const ex = D.exams[exId], idx = ex.steps.map((s, i) => i);
+  const gk = i => ex.steps[i].tags.includes('extra') ? 'extra' : h2tPhase(ex.steps[i]);
+  const groups = [...H2T_PHASES, ['extra', 'Non-routine tests']].map(([k, name]) => ({k, name, items: idx.filter(i => gk(i) === k)
+    .map((i, o) => [i, k === 'extra' ? 0 : h2tRegion(ex.steps[i]), o]).sort((a, b) => a[1] - b[1] || a[2] - b[2]).map(x => x[0])}));
+  const mine = store.get('h2t:' + exId);
+  if (mine && Array.isArray(mine.list)) {
+    const seen = new Set();
+    groups.forEach(g => g.items = []);
+    mine.list.forEach(([i, k]) => { const g = groups.find(x => x.k === k); if (g && ex.steps[i] && !seen.has(i)) { g.items.push(i); seen.add(i); } });
+    idx.forEach(i => { if (!seen.has(i)) groups.find(x => x.k === gk(i)).items.push(i); });   // steps added since you saved
+  }
+  return groups;
+}
+function examH2tSecs(ex, keep){
+  const exId = Object.keys(D.exams).find(k => D.exams[k] === ex);
+  return examH2tAll(exId).map(g => ({name: g.name, k: g.k, items: g.items.filter(i => keep[i])})).filter(g => g.items.length);
+}
+let h2tEdit = false;
+function h2tMove(exId, i, dir){
+  const groups = examH2tAll(exId).filter(g => g.items.length || true);
+  const gi = groups.findIndex(g => g.items.includes(i)); if (gi < 0) return;
+  const g = groups[gi], p = g.items.indexOf(i);
+  if (dir < 0) { if (p > 0) [g.items[p - 1], g.items[p]] = [g.items[p], g.items[p - 1]];
+    else { let t = gi - 1; while (t >= 0 && groups[t].k === 'extra') t--; if (t < 0) return; g.items.splice(p, 1); groups[t].items.push(i); } }
+  else { if (p < g.items.length - 1) [g.items[p + 1], g.items[p]] = [g.items[p], g.items[p + 1]];
+    else { let t = gi + 1; while (t < groups.length && groups[t].k === 'extra') t++; if (t >= groups.length) return; g.items.splice(p, 1); groups[t].items.unshift(i); } }
+  store.set('h2t:' + exId, {list: groups.flatMap(x => x.items.map(j => [j, x.k]))});
+}
+// Which exam steps belong to which condition. Each rule is [step name pattern, condition title pattern]:
+// a step that matches a rule is shown only for conditions whose title matches. Steps with no rule are shown for every condition.
+// Everything else stays one tap away under "Rest of the exam".
+const CONDEX = {
+  volume: [[/\(hypervolemia\)$/, /hyper/i], [/\(hypovolemia\)$/, /hypo/i], [/^Orthostatic/, /hypo/i], [/^Listening to breathing|^Precordial auscultation/, /hyper/i]],
+  resp: [[/Forced Expiratory/, /short|wheez|cough/i]],
+  cardiac: [[/Pulsus Paradoxus/, /chest|short/i]],
+  headneck: [[/Mallampati/, /sleep/i], [/Outer Ear|Otoscopy/, /ear|hearing|tinnitus|dizz/i], [/Hearing Loss/, /hearing|tinnitus|dizz/i],
+    [/^Nose/, /epistaxis|rhinosin/i], [/Transillumination/, /rhinosin/i], [/^Mouth|^Oropharynx/, /pharyng|sleep|ear|rhinosin/i],
+    [/Closer Assessment of Eyes|Fundoscopy/, /dizz/i], [/HINTS|Dix-Hallpike|Supine Roll/, /dizz/i]],
+  lymph: [[/Tonsils/, /constitutional|enlarged/i], [/Spleen|Traube|Castell/, /constitutional|enlarged|bony/i]],
+  abdo: [[/Stigmata|Venous Hum|Liver Scratch|Liver Excursion|liver edge|Fluid Wave|Shifting Dullness/, /liver|abdominal pain/i],
+    [/Castell|Traube|Splenic/, /liver|abdominal pain/i],
+    [/Cullen|Peritonitis|Friction Rub|Rebound|Shake Test|McBurney|Rovsing|Psoas|Obturator|Murphy/, /abdominal pain|nausea/i],
+    [/Digital Rectal/, /bowel|abdominal pain/i]],
+  thyroid: [[/hyperthyroidism/i, /hyper/i]],
+  adrenal: [[/Waist|Abdomen|Hirsutism|Coagulopathy|Skinfold|Edema/, /hypercort/i]],
+  elbow: [[/Lateral Epicondylitis/, /lateral/i], [/Medial Epicondylitis|Tinel|Elbow Flexion/, /medial/i], [/Elbow Stability/, /medial|lateral/i]],
+  hand: [[/Finkelstein/, /radial/i], [/Wrist Stability/, /radial|central/i], [/Piano Key/, /ulnar/i], [/Tinel|Phalen/, /central|hand/i], [/\(MCP\)|\(IP\)/, /hand|finger/i]],
+  knee: [[/McMurray|Apley/, /medial|lateral|posterior/i], [/Clarke|Patellar/, /anterior/i], [/Functional Trendelenburg/, /lateral/i]],
+  hip: [[/Thomas|FADIR|Barlow/, /anterior|groin/i], [/Ober/, /lateral/i], [/FABER/, /anterior|groin|posterior|buttock/i]],
+  ankle: [[/Thompson/, /achilles/i], [/Tinel/, /medial|rearfoot/i], [/Stability/, /anterior|medial|lateral/i]],
+  back: [[/Spurling/, /neck/i], [/Straight Leg|Femoral Nerve|Gaenslen|FABER|Schober|Rib-Pelvis|Adam/, /low back/i]],
+  neuro: [[/HINTS|Dix-Hallpike|Supine Roll|Subclavian|Parietal|Cortical Sensation/, /stroke/i], [/Hearing Loss/, /stroke/i],
+    [/Meningismus/, /headache|seizure|concussion/i], [/Brainstem Reflexes/, /stroke|concussion/i], [/Gower|Digital Rectal/, /weakness/i],
+    [/Frontal Release/, /frailty|behaviour|aphasia/i], [/Timed Up/, /frailty|weakness/i], [/Dysmorphia/, /behaviour|seizure/i]],
+};
+// evidence tables that belong to one condition only, for chapters that cover opposite conditions
+const CONDEV = {
+  c9: [[/hyper/i, /^$/], [/hypo/i, /hypovol|dehydrat/i]],
+  c15: [[/hyper/i, /hyperthy|goiter/i], [/hypo/i, /hypothy|goiter/i]],
+  c16: [[/hypercort/i, /cushing/i], [/hypocort/i, /^$/], [/pheo/i, /pheo/i]],
+};
+function condEvOk(c, cp, e){
+  const r = (CONDEV[c.id] || []).find(([cre]) => cre.test(cp.t));
+  return !r || r[1].test(e.q);
+}
+function condStepOk(exId, s, cp){
+  if (!cp || cp.all) return true;
+  const rules = (CONDEX[exId] || []).filter(([re]) => re.test(s.name));
+  return !rules.length || rules.some(([, cre]) => cre.test(cp.t));
+}
+function examStepsHtml(exId, cp){
+  const ex = D.exams[exId]; if (!ex) return '';
+  const ticks = store.get('t:' + exId) || {};
+  const keep = ex.steps.map(s => condStepOk(exId, s, cp)), rest = keep.filter(k => !k).length;
+  let secs = [];
+  if (condOrder === 'h2t' && examH2tOk(ex)) secs = examH2tSecs(ex, keep);
+  else ex.steps.forEach((s, i) => { if (!keep[i]) return; if (!secs.length || secs[secs.length - 1].name !== s.sec) secs.push({name: s.sec, items: []}); secs[secs.length - 1].items.push(i); });
+  let n = 0, h = '';
+  if (rest) h += `<p class="tip">Showing the steps for ${esc(cp.t.toLowerCase())}. Steps for other conditions are folded away at the bottom.</p>`;
+  secs.forEach(sec => {
+    const isExtra = ex.steps[sec.items[0]].tags.includes('extra');
+    h += `<div class="sec sm"${isExtra && !showExtra ? ' hidden' : ''} data-extra="${isExtra ? 1 : 0}"><h3>${esc(sec.name)}</h3><span class="n">${sec.items.length}</span></div><div class="steps"${isExtra && !showExtra ? ' hidden' : ''} data-extra="${isExtra ? 1 : 0}">`;
+    sec.items.forEach(i => { const s = ex.steps[i]; n++; let sh = stepHtml(exId, s, i, n, !!ticks[i]);
+      if (h2tEdit && condOrder === 'h2t' && sec.k) sh = sh.replace('</summary>', `<span class="mvbox"><button type="button" class="mv" data-mv="-1" data-mvi="${i}" data-mvx="${exId}" aria-label="Move up">↑</button><button type="button" class="mv" data-mv="1" data-mvi="${i}" data-mvx="${exId}" aria-label="Move down">↓</button></span></summary>`);
+      h += sh; });
+    h += `</div>`;
+  });
+  if (rest) {
+    h += `<details class="box condrest"><summary>Rest of the ${esc(ex.title.toLowerCase())} (${rest} step${rest > 1 ? 's' : ''} for other conditions)</summary><div class="inner"><div class="steps">`;
+    ex.steps.forEach((s, i) => { if (!keep[i]) h += stepHtml(exId, s, i, '·', !!ticks[i]); });
+    h += `</div></div></details>`;
+  }
+  return h;
+}
+function renderCond(tok){
+  const hit = FXCP[tok.slice(5)];
+  if (!hit) { renderCondList(); return; }
+  const {c, cp} = hit;
+  view = 'cond'; cur = null; setTop('cond'); store.set('lastCond', tok);
+  const main = $('#main'); delete main.dataset.hls;
+  const exam = CH2EXAM[c.id], ex = exam && D.exams[exam];
+  const twins = CONDS.filter(x => x.id !== cp.id && fxNormT(x.t) === fxNormT(cp.t));
+  const core = c.complaints.filter(x => x.core);
+  let h = `<div class="eyebrow">Condition · ${esc(c.name)}</div><h1>${esc(cp.t)}</h1>`;
+  h += `<div class="condbar"><div class="condsearch sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="condq2" type="search" placeholder="Switch to another condition…" autocomplete="off" aria-label="Switch condition"><div class="results" id="condres" hidden></div></div>
+    <div class="gview" role="group" aria-label="Show">${[['both','History + exam'],['hx','History'],['px','Exam']].map(([k, l]) => `<button type="button" data-cmode="${k}" aria-pressed="${condMode === k}">${l}</button>`).join('')}</div></div>`;
+  if (twins.length) h += `<p class="tip">Also covered in: ${twins.map(x => `<a href="#cond-${x.id}" data-goto="cond-${x.id}">${esc(x.sys)}</a>`).join(', ')}</p>`;
+  h += noteBox('cond:' + cp.id, 'My notes – ' + cp.t);
+  let hx = `<div class="condpart" data-part="hx"><h2 class="partttl"><span>1</span>Focused history</h2>`;
+  if (core.length) hx += (cp.all ? '' : `<div class="fxgroup">Ask for every ${esc(c.name.toLowerCase())} complaint</div>`) + core.map(x => fxSection(c, x, {noCoreTag: true})).join('') + (cp.all ? '' : `<div class="fxgroup">${esc(cp.t)}</div>`);
+  if (!cp.all) hx += fxSection(c, cp, {isolate: false});
+  hx += `<details class="fxs fxbgwrap" data-ch="${c.id}"><summary><h2>Background history for ${esc(c.name.toLowerCase())}</h2><span class="also">Past medical, surgical, family, social, medications</span></summary>${fxBackground(c, false).replace(/^<section[^>]*>[\s\S]*?<\/header>/, '').replace(/<\/section>$/, '')}</details>`;
+  hx += `</div>`;
+  let px = `<div class="condpart" data-part="px"><h2 class="partttl"><span>2</span>Physical exam${ex ? ` · ${esc(ex.title)}` : ''}</h2>`;
+  if (ex) {
+    const extra = ex.steps.filter(s => s.tags.includes('extra')).length;
+    if (examH2tOk(ex)) px += `<div class="gview orderpick" role="group" aria-label="Order of exam steps"><span>Order:</span>${[['guide', 'As in the guide'], ['h2t', 'Head to toe']].map(([k, l]) => `<button type="button" data-corder="${k}" aria-pressed="${condOrder === k}">${l}</button>`).join('')}</div>`
+      + (condOrder === 'h2t' ? ` <button type="button" class="btn${h2tEdit ? ' on' : ''}" data-h2tedit>${h2tEdit ? 'Done rearranging' : 'Rearrange'}</button>${store.get('h2t:' + exam) ? ` <button type="button" class="btn" data-h2treset>Reset order</button>` : ''}` : '')
+      + (h2tEdit && condOrder === 'h2t' ? `<p class="tip">Use ↑ and ↓ to move a step. Moving past the top or bottom of a group moves it into the next group. Your order is saved for every condition that uses this exam.</p>` : '');
+    px += `<div class="tools"><button class="btn" data-act="open">Expand all</button><button class="btn" data-act="close">Collapse all</button>${extra ? `<label class="toggle"><input type="checkbox" id="xtra" ${showExtra ? 'checked' : ''}> Show non-routine tests (${extra})</label>` : ''}<a class="btn" href="#${exam}" data-goto="${exam}">Open full exam page →</a></div>`;
+    if (ex.notes && ex.notes.length) px += `<details class="box notes"><summary>Setup & tips from the guide</summary><div class="inner">${list(ex.notes)}</div></details>`;
+    px += examStepsHtml(exam, cp);
+  } else px += `<div id="condpx"><p class="lead">This chapter’s physical exam isn’t one of the quick exam pages. Loading it from the guide…</p></div>`;
+  px += `</div>`;
+  h += hx + px;
+  h += `<div class="condpart" data-part="hx px"><details class="box" id="condev"><summary>Evidence: likelihood ratios for ${esc(c.name.toLowerCase())}</summary><div class="inner" id="condevin"><p class="tip">Loading…</p></div></details></div>`;
+  main.innerHTML = h; condApplyMode(); syncBadge(); hl.paintAll(); markRail('cond'); window.scrollTo(0, 0);
+  loadGuide().then(() => {
+    if (view !== 'cond' || store.get('lastCond') !== tok) return;
+    const evs = G.evidence.filter(e => e.ch === c.id && condEvOk(c, cp, e));
+    const ei = $('#condevin'); if (ei) ei.innerHTML = evs.length ? evs.map(e => `<details class="evitem"><summary><small>Q${e.n}</small>${esc(e.q)}</summary><div class="in">${e.t.map(gtable).join('')}${e.pg ? `<button type="button" class="fxpg" data-page="${e.pg}">p. ${e.pg}</button>` : ''}</div></details>`).join('') : `<p class="tip">This chapter has no likelihood-ratio tables.</p>`;
+    if (!evs.length) { const d = $('#condev'); if (d) d.hidden = true; }
+    const cp2 = $('#condpx'); if (!cp2) return;
+    const gc = gch(c.id), parts = gc ? gc.parts.map((p, k) => [p, k]).filter(([p]) => /Physical Exam|Maneuvers|Approach to Lesions|Skin Cancers|Vitals and Measures/i.test(p.t)) : [];
+    cp2.innerHTML = parts.length ? parts.map(([p, k]) => `<details class="gpart"${parts.length === 1 ? ' open' : ''}><summary><h2>${esc(p.t)}</h2></summary><div class="gbody">${gblocks(p.b)}</div></details>`).join('') + `<a class="btn" href="#g-${c.id}" data-goto="g-${c.id}">Whole chapter in the guide →</a>`
+      : `<p class="lead">The guide has no physical exam section for ${esc(c.name.toLowerCase())}. <a href="#g-${c.id}" data-goto="g-${c.id}">Open the chapter →</a></p>`;
+  }).catch(() => {});
+}
+const fxNormT = s => s.toLowerCase().replace(/\(.*?\)/g, '').replace(/[^a-z]/g, '');
+function condApplyMode(){
+  document.querySelectorAll('.condpart').forEach(p => { p.hidden = condMode !== 'both' && !p.dataset.part.split(' ').includes(condMode); });
+  document.querySelectorAll('[data-cmode]').forEach(b => b.setAttribute('aria-pressed', b.dataset.cmode === condMode));
+}
+function condResults(q, box){
+  q = q.trim();
+  if (q.length < 2) { box.hidden = true; return; }
+  const hits = condMatch(q).slice(0, 20);
+  box.innerHTML = hits.length ? hits.map(x => `<button type="button" data-goto="cond-${x.id}">${esc(x.t)}<small>${esc(x.sys)}</small></button>`).join('') : `<button type="button" disabled>No match</button>`;
+  box.hidden = false;
+}
+function partPage(c, k){ const p = c.parts[k]; const pg = p && p.b.find(x => x[0] === 'pg'); return pg ? pg[1] : c.pg[0]; }
+function renderEvidence(){
+  const main = $('#main');
+  main.innerHTML = `<div class="eyebrow">Guide · Evidence-based diagnosis</div><h1>Likelihood-ratio tables</h1>
+    <p class="lead">Every “Clinical Question” table in the guide, by chapter (${G.evidence.length} questions). Colours follow the guide’s simplified method for pre-test probabilities of 10–90%: green raises and red lowers the chance of the diagnosis, and deeper shades mean a bigger change. Ch 2 explains how to use them.</p>
+    <div class="legend"><span style="--cc:#c0504d">LR ≤ 0.1 · about −45%</span><span style="--cc:#d99594">0.1–0.5 · about −30%</span><span style="--cc:#f2dbdb">0.5–1 · about −15%</span><span style="--cc:#ffffff">CI crosses 1 · no change</span><span style="--cc:#eaf1dd">1–5 · about +15%</span><span style="--cc:#c2d69b">5–10 · about +30%</span><span style="--cc:#9bbb59">≥ 10 · about +45%</span></div>
+    <div class="tools"><input id="evq" class="evq" type="search" placeholder="Filter questions… (e.g. pneumonia, DVT, ACL)" value="${esc(evFilter)}" aria-label="Filter likelihood-ratio questions"><span class="progress" id="evn"></span></div><div id="evl"></div>`;
+  renderEvList(); window.scrollTo(0, 0);
+}
+function renderEvList(){
+  const words = evFilter.toLowerCase().split(/\s+/).filter(Boolean);
+  const hits = G.evidence.filter(e => { const c = gch(e.ch); const hay = (e.q + ' ' + (c ? c.title : '')).toLowerCase(); return words.every(w => hay.includes(w)); });
+  let h = '', last = null;
+  hits.forEach(e => {
+    const c = gch(e.ch);
+    if (e.ch !== last) { h += `<h2 class="evch">${esc(c.lab)}: ${esc(c.title)}</h2>`; last = e.ch; }
+    h += `<details class="evitem"${words.length ? ' open' : ''}><summary><small>Q${e.n}</small>${esc(e.q)}</summary><div class="in">${e.t.map(gtable).join('')}<a href="#g-${c.id}" data-goto="g-${c.id}">Open ${esc(c.lab)}${e.pg ? ', p. ' + e.pg : ''} →</a></div></details>`;
+  });
+  $('#evl').innerHTML = h || `<div class="intro">No questions match “${esc(evFilter)}”.</div>`;
+  $('#evn').textContent = `${hits.length} of ${G.evidence.length}`;
+}
+function markRail(tok){ document.querySelectorAll('.rail a').forEach(a => { if ((a.dataset.id || a.dataset.h || a.dataset.g) === tok) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); }); }
+function railHist(){
+  return `<h4>History basics</h4><a href="#hpi" data-h="hpi">OPQRST / HPI</a><a href="#ros" data-h="ros">Review of systems</a><a href="#big6" data-h="big6">Big 6</a>`
+    + FX.map(([g, xs]) => `<h4>${esc(g)}</h4>` + xs.map(([id, n]) => `<a href="#fhx-${id}" data-h="fhx-${id}">${esc(n)}<span>${FXC[id].complaints.filter(x => !x.all).length}</span></a>`).join('')).join('')
+    + `<h4>Notes</h4><a href="#notes" data-h="notes">My notes <span id="ncount"></span></a>`;
+}
+function railCond(){
+  const cur = (store.get('lastCond') || '').slice(5), curCh = FXCP[cur] ? FXCP[cur].c.id : null;
+  return `<a href="#cond" data-h="cond" style="font-weight:600">Search all conditions</a>`
+    + FX.map(([g, xs]) => `<h4>${esc(g)}</h4>` + xs.map(([id, n]) => { const cs = FXC[id].complaints.filter(x => !x.core);
+        return `<details class="railsys"${id === curCh ? ' open' : ''}><summary>${esc(n)}<span>${cs.length}</span></summary>${cs.map(x => `<a href="#cond-${x.id}" data-h="cond-${x.id}">${esc(x.t)}</a>`).join('')}</details>`; }).join('')).join('')
+    + `<h4>Notes</h4><a href="#notes" data-h="notes">My notes <span id="ncount"></span></a>`;
+}
+
+function renderRail(mode, force){
+  mode = mode || railMode || 'exam'; if (mode === railMode && !force) return; railMode = mode;
+  const r = $('#rail'); $('#menuLab').textContent = {guide: 'Chapters', hist: 'Systems', cond: 'Conditions'}[mode] || 'Exams';
+  if (mode === 'hist') { r.innerHTML = railHist(); updateCount(); return; }
+  if (mode === 'cond') { r.innerHTML = railCond(); updateCount(); return; }
+  if (mode === 'guide') {
+    r.innerHTML = (!G ? `<p class="tip">Loading the guide…</p>` : Object.entries(G.sections).map(([k, name]) => `<h4>${esc(name)}</h4>` + G.chapters.filter(c => c.sec === k).map(c => `<a href="#g-${c.id}" data-g="g-${c.id}"><span class="gl">${esc(c.lab)}</span>${esc(c.title)}</a>`).join('')).join('')
+      + `<h4>Evidence</h4><a href="#g-evidence" data-g="g-evidence">All likelihood-ratio tables <span>${G.evidence.length}</span></a>`)
+      + `<h4>Notes</h4><a href="#notes" data-h="notes">My notes <span id="ncount"></span></a>`
+      + `<p class="tip" style="margin-top:18px">The full McMaster Clinical Skills Guide, 6e (2026–27), chapter by chapter. Use “original page” to see any page exactly as printed.</p>`;
+    updateCount(); markRail(guideTok); return;
+  }
+  r.innerHTML = D.groups.map(g => `<h4>${esc(g.name)}</h4>` + g.ids.map(id =>
+    `<a href="#${id}" data-id="${id}">${esc(D.exams[id].title)}<span>${D.exams[id].steps.length}</span></a>`).join('')).join('')
+    + `<h4>History</h4><a href="#hpi" data-h="hpi">OPQRST / HPI</a><a href="#ros" data-h="ros">Review of systems</a><a href="#big6" data-h="big6">Big 6</a><a href="#fhx" data-h="fhx">Focused histories <span>${FXD.length}</span></a><a href="#cond" data-h="cond">Find a condition <span>${CONDS.length}</span></a>`
+    + `<h4>Notes</h4><a href="#notes" data-h="notes">My notes <span id="ncount"></span></a>`
+    + `<p class="tip" style="margin-top:18px">Built from the McMaster Clinical Skills Guide, 6e (2026–27). Figures are the guide’s; original image sources are cited there.</p>`;
+  updateCount();
+}
+
+function renderExam(id){
+  const ex = D.exams[id]; cur = id; view = 'exam';
+  const ticks = store.get('t:'+id) || {};
+  const secs = [];
+  ex.steps.forEach((s,i) => { if (!secs.length || secs[secs.length-1].name !== s.sec) secs.push({name:s.sec, items:[]}); secs[secs.length-1].items.push(i); });
+  const extraCount = ex.steps.filter(s=>s.tags.includes('extra')).length;
+  let h = `<div class="eyebrow">Physical exam · guide pp. ${ex.pg[0]}–${ex.pg[1]}</div><h1>${esc(ex.title)}</h1>`;
+  h += `<div class="order" aria-label="Exam order">` + secs.map((s,k) => `${k?'<i>→</i>':''}<a href="#${id}" data-jump="s${k}">${esc(s.name)}</a>`).join('') + `</div>`;
+  h += `<div class="tools"><button class="btn" data-act="open">Expand all</button><button class="btn" data-act="close">Collapse all</button><button class="btn" data-act="reset">Clear ticks</button>`;
+  if (extraCount) h += `<label class="toggle"><input type="checkbox" id="xtra" ${showExtra?'checked':''}> Show non-routine tests (${extraCount})</label>`;
+  if (EXAM2CH[id] && FXNAME[EXAM2CH[id]]) h += `<a class="btn" href="#fhx-${EXAM2CH[id]}" data-goto="fhx-${EXAM2CH[id]}">Focused history →</a>`;
+  if (EXAM2CH[id]) h += `<a class="btn" href="#g-${EXAM2CH[id]}" data-goto="g-${EXAM2CH[id]}">Full chapter in the guide →</a>`;
+  h += `<span class="progress" id="prog"></span></div>`;
+  h += noteBox('exam:'+id, 'My session notes – '+ex.title);
+  if (REFS[id]) h += `<div class="refs">${REFS[id]}</div>`;
+  if (ex.notes && ex.notes.length) h += `<details class="box notes"><summary>Setup & tips from the guide</summary><div class="inner">${list(ex.notes)}</div></details>`;
+  let n = 0;
+  secs.forEach((sec,k) => {
+    const isExtra = ex.steps[sec.items[0]].tags.includes('extra');
+    h += `<div class="sec" id="s${k}" ${isExtra&&!showExtra?'hidden':''} data-extra="${isExtra?1:0}"><h2>${esc(sec.name)}</h2><span class="n">${sec.items.length} step${sec.items.length>1?'s':''}</span></div><div class="steps" ${isExtra&&!showExtra?'hidden':''} data-extra="${isExtra?1:0}">`;
+    sec.items.forEach(i => { n++; h += stepHtml(id, ex.steps[i], i, n, !!ticks[i]); });
+    h += `</div>`;
+  });
+  h += `<p class="tip" style="margin-top:28px">Source: McMaster Clinical Skills Guide, 6e (2026–27). Check the guide for full likelihood ratios and references.</p>`;
+  $('#main').dataset.hls = 'hl:x:' + id;
+  $('#main').innerHTML = h; syncBadge(); hl.paint($('#main'));
+  updateProg();
+  document.querySelectorAll('.rail a').forEach(a => { if (a.dataset.id===id) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current'); });
+}
+
+function stepHtml(id, s, i, n, done){
+  const ph = stepPhase(s);
+  const tags = s.tags.filter(t=>t!=='extra').map(t => `<span class="tag ${t==='conditional'?'cond':''}">${t==='conditional'?'if indicated':t}</span>`).join('');
+  const hasNote = !!notes.get('step:'+id+':'+i);
+  return `<details class="step${done?' done':''}" id="${id}-${i}" data-i="${i}" data-ex="${id}"><summary>
+    <input type="checkbox" class="tick" aria-label="Mark done" ${done?'checked':''}>
+    <span class="num">${n}</span>
+    <span class="name">${ph?`<span class="ph ${ph}" title="${PHASE_LABEL[ph]||''}"></span>`:''}${esc(s.name)}${tags?`<span class="tags">${tags}</span>`:''}${hasNote?'<span class="pen">✎</span>':''}</span>
+    <span class="chev" aria-hidden="true"></span></summary><div class="body"></div></details>`;
+}
+function fillStep(el){
+  const body = el.querySelector('.body'); if (body.dataset.f) return;
+  const exId = el.dataset.ex || cur, s = D.exams[exId].steps[+el.dataset.i];
+  let h = '';
+  if (s.how) h += `<div><div class="lab">How</div><p style="margin:0">${esc(s.how)}</p></div>`;
+  if (s.setup) h += `<div><div class="lab">Setup</div>${list(s.setup, true)}</div>`;
+  if (s.do) h += `<div><div class="lab">Do</div>${list(s.do, true)}</div>`;
+  if (s.imgs && s.imgs.length) h += `<div class="figs">` + s.imgs.map(f => IMG[f] ? `<button data-img="${f}" data-pg="${s.pg}" aria-label="Enlarge figure"><img src="${IMG[f]}" alt="Figure for ${esc(s.name)}" loading="lazy"></button>` : '').join('') + `</div>`;
+  if (s.report) h += `<div class="report"><div class="lab">Report</div>${para(s.report)}</div>`;
+  if (s.say) h += `<details class="more"><summary>Say to the patient</summary><div class="in">${para(s.say)}</div></details>`;
+  if (s.normal) h += `<details class="more"><summary>What is normal</summary><div class="in">${list(s.normal)}</div></details>`;
+  if (s.why) h += `<details class="more"><summary>Why check / interpretation</summary><div class="in">${list(s.why)}</div></details>`;
+  if (s.more) h += `<details class="more"><summary>Notes</summary><div class="in">${list(s.more)}</div></details>`;
+  if (s.gloss && s.gloss.length) h += `<details class="more"><summary>Terms (${s.gloss.length})</summary><div class="in">${list(s.gloss.map(g=>'• '+g))}</div></details>`;
+  const sk = 'step:'+exId+':'+el.dataset.i, st = notes.all()[sk];
+  h += `<div class="snote"><div class="lab">My notes</div>${editor(sk, 'Preceptor tips for this step…')}<div class="nrow"><span data-saved="${sk}">${st?'Saved '+fmtTime(st.at):''}</span></div></div>`;
+  h += `<div class="pg">Guide p. ${s.pg}</div>`;
+  body.innerHTML = h; body.dataset.f = 1;
+  body.dataset.hls = 'hl:s:' + exId + ':' + el.dataset.i; hl.paint(body);
+}
+
+function updateProg(){
+  if (!cur) return; const ex = D.exams[cur]; const t = store.get('t:'+cur) || {};
+  const done = Object.keys(t).filter(k=>t[k]).length;
+  const p = $('#prog'); if (p) p.textContent = `${done}/${ex.steps.length} ticked`;
+}
+
+/* ---------- history ---------- */
+function renderHist(tab){
+  histTab = tab; cur = null; view = 'hist';
+  const tabs = [['hpi','OPQRST / HPI'],['ros','Review of systems'],['big6','Big 6'],['fhx','Focused histories']];
+  let h = `<div class="eyebrow">History · guide Ch 1, pp. 9–14</div><h1>History taking</h1>
+    <div class="subtabs" role="tablist">${tabs.map(([k,l])=>`<button role="tab" aria-selected="${k===tab}" data-h="${k}">${l}</button>`).join('')}</div>`;
+  const H = HIST[tab];
+  h += `<p class="lead">${esc(H.lead)} <a href="#g-c1" data-goto="g-c1">Full Ch 1 in the guide →</a></p>` + noteBox('hist:'+tab, 'My session notes – '+tabs.find(x=>x[0]===tab)[1]) + (H.intro||'');
+  if (tab==='hpi'){
+    h += `<div class="hgrid">` + H.cards.map(([b,t,qs,tip]) => `<div class="hcard"><div class="big">${b}</div><div><h3>${t}</h3><ul class="q">${qs.map(q=>`<li${/^(Targeted|Feelings|Ideas|Function|Expectations)/.test(q)?' class="n"':''}>${esc(q)}</li>`).join('')}</ul>${tip?`<p class="tip">${esc(tip)}</p>`:''}</div></div>`).join('') + `</div>`;
+  } else if (tab==='ros'){
+    const t = store.get('ros') || {};
+    h += `<div class="tools"><button class="btn" data-act="rosreset">Clear ticks</button></div><div class="ros">` + H.systems.map(([sys,hy,oth],k) => `<div class="sys"><h3>${esc(sys)}</h3>` +
+      hy.map((x,j)=>`<label class="hy"><input type="checkbox" data-ros="${k}h${j}" ${t[k+'h'+j]?'checked':''}>${esc(x)}</label>`).join('') +
+      oth.map((x,j)=>`<label class="oth"><input type="checkbox" data-ros="${k}o${j}" ${t[k+'o'+j]?'checked':''}>${esc(x)}</label>`).join('') + `</div>`).join('') + `</div>`;
+  } else {
+    h += `<div class="big6">` + H.sections.map(([n,t,qs]) => {
+      if (!qs) return `<div class="hcard"><div class="big">${n}</div><div><h3>${t}</h3><p class="tip" style="margin:0 0 8px">“These are questions we ask everyone, to get a more complete picture…”</p>` +
+        H.social.map(([s,q]) => `<details class="more" style="margin-top:6px"><summary>${esc(s)}</summary><div class="in"><ul class="q">${q.map(x=>`<li${/^(ADLs|IADLs)/.test(x)?' class="n"':''}>${esc(x)}</li>`).join('')}</ul></div></details>`).join('') + `</div></div>`;
+      return `<div class="hcard"><div class="big">${n}</div><div><h3>${t}</h3><ul class="q">${qs.map(([k,x])=>`<li${k==='n'?' class="n"':''}>${esc(x)}</li>`).join('')}</ul></div></div>`;
+    }).join('') + `</div>`;
+  }
+  $('#main').dataset.hls = 'hl:h:' + tab;
+  $('#main').innerHTML = h; syncBadge(); hl.paint($('#main'));
+  document.querySelectorAll('.rail a').forEach(a => { if (a.dataset.h===tab) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current'); });
+}
+
+/* ---------- routing ---------- */
+function setTop(t){
+  t = t === true ? 'hist' : t === false ? 'exam' : t;
+  $('#tabExam').setAttribute('aria-pressed', t === 'exam'); $('#tabHist').setAttribute('aria-pressed', t === 'hist'); $('#tabCond').setAttribute('aria-pressed', t === 'cond'); $('#tabGuide').setAttribute('aria-pressed', t === 'guide');
+  renderRail(t === 'guide' ? 'guide' : t === 'hist' ? 'hist' : t === 'cond' ? 'cond' : 'exam', t === 'cond');
+}
+function go(token, stepIdx){
+  closeDrawer();
+  if (token === 'notes') { renderNotes(); window.scrollTo(0,0); return; }
+  if (/^fhx(-[a-z0-9]+)?$/.test(token || '')) { renderFhx(token); store.set('last', token); return; }
+  if (token === 'cond') { renderCondList(); store.set('last', token); return; }
+  if (/^cond-[a-z0-9-]+$/.test(token || '')) { renderCond(token); store.set('last', token); return; }
+  if (/^g-[a-z0-9]+$/.test(token || '')) { renderGuide(token, stepIdx); store.set('last', token); return; }
+  if (HIST[token]) { setTop(true); renderHist(token); markRail(token); window.scrollTo(0,0); store.set('last', token); return; }
+  const id = D.exams[token] ? token : 'approach';
+  setTop(false); renderExam(id); store.set('last', id);
+  if (stepIdx != null){
+    const el = document.getElementById(id+'-'+stepIdx);
+    if (el){ el.open = true; fillStep(el); el.scrollIntoView({block:'start'}); return; }
+  }
+  window.scrollTo(0,0);
+}
+function routeFromHash(){ const t = (location.hash||'').slice(1); go(t || store.get('last') || 'approach'); }
+
+/* ---------- search ---------- */
+const INDEX = [];
+for (const [id,ex] of Object.entries(D.exams)) ex.steps.forEach((s,i)=>INDEX.push({t:s.name, sub:ex.title+' · '+s.sec, id, i, hay:(s.name+' '+ex.title+' '+s.sec).toLowerCase()}));
+for (const [id,ex] of Object.entries(D.exams)) INDEX.push({t:ex.title+' exam', sub:'Physical exam', id, hay:(ex.title+' exam').toLowerCase()});
+INDEX.push({t:'OPQRST / HPI', sub:'History', h:'hpi', hay:'opqrst hpi history onset provoking quality radiation severity timing fife'});
+INDEX.push({t:'Review of systems', sub:'History', h:'ros', hay:'review of systems ros functional inquiry'});
+INDEX.push({t:'My notes', sub:'Notes', h:'notes', hay:'my notes preceptor session notes export backup'});
+INDEX.push({t:'Focused histories', sub:'History', h:'fhx', hay:'focused history histories questions by system chief complaint'});
+INDEX.push({t:'Find a condition', sub:'Conditions', h:'cond', hay:'find condition conditions isolate select presenting complaint'});
+CONDS.forEach(x => INDEX.unshift({t: x.t, sub: 'Condition · ' + x.sys + ' · history + exam', h: 'cond-' + x.id, hay: x.hay + ' condition'}));
+FXD.forEach(c => INDEX.push({t: c.name + ' focused history', sub: 'History · focused histories', h: 'fhx-' + c.id, hay: (c.name + ' ' + c.title + ' focused history questions').toLowerCase()}));
+INDEX.push({t:'Big 6', sub:'History', h:'big6', hay:'big 6 past medical surgical family social medications allergies if-it-helps'});
+function search(q){
+  const box = $('#results'); q = q.trim().toLowerCase();
+  if (q.length < 2){ box.hidden = true; return; }
+  const words = q.split(/\s+/);
+  const hits = INDEX.filter(x => words.every(w => x.hay.includes(w))).slice(0,30);
+  box.innerHTML = hits.length ? hits.map((x,k)=>`<button data-k="${INDEX.indexOf(x)}">${esc(x.t)}<small>${esc(x.sub)}</small></button>`).join('') : `<button disabled>No match. Try a test name like “Phalen” or “egophony”.</button>`;
+  box.hidden = false;
+}
+
+/* ---------- events ---------- */
+document.addEventListener('click', e => {
+  const t = e.target;
+  if (t.closest('#hlbtn')){ if (hl.mode == null) { hl.set(hl.color); hl.panel(true); } else hl.panel($('#hlpanel').hidden); return; }
+  const hc = t.closest('[data-hlc]');
+  if (hc){ hl.set(hc.dataset.hlc === 'erase' ? 'erase' : +hc.dataset.hlc); return; }
+  const ha = t.closest('[data-hlact]');
+  if (ha){
+    if (ha.dataset.hlact === 'off') { hl.set(null); hl.panel(false); }
+    if (ha.dataset.hlact === 'hex') { const v = toHex($('#hlhex').value); if (v) hl.set(v); else { $('#hlhint').textContent = 'That isn’t a hex colour. Try something like #ff00aa.'; $('#hlhex').focus(); } }
+    if (ha.dataset.hlact === 'clear') { const ks = hl.pageKeys(); if (ks.length && confirm('Remove all highlights on this page?')) { ks.forEach(k => notes.set(k, '')); hl.paintAll(); } }
+    return;
+  }
+  if (!t.closest('#hlfab')) hl.panel(false);
+  if (hl.mode === 'erase'){ const m = t.closest('mark.hl'); if (m){ e.preventDefault(); const sc = m.closest('[data-hls]'); const list = hl.get(sc.dataset.hls); list.splice(+m.dataset.r, 1); hl.put(sc.dataset.hls, list); hl.paint(sc); return; } }
+  if (hl.mode != null && !getSelection().isCollapsed && t.closest('summary, .qq')) { e.preventDefault(); return; }
+  const rr = t.closest('#results button[data-k]');
+  if (rr){ const x = INDEX[+rr.dataset.k]; $('#results').hidden = true; $('#q').value=''; if (x.fx){ history.replaceState(null,'','#'+x.fx); go(x.fx); return; } if (x.g){ if (x.evq) evFilter = x.evq; history.replaceState(null,'','#'+x.g); go(x.g, x.part); return; } if (x.h){ history.replaceState(null,'','#'+x.h); go(x.h);} else { history.replaceState(null,'','#'+x.id); go(x.id, x.i); } return; }
+  if (!t.closest('.search')) $('#results').hidden = true;
+  const ra = t.closest('.rail a');
+  if (ra){ e.preventDefault(); const tok = ra.dataset.id || ra.dataset.h || ra.dataset.g; if (ra.dataset.g === 'g-evidence') evFilter = ''; history.replaceState(null,'','#'+tok); go(tok); return; }
+  const j = t.closest('[data-jump]');
+  if (j){ e.preventDefault(); const el = document.getElementById(j.dataset.jump); if (el) el.scrollIntoView({block:'start'}); return; }
+  const st = t.closest('.subtabs button');
+  if (st){ const tk = st.dataset.h === 'fhx' ? 'fhx-' + (store.get('lastFhxCh') || 'c5') : st.dataset.h; history.replaceState(null,'','#'+tk); go(tk); return; }
+  const fj = t.closest('[data-fxjump]');
+  if (fj){ e.preventDefault(); const el = document.getElementById('fx-' + fj.dataset.fxjump); if (el){ const off = $('.top').offsetHeight + ($('#fxnav') ? $('#fxnav').offsetHeight : 0) + 8; window.scrollTo({top: el.getBoundingClientRect().top + scrollY - off}); } return; }
+  const cm = t.closest('[data-cmode]');
+  if (cm){ condMode = cm.dataset.cmode; store.set('condMode', condMode); condApplyMode(); return; }
+  if (t.classList.contains('fxtick')){
+    const k = t.dataset.fxq, cpid = k.split(':')[0], row = t.closest('.qq');
+    const cid = (t.closest('[data-ch]') || {}).dataset ? t.closest('[data-ch]').dataset.ch : store.get('lastFhxCh');
+    const m = fxTicks(cid); if (t.checked) m[k] = 1; else delete m[k]; store.set(fxKey(cid), m);
+    document.querySelectorAll(`[data-fxq="${CSS.escape(k)}"]`).forEach(x => { x.checked = t.checked; x.closest('.qq').classList.toggle('done', t.checked); });
+    fxUpdateCount(cpid); return;
+  }
+  if (!t.closest('.condsearch')) { const cr = $('#condres'); if (cr) cr.hidden = true; }
+  const fig = t.closest('.figs button');
+  if (fig){ $('#lb').classList.remove('page'); $('#lbImg').src = IMG[fig.dataset.img]; $('#lbCap').textContent = 'McMaster Clinical Skills Guide, 6e, p. '+fig.dataset.pg; $('#lb').hidden = false; return; }
+  const gf = t.closest('[data-gimg]');
+  if (gf){ $('#lb').classList.remove('page'); $('#lbImg').src = ASSET + 'gfig/' + gf.dataset.gimg; $('#lbCap').textContent = 'Figure from the McMaster Clinical Skills Guide, 6e'; $('#lb').hidden = false; return; }
+  const pgb = t.closest('[data-page]');
+  if (pgb){ e.preventDefault(); const n = +pgb.dataset.page; $('#lb').classList.add('page'); $('#lbImg').src = pageSrc(n); $('#lbCap').textContent = 'McMaster Clinical Skills Guide, 6e, p. ' + n + ' · tap anywhere to close'; $('#lb').hidden = false; $('#lb').scrollTop = 0; return; }
+  const gp = t.closest('[data-gpart]');
+  if (gp){ e.preventDefault(); const c = gch(guideTok.slice(2)); const el = gMode === 'pages' ? document.getElementById('pp' + partPage(c, +gp.dataset.gpart)) : document.getElementById('gp' + gp.dataset.gpart); if (el){ if (el.tagName === 'DETAILS') el.open = true; el.scrollIntoView({block:'start'}); } return; }
+  const gm = t.closest('[data-gmode]');
+  if (gm){ gMode = gm.dataset.gmode; store.set('gmode', gMode); renderGuide(guideTok); return; }
+  if (t.closest('#lb')){ $('#lb').hidden = true; return; }
+  if (t.classList.contains('tick')){
+    const val = t.checked; e.preventDefault();
+    const det = t.closest('.step'); const i = det.dataset.i; const k = 't:'+(det.dataset.ex || cur); const m = store.get(k) || {};
+    m[i] = val; store.set(k, m); det.classList.toggle('done', val); updateProg();
+    setTimeout(()=>{ t.checked = val; }, 0);
+    return;
+  }
+  const gt = t.closest('[data-goto]');
+  if (gt){ e.preventDefault(); history.replaceState(null,'','#'+gt.dataset.goto); go(gt.dataset.goto, gt.dataset.step!=null?+gt.dataset.step:undefined); return; }
+  const dt = t.closest('[data-date]');
+  if (dt){ const ed = document.querySelector(`.rte[data-note="${dt.dataset.date}"]`); ed.insertAdjacentHTML('beforeend', `<div><b>— ${esc(today())} —</b></div><div><br></div>`); ed.focus(); caretEnd(ed); saveNote(ed); return; }
+  const gb = t.closest('[data-gcmd],[data-gsize],[data-gblock]');
+  if (gb && gEditing){ const body = gEditing.querySelector('.gbody'); if (!body.contains(getSelection().anchorNode)) body.focus();
+    if (gb.dataset.gcmd) document.execCommand(gb.dataset.gcmd, false, null);
+    else if (gb.dataset.gsize) document.execCommand('fontSize', false, gb.dataset.gsize);
+    else document.execCommand('formatBlock', false, gb.dataset.gblock.toUpperCase());
+    return; }
+  const ge = t.closest('[data-ged]');
+  if (ge){ const det = ge.closest('.gpart'); const [cid, k] = det.dataset.gk.split(':'); const key = 'ed:g:' + cid + ':' + k; const a = ge.dataset.ged;
+    if (a === 'edit') startEdit(det);
+    if (a === 'cancel') replacePart(det);
+    if (a === 'save') { const html = cleanGuideHtml(det.querySelector('.gbody').innerHTML);
+      if (html.length > 390000) { alert('This part is too long to save as one edit. Try undoing some changes.'); return; }
+      notes.set(key, html); replacePart(det); }
+    if (a === 'reset' && confirm('Undo your edits to this part and go back to the guide’s original text?')) { notes.set(key, ''); replacePart(det); }
+    return; }
+  const fb = t.closest('.fmt button');
+  if (fb){ const ed = document.querySelector(`.rte[data-note="${fb.parentElement.dataset.for}"]`); if (!ed) return;
+    if (document.activeElement !== ed) { ed.focus(); const r = lastRange[ed.dataset.note]; if (r && ed.contains(r.startContainer)) { const s = getSelection(); s.removeAllRanges(); s.addRange(r); } else caretEnd(ed); }
+    if (fb.dataset.cmd) document.execCommand(fb.dataset.cmd, false, null); else document.execCommand('fontSize', false, fb.dataset.size);
+    fmtState(ed); clearTimeout(saveT[ed.dataset.note]); saveT[ed.dataset.note] = setTimeout(()=>saveNote(ed), 300); return; }
+  const mvb = t.closest('[data-mv]');
+  if (mvb){ e.preventDefault(); e.stopPropagation(); h2tMove(mvb.dataset.mvx, +mvb.dataset.mvi, +mvb.dataset.mv); const el = mvb.closest('details'), off = el ? el.getBoundingClientRect().top : 0; go(location.hash.slice(1)); const again = document.querySelector(`[data-mvi="${mvb.dataset.mvi}"]`); if (again) { const d = again.closest('details'); window.scrollBy(0, d.getBoundingClientRect().top - off); d.classList.add('moved'); setTimeout(() => d.classList.remove('moved'), 700); } return; }
+  if (t.closest('[data-h2tedit]')){ h2tEdit = !h2tEdit; const y = scrollY; go(location.hash.slice(1)); window.scrollTo(0, y); return; }
+  if (t.closest('[data-h2treset]')){ const ex = CH2EXAM[(FXCP[(store.get('lastCond') || '').slice(5)] || {c: {}}).c.id]; if (ex) store.set('h2t:' + ex, null); const y = scrollY; go(location.hash.slice(1)); window.scrollTo(0, y); return; }
+  const co = t.closest('[data-corder]');
+  if (co){ condOrder = co.dataset.corder; store.set('condOrder', condOrder); const y = scrollY; go(location.hash.slice(1)); window.scrollTo(0, y); return; }
+  const fh = t.closest('.fxs[data-cp] > .fxh');
+  if (fh && (t.closest('.fxfold') || (!t.closest('a, button, input, label') && fh.parentElement.classList.contains('shut')))){
+    const sec = fh.parentElement, v = !sec.classList.contains('shut'); sec.classList.toggle('shut', v); fxSetShut([sec.dataset.cp], v); return; }
+  const act = t.closest('[data-act]');
+  if (act){
+    const a = act.dataset.act;
+    if (a==='fxshutall' || a==='fxopenall'){ const v = a === 'fxshutall', ss = [...document.querySelectorAll('.fxs[data-cp]')]; ss.forEach(x => x.classList.toggle('shut', v)); fxSetShut(ss.map(x => x.dataset.cp), v); }
+    if (a==='open') document.querySelectorAll('.step').forEach(d => { if (!d.closest('[hidden]')) { d.open = true; fillStep(d); } });
+    if (a==='close') document.querySelectorAll('.step').forEach(d => d.open = false);
+    if (a==='fxclear' && confirm('Clear all ticked questions for this system?')){ store.set(fxKey(act.dataset.ch), {}); renderFhx('fhx-' + act.dataset.ch); }
+    if (a==='gopen') document.querySelectorAll('.gpart').forEach(d => d.open = true);
+    if (a==='gclose') document.querySelectorAll('.gpart').forEach(d => d.open = false);
+    if (a==='reset'){ store.set('t:'+cur, {}); document.querySelectorAll('.step').forEach(d=>{d.classList.remove('done'); d.querySelector('.tick').checked=false;}); updateProg(); }
+    if (a==='exportmd') download('clinical-skills-notes.md', notesMarkdown(), 'text/markdown');
+    if (a==='exportjson') download('clinical-skills-notes-backup.json', JSON.stringify(notes.all(), null, 1), 'application/json');
+    if (a==='rosreset'){ store.set('ros', {}); document.querySelectorAll('[data-ros]').forEach(c=>c.checked=false); }
+  }
+});
+let saveT = {}, lastRange = {};
+function saveNote(ed){
+  const k = ed.dataset.note, v = edVal(ed); notes.set(k, v);
+  document.querySelectorAll(`[data-saved="${k}"]`).forEach(el => el.textContent = v ? 'Saved ' + fmtTime(Date.now()) : '');
+  const det = document.getElementById(k.replace(/^step:/,'').replace(':','-'));
+  if (det && k.startsWith('step:')){ const nm = det.querySelector('summary .name'); const pen = nm.querySelector('.pen'); if (v && !pen) nm.insertAdjacentHTML('beforeend','<span class="pen">✎</span>'); if (!v && pen) pen.remove(); }
+  updateCount();
+}
+function caretEnd(ed){ const r = document.createRange(); r.selectNodeContents(ed); r.collapse(false); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
+function fmtState(ed){
+  const bar = ed.previousElementSibling; if (!bar || !bar.classList.contains('fmt')) return;
+  bar.querySelectorAll('[data-cmd]').forEach(b => { let on = false; try { on = document.queryCommandState(b.dataset.cmd); } catch(e){} b.setAttribute('aria-pressed', on); });
+}
+function updateCount(){ const c = $('#ncount'); if (c) c.textContent = noteKeys().length || ''; }
+const edOf = e => e.target && e.target.closest ? e.target.closest('.rte[data-note]') : null;
+document.addEventListener('input', e => { const ed = edOf(e); if (ed){ clearTimeout(saveT[ed.dataset.note]); saveT[ed.dataset.note] = setTimeout(()=>saveNote(ed), 300); } });
+document.addEventListener('focusout', e => { const ed = edOf(e); if (ed){ clearTimeout(saveT[ed.dataset.note]); saveNote(ed); } });
+// keep formatting buttons from stealing focus (and the phone keyboard) from the note
+['pointerdown','mousedown'].forEach(ev => document.addEventListener(ev, e => { if (e.target.closest && e.target.closest('.fmt button')) e.preventDefault(); }));
+// paste as plain text so web pages don't bring their own fonts and colours
+document.addEventListener('paste', e => { const ed = edOf(e) || (e.target.closest && e.target.closest('.gbody.editing')); if (!ed) return; e.preventDefault(); document.execCommand('insertText', false, (e.clipboardData || window.clipboardData).getData('text/plain')); });
+document.addEventListener('keydown', e => { const ed = edOf(e); if (ed && (e.ctrlKey || e.metaKey) && /^[biu]$/i.test(e.key)) setTimeout(() => fmtState(ed), 0); });
+document.addEventListener('selectionchange', () => {
+  const ed = document.activeElement && document.activeElement.closest ? document.activeElement.closest('.rte[data-note]') : null;
+  if (ed) { const s = getSelection(); if (s.rangeCount && ed.contains(s.anchorNode)) lastRange[ed.dataset.note] = s.getRangeAt(0).cloneRange(); fmtState(ed); }
+  hl.onSelChange();
+});
+window.addEventListener('beforeunload', () => document.querySelectorAll('.rte[data-note]').forEach(ed => notes.set(ed.dataset.note, edVal(ed))));
+document.addEventListener('toggle', e => { const fd = e.target.dataset && e.target.dataset.fold; if (fd) { const m = fxFolds(); if (e.target.open) delete m[fd]; else m[fd] = 1; store.set('fx:fold', m); }
+  if (e.target.classList && e.target.classList.contains('fxcat') && e.target.dataset.cat) { const m = fxFolds(); if (e.target.open) delete m[e.target.dataset.cat]; else m[e.target.dataset.cat] = 1; store.set('fx:fold', m); } if (e.target.classList && e.target.classList.contains('step') && e.target.open) fillStep(e.target); }, true);
+document.addEventListener('change', e => {
+  if (e.target.id==='importNotes' && e.target.files[0]){
+    const r = new FileReader();
+    r.onload = () => { try { const inc = JSON.parse(r.result); const a = notes.all(); let n = 0;
+      for (const [k,v] of Object.entries(inc)) { if (v && typeof v.text === 'string' && (!a[k] || (v.at||0) > a[k].at)) { a[k] = {text:v.text, at:v.at||Date.now()}; n++; } }
+      store.set('notes', a); renderNotes(); updateCount(); $('.lead').insertAdjacentHTML('afterend', `<div class="intro">Restored ${n} note${n===1?'':'s'} from the backup. Newer notes already on this computer were kept.</div>`);
+    } catch(err){ $('.lead').insertAdjacentHTML('afterend', '<div class="intro">That file isn’t a notes backup. Choose the .json file made with “Back up”.</div>'); } };
+    r.readAsText(e.target.files[0]);
+  }
+  if (e.target.dataset && e.target.dataset.sys){ const tok = (e.target.dataset.sys === 'fhx' ? 'fhx-' : 'cond-') + e.target.value; history.replaceState(null,'','#'+tok); go(tok); return; }
+  if (e.target.id==='xtra'){ showExtra = e.target.checked; document.querySelectorAll('[data-extra="1"]').forEach(el=>el.hidden=!showExtra); }
+  if (e.target.dataset && e.target.dataset.ros){ const m = store.get('ros') || {}; m[e.target.dataset.ros] = e.target.checked; store.set('ros', m); }
+});
+document.addEventListener('keydown', e => { if (e.target.id === 'hlhex' && e.key === 'Enter') { e.preventDefault(); $('[data-hlact="hex"]').click(); return; } if (e.key==='Escape'){ hl.panel(false); $('#lb').hidden = true; $('#results').hidden = true; closeDrawer(); } });
+document.addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') hl.down = true; });
+document.addEventListener('mouseup', () => { hl.down = false; if (hl.mode != null) setTimeout(() => hl.fromSelection(), 0); });
+document.addEventListener('touchend', () => { if (hl.mode != null) { clearTimeout(hl.selT); hl.selT = setTimeout(() => hl.fromSelection(), 900); } });
+$('#q').addEventListener('input', e => search(e.target.value));
+document.addEventListener('input', e => { if (e.target.id === 'hlcol') { hl.set(e.target.value.toLowerCase()); return; } if (e.target.id === 'evq') { evFilter = e.target.value; renderEvList(); }
+  if (e.target.id === 'condq') { condQ = e.target.value; $('#condlist').innerHTML = condListHtml(condQ); }
+  if (e.target.id === 'condq2') condResults(e.target.value, $('#condres')); });
+document.addEventListener('keydown', e => { if (e.key === 'Enter' && (e.target.id === 'condq' || e.target.id === 'condq2')) { const b = (e.target.id === 'condq' ? $('#condlist') : $('#condres')).querySelector('[data-goto]'); if (b) b.click(); } });
+$('#tabGuide').addEventListener('click', () => { const l = store.get('lastGuide') || 'g-c1'; history.replaceState(null,'','#'+l); go(l); });
+$('#q').addEventListener('keydown', e => { if (e.key==='Enter'){ const b = $('#results button[data-k]'); if (b) b.click(); } });
+$('#tabExam').addEventListener('click', () => { const l = store.get('lastExam') || 'approach'; history.replaceState(null,'','#'+l); go(l); });
+$('#tabHist').addEventListener('click', () => { const tk = histTab === 'fhx' ? 'fhx-' + (store.get('lastFhxCh') || 'c5') : histTab; history.replaceState(null,'','#'+tk); go(tk); });
+$('#tabCond').addEventListener('click', () => { history.replaceState(null,'','#cond'); go('cond'); });
+function closeDrawer(){ $('#rail').classList.remove('open'); $('#scrim').classList.remove('open'); }
+$('#menuBtn').addEventListener('click', () => { $('#rail').classList.add('open'); $('#scrim').classList.add('open'); });
+$('#scrim').addEventListener('click', closeDrawer);
+window.addEventListener('hashchange', routeFromHash);
+const _go = go; go = function(tok, i){ if (D.exams[tok]) store.set('lastExam', tok); _go(tok, i); };
+
+const setTopH = () => document.documentElement.style.setProperty('--toph', $('.top').offsetHeight + 'px');
+setTopH(); window.addEventListener('resize', setTopH);
+renderRail('exam');
+hl.ui();
+updateCount();
+cloud.init();
+routeFromHash();
+// fetch the guide in the background so search covers it
+(window.requestIdleCallback || (f => setTimeout(f, 1500)))(() => loadGuide().catch(() => {}));
+})();
+</script>
+
+</body>
+</html>
