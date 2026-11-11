@@ -1352,17 +1352,39 @@ function renderCondList(){
 // "Head to toe" order: group steps by technique (inspection, palpation…), then within each go head → neck → chest → abdomen → arms → legs
 let condOrder = store.get('condOrder') || 'guide';
 const H2T_PHASES = [['vitals', 'Vitals & general'], ['inspect', 'Inspection'], ['palpate', 'Palpation'], ['percuss', 'Percussion'], ['auscultate', 'Auscultation'], ['rom', 'Range of motion'], ['power', 'Power'], ['special', 'Special tests']];
-const H2T_REGION = [
-  [/jugular|JVP|AJR|Abdominojugular|Hepatojugular/i, 2],
-  [/^vitals|general|body habitus|habitus|mental status|confusion|work of breathing|rhythm of breathing|assistive|scars|cachexia|sarcopenia|coagulopathy|xanthoma|skin\b|skinfold|waist|hirsut|central (and|&) peripheral pulses|level of consciousness|behaviour|appearance/i, 0],
-  [/head|eye|sclera|pupil|fundoscop|lid lag|nose|ear\b|otoscop|hearing|mouth|tongue|tonsil|oropharyn|mucous|central cyanosis|face|facial|sinus|mallampati|\bCN\b|olfactory|optic|trigeminal|facial|vestibulo|glossophar|hypoglossal|accessory|visual|ocular|intraocular|slit-lamp|confrontation/i, 1],
-  [/neck|thyroid|goiter|pemberton|carotid|trache|laryngeal|lymph nodes?/i, 2],
-  [/chest|thora|precordial|PMI|heave|thrill|breath|lung|fremitus|expansion|diaphragm|pectus|barrel|scoliosis|kyphosis|intercostal|consolidation|egophony|expiratory|breast|axilla|cardiac|S1|murmur/i, 3],
-  [/abdom|liver|spleen|splenic|kidney|CVA|costovertebral|bladder|bowel|murphy|mcburney|rovsing|psoas|obturator|ascites|fluid wave|shifting|castell|traube|hernia|rectal|cullen|peritoni|rebound|shake|palpation$|light palpation|deep palpation|venous hum|friction rub|bruits/i, 4],
-  [/hand|finger|nail|clubbing|tar stain|arm\b|arms|upper limb|radial|wrist|elbow|shoulder|tremor|peripheral cyanosis|capillary refill|allen|tinel|phalen|finkelstein|piano key|MCP|IP\)/i, 5],
-  [/leg|edema|pedal|ankle|foot|feet|sole|calf|knee|hip|lower limb|femoral|popliteal|buerger|brachial index|ABI|varicose|brodie|heel|toe|plantar|extremit|temperature to touch|gait|pretibial|thompson/i, 6],
+const H2T_REGION = [   // head → eyes → nose → ears → mouth → neck → arms → hands → thorax → abdomen → pelvis → thigh → calf → foot
+  [/general shape of abdomen|peritonitis|bowel sounds/i, 10], [/skin turgor|consolidation|^cardiovascular$/i, 9],
+  [/^gait assessment|^gait$|^3 screening|^vitals|^orthostatic|^pulsus|^volume status|^inspect from behind|^(work|rhythm) of breathing|^assistive|^scars|^cachexia|^general(?! inspection – head)|body habitus|mental status|confusion|^skin|skinfold|waist|hirsut|coagulopathy|xanthoma|level of consciousness|^behaviour|^appearance/i, 0],
+  [/jugular|JVP|AJR|Abdominojugular|Hepatojugular|^central pulses|central (and|&) peripheral pulses|carotid/i, 6],
+  [/central (and|&) upper limb pulses|^peripheral pulses|deep tendon reflexes|proximal muscle|hands behind head/i, 7],
+  [/brachial index|ABI\b/i, 14],
+  [/temperature to touch|capillary refill|peripheral cyanosis|pinch|grip/i, 8],
+  [/eye|sclera|pupil|fundoscop|lid lag|optic|oculomotor|visual|ocular|slit-lamp|confrontation/i, 2],
+  [/nose|sinus|olfactory/i, 3],
+  [/\bear\b|otoscop|hearing|vestibulo|whispered voice|weber|rinne|finger rub|hum test|dix-hallpike|supine roll|HINTS/i, 4],
+  [/mouth|tongue|tonsil|oropharyn|mucous|central cyanosis|mallampati|glossophar|hypoglossal|vagus|temporomandibular/i, 5],
+  [/head|face|facial|trigeminal|scalp|cranial|glasgow/i, 1],
+  [/neck|thyroid|goiter|pemberton|trache|laryngeal|lymph nodes?|accessory|spurling|occiput/i, 6],
+  [/edema|calf|\blegs?\b|shin|pretibial|varicose|brodie|buerger|thompson|heel-to-shin/i, 13],
+  [/hands? (&|and) mouth/i, 5],
+  [/\barms?\b|upper limb|shoulder|elbow|epicondyl|biceps|rotator|drop arm|painful arc|empty can|lift off|hawkins|neer|scarf|o.brien|sulcus|instability|speed|yergason|AC joint|anterior relocation|cubital/i, 7],
+  [/hand|finger|nail|clubbing|schamroth|tar stain|wrist|radial|tremor|allen|tinel|phalen|finkelstein|piano key|MCP|\(IP\)|interphalangeal|rapid alternating/i, 8],
+  [/chest|thora|precordial|PMI|heave|thrill|breath|lung|fremitus|expansion|diaphragm|pectus|barrel|scoliosis|kyphosis|intercostal|egophony|expiratory|breast|axilla|cardiac|murmur|spine|spinal|back|adam|rib-pelvis|schober|tanner|lump|localized|respiratory/i, 9],
+  [/abdom|liver|spleen|splenic|kidney|CVA|costovertebral|bladder|bowel|murphy|mcburney|rovsing|psoas|obturator|ascites|fluid wave|shifting|castell|traube|hernia|cullen|peritoni|rebound|shake|light palpation|deep palpation|venous hum|friction rub|bruits|ballottement/i, 10],
+  [/pelvi|genital|groin|inguinal|rectal|hip|femoral pulse|FABER|FADIR|thomas|ober|gaenslen|barlow|ortolani|leg length|trendelenburg|gower|sacr/i, 11],
+  [/thigh|femoral nerve|quadriceps|straight leg|lasegue|hamstring/i, 12],
+  [/knee|patell|lachman|drawer|MCL|LCL|mcmurray|apley|pivot|clarke|popliteal/i, 12.5],
+  [/foot|feet|sole|ankle|\btoe|heel|plantar|pedal|clonus|stability testing|MTP|peripheral vascular$|^touch$|vibration|proprioception/i, 14],
+  [/gait|stance|romberg|tandem|timed up|walking/i, 15],
 ];
-const h2tRegion = s => { for (const [re, r] of H2T_REGION) if (re.test(s.name)) return r; for (const [re, r] of H2T_REGION) if (re.test(s.sec || '')) return r; return 3.5; };
+// a few test names mean a different place depending on the exam (Tinel's at the wrist, elbow or ankle)
+const H2T_EXAM = {ankle: [[/tinel/i, 14]], elbow: [[/tinel/i, 7]]};
+const h2tRegion = (s, exId) => {
+  const nm = s.name.replace(/\([^)]*\)/g, ' ').trim();
+  for (const [re, r] of (H2T_EXAM[exId] || [])) if (re.test(nm)) return r;
+  for (const t of [nm, s.name, s.sec || '']) for (const [re, r] of H2T_REGION) if (re.test(t)) return r;
+  return 0;
+};
 function h2tPhase(s){
   if (s.phase) return s.phase;
   const t = s.sec || '';
@@ -1376,7 +1398,7 @@ function examH2tAll(exId){
   const ex = D.exams[exId], idx = ex.steps.map((s, i) => i);
   const gk = i => ex.steps[i].tags.includes('extra') ? 'extra' : h2tPhase(ex.steps[i]);
   const groups = [...H2T_PHASES, ['extra', 'Non-routine tests']].map(([k, name]) => ({k, name, items: idx.filter(i => gk(i) === k)
-    .map((i, o) => [i, k === 'extra' ? 0 : h2tRegion(ex.steps[i]), o]).sort((a, b) => a[1] - b[1] || a[2] - b[2]).map(x => x[0])}));
+    .map((i, o) => [i, k === 'extra' ? 0 : h2tRegion(ex.steps[i], exId), o]).sort((a, b) => a[1] - b[1] || a[2] - b[2]).map(x => x[0])}));
   const mine = store.get('h2t:' + exId);
   if (mine && Array.isArray(mine.list)) {
     const seen = new Set();
