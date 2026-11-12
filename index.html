@@ -188,6 +188,50 @@ td.k{font-family:var(--f-mono);white-space:nowrap}
 .rte ul,.rte ol,.nview ul,.nview ol{list-style:disc!important;padding-left:22px!important;margin:4px 0!important}
 .rte ol,.nview ol{list-style:decimal!important}
 .rte ul ul,.nview ul ul{list-style:circle!important}
+.rte ul ul ul,.nview ul ul ul{list-style:square!important}
+.rte ol ol,.nview ol ol,.rte li>ol,.nview li>ol{list-style:lower-alpha!important}
+.rte ol ol ol,.nview ol ol ol{list-style:lower-roman!important}
+.rte ol ol ol ol,.nview ol ol ol ol{list-style:decimal!important}
+:is(.gbody,.uedit,.eding) :is(ul,ol):not([class]){padding-left:22px;margin:4px 0}
+:is(.gbody,.uedit,.eding) ul:not([class]){list-style:disc}:is(.gbody,.uedit,.eding) ul:not([class]) ul:not([class]){list-style:circle}
+:is(.gbody,.uedit,.eding) ol:not([class]){list-style:decimal}:is(.gbody,.uedit,.eding) ol:not([class]) ol:not([class]){list-style:lower-alpha}:is(.gbody,.uedit,.eding) ol:not([class]) ol:not([class]) ol:not([class]){list-style:lower-roman}
+:is(.gbody,.uedit,.eding) :is(ul,ol):not([class])>li{padding-left:0;position:static}:is(.gbody,.uedit,.eding) :is(ul,ol):not([class])>li::before{content:none}
+/* edit mode */
+.edbtn svg{width:20px;height:20px}
+body.editmode [data-eb]{cursor:text;border-radius:3px}
+body.editmode [data-eb]:hover{outline:1px dashed var(--accent);outline-offset:2px}
+body.editmode .uedit{box-shadow:inset 3px 0 0 var(--accent)}
+.eding{outline:2px solid var(--accent)!important;outline-offset:2px;background:var(--note-bg);border-radius:3px}
+body:not(.editmode) .uempty{display:none!important}
+body.editmode .uempty{min-height:1.2em;opacity:.6}body.editmode .uempty:not(.eding)::after{content:"(deleted text: tap to restore)";font-size:12px;color:var(--muted)}
+.edbar{position:fixed;left:max(16px,env(safe-area-inset-left,0px));bottom:max(16px,env(safe-area-inset-bottom,0px));z-index:36;max-width:min(640px,calc(100vw - 100px));background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.2);padding:10px 12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px}
+.edbar>b{font:600 14px var(--f-head)}
+.edbar #edhint{color:var(--muted);flex:1 1 180px}
+.edbar .fmt{border-radius:8px;border-bottom:1px solid var(--line)}
+.edbar .btn{padding:6px 10px}
+.edbar .btn[disabled]{opacity:.45;cursor:default}
+/* combined pages */
+.cbbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0 14px}
+.cbbar select{font:inherit;padding:7px 8px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);max-width:100%}
+.cbadd{margin:0 0 18px;max-width:560px}
+.cbit{border:1px solid var(--line);border-radius:12px;margin:0 0 16px;background:var(--panel)}
+.cbh{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line);background:var(--panel);border-radius:12px 12px 0 0}
+.cbit.shut .cbh{border-bottom:0;border-radius:12px}
+.cbit.shut .cbbody{display:none}
+.cbh .cbt{flex:1;min-width:0}
+.cbh h2{margin:2px 0 0;font:600 19px/1.25 var(--f-head)}
+.cbtype{font:500 11px var(--f-mono);text-transform:uppercase;letter-spacing:.05em;color:var(--accent)}
+.cbh .also{display:block;color:var(--muted);font-size:13px}
+.cbtools{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+.cbtools button,.cbtools a{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;min-width:32px;height:32px;padding:0 8px;cursor:pointer;font:13px var(--f-body);display:inline-grid;place-items:center;text-decoration:none}
+.cbtools button:disabled{opacity:.35;cursor:default}
+.cbfold{border:0;background:none;color:var(--muted);font-size:18px;cursor:pointer;padding:2px 4px;transition:transform .15s}
+.cbit.shut .cbfold{transform:rotate(-90deg)}
+.cbbody{padding:6px 12px 12px}
+.cbpart{font:600 13px var(--f-mono);text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:16px 0 8px}
+.cbempty{border:1px dashed var(--line);border-radius:12px;padding:18px;color:var(--muted)}
+.cbadded{font-size:13px;color:var(--muted);align-self:center}
+@media (max-width:520px){.cbh{flex-wrap:wrap}.cbtools{width:100%;justify-content:flex-start}}
 .rte li,.nview li{padding-left:0!important;margin:2px 0!important;position:static!important}
 .rte li::before,.nview li::before{content:none!important}
 .rte p,.nview p{margin:0}
@@ -204,6 +248,10 @@ mark.hl[data-c="0"]{background:rgba(255,210,0,.5)}mark.hl[data-c="1"]{background
 .hlpanel .custom .btn{padding:6px 10px}
 .hlpanel .custom.on input[type=color]{box-shadow:0 0 0 2px var(--ink)}
 .sw-0{background:#ffd400}.sw-1{background:#3cc86e}.sw-2{background:#ff64aa}.sw-3{background:#4696ff}.sw-4{background:#ff8c1e}
+mark.hl[data-c="b"]{background:none;font-weight:700}mark.hl[data-c="L"]{background:none;font-size:1.22em;line-height:1.3}
+.hlpanel .sw .tx{background:var(--soft);color:var(--ink);font:700 15px var(--f-body);display:grid;place-items:center}
+.hlpanel .sw .tx.lg{font-size:13px}.hlpanel .sw .tx.lg big{font-size:18px}
+.hlpanel .sub{font:500 11px var(--f-mono);color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:-4px}
 body.hl-erase mark.hl{cursor:pointer;outline:1px dashed currentColor;outline-offset:1px}
 .hlfab{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:max(16px,env(safe-area-inset-bottom,0px));z-index:35;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
 .hlbtn{width:50px;height:50px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--ink);box-shadow:0 4px 16px rgba(0,0,0,.18);display:grid;place-items:center;cursor:pointer;position:relative}
@@ -447,6 +495,7 @@ details.step.moved{outline:2px solid var(--accent);outline-offset:1px;transition
       <button id="tabHist" aria-pressed="false">History</button>
       <button id="tabCond" aria-pressed="false"><span class="tabs-lg">Conditions</span><span class="tabs-sm">Find</span></button>
       <button id="tabGuide" aria-pressed="false">Guide</button>
+      <button id="tabMine" aria-pressed="false"><span class="tabs-lg">My pages</span><span class="tabs-sm">Mine</span></button>
     </div>
     <div class="search">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
@@ -649,9 +698,10 @@ const noteKeys = () => Object.keys(notes.all()).filter(k => !isHl(k));
 
 /* ---------- rich-text notes: stored as a small, cleaned subset of HTML ---------- */
 const looksHtml = t => /<(div|p|br|b|i|u|ul|ol|li|span|strong|em|font)\b/i.test(t);
-function cleanHtml(html){
+const ECLS = /^(pill|key|rf|pg|n|qul|also|coretag|isq|nb)$/;
+function cleanHtml(html, keepCls){
   const tpl = document.createElement('template'); tpl.innerHTML = html;
-  const OK = {B:1, STRONG:1, I:1, EM:1, U:1, UL:1, OL:1, LI:1, BR:1, DIV:1, P:1, SPAN:1, FONT:1};
+  const OK = {B:1, STRONG:1, I:1, EM:1, U:1, UL:1, OL:1, LI:1, BR:1, DIV:1, P:1, SPAN:1, FONT:1, SUB:1, SUP:1};
   (function walk(el){
     [...el.childNodes].forEach(n => {
       if (n.nodeType === 3) return;
@@ -667,9 +717,10 @@ function cleanHtml(html){
         if (/underline/.test(cs.textDecorationLine || cs.textDecoration || '')) st.push('text-decoration:underline');
         if (st.length) keep.style = st.join(';');
       }
+      if (keepCls && n.classList.length && [...n.classList].every(c => ECLS.test(c))) keep.class = n.className;
       [...n.attributes].forEach(a => n.removeAttribute(a.name));
       Object.entries(keep).forEach(([k, v]) => n.setAttribute(k, v));
-      if ((n.nodeName === 'FONT' && !keep.size) || (n.nodeName === 'SPAN' && !keep.style)) n.replaceWith(...n.childNodes);
+      if ((n.nodeName === 'FONT' && !keep.size) || (n.nodeName === 'SPAN' && !keep.style && !keep.class)) n.replaceWith(...n.childNodes);
     });
   })(tpl.content);
   return tpl.innerHTML;
@@ -706,6 +757,7 @@ function editor(k, ph){
     <button type="button" data-size="3" title="Normal text" aria-label="Normal text">A</button>
     <button type="button" data-size="5" class="fs5" title="Large text" aria-label="Large text">A</button><span class="sep"></span>
     <button type="button" data-cmd="insertUnorderedList" title="Bullet list" aria-label="Bullet list"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="5" cy="6" r="1.3" fill="currentColor"/><circle cx="5" cy="12" r="1.3" fill="currentColor"/><circle cx="5" cy="18" r="1.3" fill="currentColor"/><path d="M10 6h10M10 12h10M10 18h10"/></svg></button>
+    <button type="button" data-cmd="insertOrderedList" title="Numbered list (1. a. i.) · Tab to indent" aria-label="Numbered list"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M10 6h10M10 12h10M10 18h10"/><text x="1.5" y="8.5" font-size="7" stroke="none" fill="currentColor" font-family="sans-serif">1</text><text x="1.5" y="14.5" font-size="7" stroke="none" fill="currentColor" font-family="sans-serif">2</text><text x="1.5" y="20.5" font-size="7" stroke="none" fill="currentColor" font-family="sans-serif">3</text></svg></button>
   </div><div class="rte" contenteditable="true" role="textbox" aria-multiline="true" aria-label="${esc(ph)}" data-note="${k}" data-ph="${esc(ph)}">${noteHtml(notes.get(k))}</div>`;
 }
 
@@ -729,6 +781,7 @@ const hl = {
   },
   paint(scope){
     if (!scope || !scope.dataset.hls) return;
+    edits.apply(scope);
     scope.querySelectorAll('mark.hl').forEach(m => { if (m.closest('[data-hls]') === scope) m.replaceWith(...m.childNodes); });
     scope.normalize();
     this.get(scope.dataset.hls).forEach(([s, e, c], idx) => {
@@ -739,10 +792,11 @@ const hl = {
         if (isHex(c)) m.style.background = c + '73'; else m.dataset.c = c; n.replaceWith(m); m.appendChild(n); });
     });
   },
-  paintAll(){ document.querySelectorAll('[data-hls]').forEach(sc => this.paint(sc)); },
+  paintAll(){ const m = $('#main'); if (m && !m.dataset.hls) edits.apply(m, true); document.querySelectorAll('[data-hls]').forEach(sc => this.paint(sc)); },
   merge(list, s, e, mode){
     const out = [];
-    list.forEach(([a, b, c]) => { if (b <= s || a >= e) out.push([a, b, c]); else { if (a < s) out.push([a, s, c]); if (b > e) out.push([e, b, c]); } });
+    const kind = c => c === 'b' || c === 'L' ? c : 'col', mk = kind(mode);
+    list.forEach(([a, b, c]) => { if (b <= s || a >= e || (mode !== 'erase' && kind(c) !== mk)) out.push([a, b, c]); else { if (a < s) out.push([a, s, c]); if (b > e) out.push([e, b, c]); } });
     if (mode !== 'erase') out.push([s, e, mode]);
     return out.sort((x, y) => x[0] - y[0]);
   },
@@ -777,15 +831,17 @@ const hl = {
   },
   set(mode){
     this.mode = mode;
-    if (mode != null && mode !== 'erase') { this.color = mode; store.set('hlc', mode); if (isHex(mode)) { this.custom = mode; store.set('hlcustom', mode); } }
+    const fx = mode === 'b' || mode === 'L';
+    if (mode != null && mode !== 'erase' && !fx) { this.color = mode; store.set('hlc', mode); if (isHex(mode)) { this.custom = mode; store.set('hlcustom', mode); } }
     document.body.classList.toggle('hl-erase', mode === 'erase');
     const b = $('#hlbtn'); b.setAttribute('aria-pressed', mode != null);
     const dot = b.querySelector('.dot'); dot.className = isHex(this.color) ? 'dot' : 'dot sw-' + this.color; dot.style.background = isHex(this.color) ? this.color : ''; dot.hidden = mode == null;
     document.querySelectorAll('#hlpanel [data-hlc]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.hlc) === String(mode)));
     $('#hlcol').value = this.custom; $('#hlhex').value = this.custom; $('#hlcustom').classList.toggle('on', isHex(mode));
-    $('#hlstate').textContent = mode == null ? 'Off' : mode === 'erase' ? 'Eraser' : isHex(mode) ? mode : HL_NAMES[mode];
+    $('#hlstate').textContent = mode == null ? 'Off' : mode === 'erase' ? 'Eraser' : mode === 'b' ? 'Bold' : mode === 'L' ? 'Larger' : isHex(mode) ? mode : HL_NAMES[mode];
     $('#hlhint').textContent = mode == null ? 'Pick a colour, then select words on the page to highlight them.'
-      : mode === 'erase' ? 'Tap a highlight, or select over it, to remove it.' : 'Select words on the page to highlight them. Highlights sync with your notes.';
+      : mode === 'erase' ? 'Tap a highlight, or select over it, to remove it (also removes bold and larger text).'
+      : fx ? 'Select words on the page to make them ' + (mode === 'b' ? 'bold' : 'larger') + '. Works on top of highlights.' : 'Select words on the page to highlight them. Highlights sync with your notes.';
   },
   panel(open){ $('#hlpanel').hidden = !open; $('#hlbtn').setAttribute('aria-expanded', open); },
   ui(){
@@ -794,6 +850,8 @@ const hl = {
         <div class="hd">Highlighter <span id="hlstate">Off</span></div>
         <div class="sw">${HL_NAMES.map((n, i) => `<button type="button" class="sw-${i}" data-hlc="${i}" aria-label="${n}" title="${n}"></button>`).join('')}
           <button type="button" class="er" data-hlc="erase" aria-label="Eraser" title="Eraser"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 21-4-4a2 2 0 0 1 0-2.8L13.2 4a2 2 0 0 1 2.8 0l4 4a2 2 0 0 1 0 2.8L11 20"/><path d="M7 21h14M9 10l5 5"/></svg></button></div>
+        <div class="sub">Text</div>
+        <div class="sw"><button type="button" class="tx" data-hlc="b" aria-label="Bold" title="Bold">B</button><button type="button" class="tx lg" data-hlc="L" aria-label="Larger text" title="Larger text">A<big>A</big></button></div>
         <div class="custom" id="hlcustom"><input type="color" id="hlcol" aria-label="Pick any colour" title="Pick any colour"><input type="text" id="hlhex" placeholder="#ff00aa" maxlength="7" spellcheck="false" autocomplete="off" aria-label="Hex colour code"><button type="button" class="btn" data-hlact="hex">Use</button></div>
         <p id="hlhint"></p>
         <div class="row"><button type="button" class="btn" data-hlact="off">Turn off</button><button type="button" class="btn" data-hlact="clear">Clear this page</button></div>
@@ -1116,6 +1174,7 @@ function startEdit(det){
     <button type="button" data-gsize="3" title="Normal text" aria-label="Normal text">A</button>
     <button type="button" data-gsize="5" class="fs5" title="Large text" aria-label="Large text">A</button><span class="sep"></span>
     <button type="button" data-gcmd="insertUnorderedList" title="Bullet list" aria-label="Bullet list">• List</button>
+    <button type="button" data-gcmd="insertOrderedList" title="Numbered list (1. a. i.) · Tab to indent" aria-label="Numbered list">1. List</button>
     <button type="button" data-gblock="h3" title="Make this line a heading" aria-label="Heading">H</button>
     <button type="button" data-gblock="p" title="Make this line normal text" aria-label="Normal paragraph">¶</button>
   </div><button type="button" class="btn" data-ged="cancel">Cancel</button><button type="button" class="btn" data-ged="save" style="border-color:var(--accent);color:var(--accent)">Save</button>`;
@@ -1244,7 +1303,7 @@ function fxSection(c, cp, opt){
   const ticks = fxTicks(c.id), pre = cp.id;
   const n = fxCountable(cp.items), done = fxDone(ticks, pre);
   let h = `<section class="fxs${cp.core ? ' core' : ''}${fxShut()[cp.id] ? ' shut' : ''}" id="fx-${cp.id}" data-cp="${cp.id}" data-ch="${c.id}">
-    <header class="fxh"><div class="fxt">${cp.core && !opt.noCoreTag ? `<span class="coretag">Ask for every ${esc(c.name.toLowerCase())} complaint</span>` : ''}<h2>${esc(cp.t)}</h2>${(cp.also || []).length ? `<p class="also">${cp.also.map(esc).join(' · ')}</p>` : ''}</div>
+    <header class="fxh"><div class="fxt">${cp.core && !opt.noCoreTag ? `<span class="coretag">Ask for every ${esc(c.name.toLowerCase())} complaint</span>` : ''}<h2 data-ek="cpt:${cp.id}">${esc(cp.t)}</h2>${(cp.also || []).length ? `<p class="also">${cp.also.map(esc).join(' · ')}</p>` : ''}</div>
     <div class="fxtools"><button type="button" class="fxfold" aria-label="Collapse or expand" title="Collapse / expand">▾</button>${n ? `<span class="fxcount" data-count="${cp.id}">${Math.min(done, n)}/${n}</span>` : ''}${cp.pg ? `<button type="button" class="fxpg" data-page="${cp.pg}" title="See this page as printed">p. ${cp.pg}</button>` : ''}${opt.isolate !== false && !cp.core ? `<a class="fxiso" href="#cond-${cp.id}" data-goto="cond-${cp.id}" title="History and physical exam for this condition only">Isolate</a>` : ''}</div></header>`;
   h += `<div class="fxbody" data-hls="hl:f2:${c.id}:${cp.id}">` + fxBody(cp.items, pre, ticks, true, cp.pearls);
   (cp.bg || []).forEach((b, k) => { h += fxFold(pre + ':b' + k, esc(b.cat), fxBody(b.items, pre + ':b' + k, ticks, true), 'fxbgsub'); });
@@ -1278,7 +1337,7 @@ function renderFhx(tok){
     <div class="subtabs" role="tablist">${[['hpi','OPQRST / HPI'],['ros','Review of systems'],['big6','Big 6'],['fhx','Focused histories']].map(([k,l])=>`<button role="tab" aria-selected="${k==='fhx'}" data-h="${k}">${l}</button>`).join('')}</div>`;
   h += `<div class="tools">${fxSysPicker(c.id, 'fhx')}<button class="btn" data-act="fxshutall">Collapse all</button><button class="btn" data-act="fxopenall">Expand all</button><button class="btn" data-act="fxclear" data-ch="${c.id}">Clear ticks</button>`
     + (exam ? `<a class="btn" href="#${exam}" data-goto="${exam}">Exam steps →</a>` : '')
-    + `<a class="btn" href="#g-${c.id}" data-goto="g-${c.id}">Chapter in the guide →</a></div>`;
+    + `<a class="btn" href="#g-${c.id}" data-goto="g-${c.id}">Chapter in the guide →</a>` + cbAddBtn('fhx:' + c.id) + `</div>`;
   h += `<p class="lead">Start open-ended, then work down each complaint. Tick questions as you ask them; grey text is what an answer points to. Tap <b>Isolate</b> to see one complaint with its physical exam.</p>`;
   if (c.intro) h += `<div class="intro">${esc(c.intro)}</div>`;
   c.extras.filter(e => e.after === 0).forEach(e => { h += `<div class="gbody fxintro">${gblocks([e.blk])}</div>`; });
@@ -1483,7 +1542,7 @@ function examStepsHtml(exId, cp){
   if (rest) h += `<p class="tip">Showing the steps for ${esc(cp.t.toLowerCase())}. Steps for other conditions are folded away at the bottom.</p>`;
   secs.forEach(sec => {
     const isExtra = ex.steps[sec.items[0]].tags.includes('extra');
-    h += `<div class="sec sm"${isExtra && !showExtra ? ' hidden' : ''} data-extra="${isExtra ? 1 : 0}"><h3>${esc(sec.name)}</h3><span class="n">${sec.items.length}</span></div><div class="steps"${isExtra && !showExtra ? ' hidden' : ''} data-extra="${isExtra ? 1 : 0}">`;
+    h += `<div class="sec sm"${isExtra && !showExtra ? ' hidden' : ''} data-extra="${isExtra ? 1 : 0}"><h3 data-ek="sec:${exId}:${esc(sec.name)}">${esc(sec.name)}</h3><span class="n">${sec.items.length}</span></div><div class="steps"${isExtra && !showExtra ? ' hidden' : ''} data-extra="${isExtra ? 1 : 0}">`;
     sec.items.forEach(i => { const s = ex.steps[i]; n++; let sh = stepHtml(exId, s, i, n, !!ticks[i]);
       if (h2tEdit && condOrder === 'h2t' && sec.k) sh = sh.replace('</summary>', mvCtl(exId, i));
       h += sh; });
@@ -1507,7 +1566,7 @@ function renderCond(tok){
   const core = c.complaints.filter(x => x.core);
   let h = `<div class="eyebrow">Condition · ${esc(c.name)}</div><h1>${esc(cp.t)}</h1>`;
   h += `<div class="condbar"><div class="condsearch sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="condq2" type="search" placeholder="Switch to another condition…" autocomplete="off" aria-label="Switch condition"><div class="results" id="condres" hidden></div></div>
-    <div class="gview" role="group" aria-label="Show">${[['both','History + exam'],['hx','History'],['px','Exam']].map(([k, l]) => `<button type="button" data-cmode="${k}" aria-pressed="${condMode === k}">${l}</button>`).join('')}</div></div>`;
+    ${cbAddBtn('cond:' + cp.id)}<div class="gview" role="group" aria-label="Show">${[['both','History + exam'],['hx','History'],['px','Exam']].map(([k, l]) => `<button type="button" data-cmode="${k}" aria-pressed="${condMode === k}">${l}</button>`).join('')}</div></div>`;
   if (twins.length) h += `<p class="tip">Also covered in: ${twins.map(x => `<a href="#cond-${x.id}" data-goto="cond-${x.id}">${esc(x.sys)}</a>`).join(', ')}</p>`;
   h += noteBox('cond:' + cp.id, 'My notes – ' + cp.t);
   let hx = `<div class="condpart" data-part="hx"><h2 class="partttl"><span>1</span>Focused history</h2>`;
@@ -1587,9 +1646,10 @@ function railCond(){
 
 function renderRail(mode, force){
   mode = mode || railMode || 'exam'; if (mode === railMode && !force) return; railMode = mode;
-  const r = $('#rail'); $('#menuLab').textContent = {guide: 'Chapters', hist: 'Systems', cond: 'Conditions'}[mode] || 'Exams';
+  const r = $('#rail'); $('#menuLab').textContent = {guide: 'Chapters', hist: 'Systems', cond: 'Conditions', combo: 'My pages'}[mode] || 'Exams';
   if (mode === 'hist') { r.innerHTML = railHist(); updateCount(); return; }
   if (mode === 'cond') { r.innerHTML = railCond(); updateCount(); return; }
+  if (mode === 'combo') { r.innerHTML = railCombo(); updateCount(); return; }
   if (mode === 'guide') {
     r.innerHTML = (!G ? `<p class="tip">Loading the guide…</p>` : Object.entries(G.sections).map(([k, name]) => `<h4>${esc(name)}</h4>` + G.chapters.filter(c => c.sec === k).map(c => `<a href="#g-${c.id}" data-g="g-${c.id}"><span class="gl">${esc(c.lab)}</span>${esc(c.title)}</a>`).join('')).join('')
       + `<h4>Evidence</h4><a href="#g-evidence" data-g="g-evidence">All likelihood-ratio tables <span>${G.evidence.length}</span></a>`)
@@ -1619,14 +1679,14 @@ function renderExam(id){
   if (extraCount) h += `<label class="toggle"><input type="checkbox" id="xtra" ${showExtra?'checked':''}> Show non-routine tests (${extraCount})</label>`;
   if (EXAM2CH[id] && FXNAME[EXAM2CH[id]]) h += `<a class="btn" href="#fhx-${EXAM2CH[id]}" data-goto="fhx-${EXAM2CH[id]}">Focused history →</a>`;
   if (EXAM2CH[id]) h += `<a class="btn" href="#g-${EXAM2CH[id]}" data-goto="g-${EXAM2CH[id]}">Full chapter in the guide →</a>`;
-  h += `<span class="progress" id="prog"></span></div>`;
+  h += cbAddBtn('exam:' + id) + `<span class="progress" id="prog"></span></div>`;
   h += noteBox('exam:'+id, 'My session notes – '+ex.title);
   if (REFS[id]) h += `<div class="refs">${REFS[id]}</div>`;
   if (ex.notes && ex.notes.length) h += `<details class="box notes"><summary>Setup & tips from the guide</summary><div class="inner">${list(ex.notes)}</div></details>`;
   let n = 0;
   secs.forEach((sec,k) => {
     const isExtra = ex.steps[sec.items[0]].tags.includes('extra');
-    h += `<div class="sec" id="s${k}" ${isExtra&&!showExtra?'hidden':''} data-extra="${isExtra?1:0}"><h2>${esc(sec.name)}</h2><span class="n">${sec.items.length} step${sec.items.length>1?'s':''}</span></div><div class="steps" ${isExtra&&!showExtra?'hidden':''} data-extra="${isExtra?1:0}">`;
+    h += `<div class="sec" id="s${k}" ${isExtra&&!showExtra?'hidden':''} data-extra="${isExtra?1:0}"><h2 data-ek="sec:${id}:${esc(sec.name)}">${esc(sec.name)}</h2><span class="n">${sec.items.length} step${sec.items.length>1?'s':''}</span></div><div class="steps" ${isExtra&&!showExtra?'hidden':''} data-extra="${isExtra?1:0}">`;
     sec.items.forEach(i => { n++; let sh = stepHtml(id, ex.steps[i], i, n, !!ticks[i]); if (h2tEdit && condOrder === 'h2t' && sec.k) sh = sh.replace('</summary>', mvCtl(id, i)); h += sh; });
     h += `</div>`;
   });
@@ -1644,7 +1704,7 @@ function stepHtml(id, s, i, n, done){
   return `<details class="step${done?' done':''}" id="${id}-${i}" data-i="${i}" data-ex="${id}"><summary>
     <input type="checkbox" class="tick" aria-label="Mark done" ${done?'checked':''}>
     <span class="num">${n}</span>
-    <span class="name">${ph?`<span class="ph ${ph}" title="${PHASE_LABEL[ph]||''}"></span>`:''}${esc(s.name)}${tags?`<span class="tags">${tags}</span>`:''}${hasNote?'<span class="pen">✎</span>':''}</span>
+    <span class="name">${ph?`<span class="ph ${ph}" title="${PHASE_LABEL[ph]||''}"></span>`:''}<span class="sname" data-ek="sn:${id}:${i}">${esc(s.name)}</span>${tags?`<span class="tags">${tags}</span>`:''}${hasNote?'<span class="pen">✎</span>':''}</span>
     <span class="chev" aria-hidden="true"></span></summary><div class="body"></div></details>`;
 }
 function fillStep(el){
@@ -1704,12 +1764,14 @@ function renderHist(tab){
 /* ---------- routing ---------- */
 function setTop(t){
   t = t === true ? 'hist' : t === false ? 'exam' : t;
-  $('#tabExam').setAttribute('aria-pressed', t === 'exam'); $('#tabHist').setAttribute('aria-pressed', t === 'hist'); $('#tabCond').setAttribute('aria-pressed', t === 'cond'); $('#tabGuide').setAttribute('aria-pressed', t === 'guide');
-  renderRail(t === 'guide' ? 'guide' : t === 'hist' ? 'hist' : t === 'cond' ? 'cond' : 'exam', t === 'cond');
+  $('#tabExam').setAttribute('aria-pressed', t === 'exam'); $('#tabMine').setAttribute('aria-pressed', t === 'combo'); $('#tabHist').setAttribute('aria-pressed', t === 'hist'); $('#tabCond').setAttribute('aria-pressed', t === 'cond'); $('#tabGuide').setAttribute('aria-pressed', t === 'guide');
+  renderRail(t === 'guide' ? 'guide' : t === 'hist' ? 'hist' : t === 'cond' ? 'cond' : t === 'combo' ? 'combo' : 'exam', t === 'cond' || t === 'combo');
 }
 function go(token, stepIdx){
   closeDrawer();
+  if (edits.editing) edits.finish();
   if (token === 'notes') { renderNotes(); window.scrollTo(0,0); return; }
+  if (/^combo(-[a-z0-9]+)?$/.test(token || '')) { renderCombo(token); store.set('last', token); edits.bar(); return; }
   if (/^fhx(-[a-z0-9]+)?$/.test(token || '')) { renderFhx(token); store.set('last', token); return; }
   if (token === 'cond') { renderCondList(); store.set('last', token); return; }
   if (/^cond-[a-z0-9-]+$/.test(token || '')) { renderCond(token); store.set('last', token); return; }
@@ -1746,12 +1808,246 @@ function search(q){
   box.hidden = false;
 }
 
+/* ---------- edit mode: change any text on the page; edits sync like notes under "ed:x:" / "ed:k:" keys ---------- */
+const ESEL = 'li,p,td,th,h1,h2,h3,h4,.qh,.qf,.qn,.qq>span,.lab,.intro,.also,.fxgroup,details.fxsub>summary,details.more>summary,details.fxmore>summary,details.box>summary';
+const ENO = NOHL.replace(',[contenteditable]', '') + ',.rte,.gbody.editing,.gedbar,.step>summary,.cbh,.fxtools,.results,.condsearch';
+const ZW = '\u200b';
+const edits = {
+  on: false, editing: null,
+  pseudoTok(){ const t = (location.hash || '').slice(1) || store.get('last') || ''; if (t === 'fhx') return 'fhx-' + (store.get('lastFhxCh') || 'c5'); return /^(cond|fhx)/.test(t) ? t : null; },
+  owned(el, scope, pseudo){ const o = el.closest('[data-hls]'); return pseudo ? !o : o === scope; },
+  blocks(scope, pseudo){
+    if (!scope) return [];
+    if (!pseudo && /^hl:g:/.test(scope.dataset.hls || '')) return [];
+    if (pseudo && !this.pseudoTok()) return [];
+    return [...scope.querySelectorAll(ESEL)].filter(el => {
+      if (!this.owned(el, scope, pseudo) || el.closest('[data-ek]') || el.closest(ENO)) return false;
+      const up = el.parentElement && el.parentElement.closest(ESEL);
+      return !(up && scope.contains(up));
+    });
+  },
+  key(scope, pseudo, i){ return pseudo ? 'ed:x:@' + this.pseudoTok() + '|' + i : 'ed:x:' + scope.dataset.hls.slice(3) + '|' + i; },
+  list(scope, pseudo){
+    const out = this.blocks(scope, pseudo).map((el, i) => [el, this.key(scope, pseudo, i)]);
+    scope.querySelectorAll('[data-ek]').forEach(el => { if (this.owned(el, scope, pseudo)) out.push([el, 'ed:k:' + el.dataset.ek]); });
+    return out;
+  },
+  apply(scope, pseudo){
+    if (!scope) return;
+    const all = notes.all(), any = Object.keys(all).some(k => k.startsWith('ed:x:') || k.startsWith('ed:k:'));
+    if (!any && !this.on && !scope.querySelector('.uedit')) return;
+    this.list(scope, pseudo).forEach(([el, k]) => {
+      if (this.on) el.dataset.eb = '';
+      if (el === this.editing) return;
+      const v = all[k] ? all[k].text : '';
+      if (el._orig == null) el._orig = el.innerHTML;
+      if (v) { const h = v === ZW ? '' : v; if (el.innerHTML !== h) el.innerHTML = h; el.classList.add('uedit'); el.classList.toggle('uempty', v === ZW); }
+      else if (el.classList.contains('uedit')) { el.innerHTML = el._orig; el.classList.remove('uedit', 'uempty'); }
+    });
+  },
+  // the editable block a click landed on, with its storage key
+  find(t){
+    const main = $('#main'); if (!main.contains(t)) return null;
+    const ek = t.closest('[data-ek]'); if (ek && main.contains(ek) && !t.closest('button,input,.tag,.pen')) return [ek, 'ed:k:' + ek.dataset.ek];
+    if (t.closest(ENO)) return null;
+    let c = t.closest(ESEL); if (!c || !main.contains(c)) return null;
+    const sc = c.closest('[data-hls]'), pseudo = !sc, scope = sc || main;
+    const bl = this.blocks(scope, pseudo);
+    while (c && scope.contains(c)) { const i = bl.indexOf(c); if (i >= 0) return [c, this.key(scope, pseudo, i)]; c = c.parentElement && c.parentElement.closest(ESEL); }
+    return null;
+  },
+  start(el, k, ev){
+    if (this.editing && this.editing !== el) this.finish();
+    if (this.editing === el) return;
+    el.querySelectorAll('mark.hl').forEach(m => m.replaceWith(...m.childNodes)); el.normalize();
+    if (el._orig == null) el._orig = el.innerHTML;
+    if (el.classList.contains('uempty')) el.innerHTML = '';
+    el._key = k; el._snap = cleanHtml(el.innerHTML, true);
+    this.editing = el; el.classList.add('eding'); el.contentEditable = 'true'; el.focus();
+    let r = null; try { if (ev && document.caretRangeFromPoint) r = document.caretRangeFromPoint(ev.clientX, ev.clientY); else if (ev && document.caretPositionFromPoint) { const p = document.caretPositionFromPoint(ev.clientX, ev.clientY); if (p) { r = document.createRange(); r.setStart(p.offsetNode, p.offset); } } } catch (e) {}
+    if (r && el.contains(r.startContainer)) { const s = getSelection(); s.removeAllRanges(); s.addRange(r); } else caretEnd(el);
+    this.bar();
+  },
+  finish(){
+    const el = this.editing; if (!el) return;
+    this.editing = null; el.removeAttribute('contenteditable'); el.classList.remove('eding');
+    const html = cleanHtml(el.innerHTML, true), orig = cleanHtml(el._orig || '', true);
+    if (html !== el._snap) {
+      if (html === orig) notes.set(el._key, '');
+      else notes.set(el._key, el.textContent.trim() ? html : ZW);
+    }
+    hl.paintAll(); this.bar();
+  },
+  resetOne(el){ if (!el) return; const k = el._key; if (this.editing === el) { this.editing = null; el.removeAttribute('contenteditable'); el.classList.remove('eding'); } notes.set(k, ''); hl.paintAll(); this.bar(); },
+  pageKeys(){ const m = $('#main'), ks = new Set(); const add = (sc, ps) => this.list(sc, ps).forEach(([, k]) => { if (notes.get(k)) ks.add(k); });
+    if (!m.dataset.hls) add(m, true); document.querySelectorAll('#main [data-hls]').forEach(sc => add(sc, false)); if (m.dataset.hls) add(m, false); return [...ks]; },
+  set(on){
+    if (this.editing) this.finish();
+    this.on = on; document.body.classList.toggle('editmode', on);
+    $('#edbtn').setAttribute('aria-pressed', on); $('#edbar').hidden = !on;
+    if (on) { hl.set(null); hl.panel(false); hl.paintAll(); }
+    else document.querySelectorAll('[data-eb]').forEach(x => delete x.dataset.eb);
+    this.bar();
+  },
+  bar(){
+    const b = $('#edbar'); if (!b) return;
+    const el = this.editing;
+    $('#edhint').textContent = view === 'guide' ? 'Guide chapters have their own Edit button on each part. Exams, histories and conditions can be edited by tapping text.'
+      : el ? 'Type to change this text. Tap outside it to save. Tab indents a bullet.' : 'Tap any text to change it. Edits save and sync with your notes.';
+    b.querySelector('[data-eact="undo"]').disabled = !(el && (el.classList.contains('uedit') || notes.get(el._key)));
+    b.querySelector('.fmt').hidden = !el;
+  },
+  ui(){
+    $('#hlbtn').insertAdjacentHTML('beforebegin', `<button type="button" class="hlbtn edbtn" id="edbtn" aria-pressed="false" aria-label="Edit text" title="Edit any text"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>`);
+    document.body.insertAdjacentHTML('beforeend', `<div class="edbar" id="edbar" role="region" aria-label="Edit mode" hidden><b>Edit mode</b><span id="edhint"></span>
+      <div class="fmt" role="toolbar" aria-label="Formatting"><button type="button" data-ecmd="bold" title="Bold"><b>B</b></button><button type="button" data-ecmd="italic" title="Italic"><i>I</i></button><button type="button" data-ecmd="underline" title="Underline"><u>U</u></button><span class="sep"></span><button type="button" data-ecmd="insertUnorderedList" title="Bullet list">• List</button><button type="button" data-ecmd="insertOrderedList" title="Numbered list">1. List</button><button type="button" data-ecmd="outdent" title="Outdent (Shift+Tab)">⇤</button><button type="button" data-ecmd="indent" title="Indent (Tab)">⇥</button></div>
+      <button type="button" class="btn" data-eact="undo">Reset this text</button><button type="button" class="btn" data-eact="resetpage">Reset page</button><button type="button" class="btn" data-eact="done" style="border-color:var(--accent);color:var(--accent)">Done</button></div>`);
+  }
+};
+// in edit mode a tap on text opens it for editing instead of ticking, folding or following a link
+document.addEventListener('click', e => {
+  if (!edits.on) return;
+  const t = e.target;
+  if (edits.editing && edits.editing.contains(t)) { if (t.closest('label, summary, a') || edits.editing.closest('label, summary, a')) e.preventDefault(); e.stopPropagation(); return; }
+  if (t.closest('#edbar, #hlfab')) return;
+  const hit = edits.find(t); if (!hit) { if (edits.editing) edits.finish(); return; }
+  e.preventDefault(); e.stopPropagation(); edits.start(hit[0], hit[1], e);
+}, true);
+document.addEventListener('focusout', e => { const el = edits.editing; if (el && e.target === el) setTimeout(() => { if (edits.editing === el && document.activeElement !== el) edits.finish(); }, 0); });
+document.addEventListener('keydown', e => {
+  const el = edits.editing; if (!el || !el.contains(e.target)) return;
+  if (e.key === 'Escape') { e.preventDefault(); el.blur(); return; }
+  if ((e.key === ' ' || e.key === 'Enter') && el.closest('summary, label')) { e.preventDefault(); if (e.key === ' ') document.execCommand('insertText', false, ' '); else document.execCommand('insertLineBreak'); }
+});
+['pointerdown', 'mousedown'].forEach(ev => document.addEventListener(ev, e => { if (e.target.closest && e.target.closest('#edbar button')) e.preventDefault(); }));
+document.addEventListener('click', e => {
+  if (e.target.closest('#edbtn')) { edits.set(!edits.on); return; }
+  const ec = e.target.closest('[data-ecmd]'); if (ec) { if (edits.editing) { edits.editing.focus(); listCmd(ec.dataset.ecmd, edits.editing); } return; }
+  const ea = e.target.closest('[data-eact]'); if (!ea) return;
+  const a = ea.dataset.eact;
+  if (a === 'done') edits.set(false);
+  if (a === 'undo') edits.resetOne(edits.editing);
+  if (a === 'resetpage') { if (edits.editing) edits.finish(); const ks = edits.pageKeys(); if (!ks.length) { $('#edhint').textContent = 'Nothing on this page has been edited.'; return; } if (confirm('Undo all ' + ks.length + ' edit' + (ks.length > 1 ? 's' : '') + ' on this page and go back to the guide’s text?')) { ks.forEach(k => notes.set(k, '')); hl.paintAll(); edits.bar(); } }
+});
+// Tab / Shift+Tab indent and outdent list items in notes, the guide editor and edit mode
+function listCmd(cmd, host){
+  if (cmd === 'indent' || cmd === 'outdent') { const s = getSelection(); let n = s.rangeCount ? s.anchorNode : null; n = n && (n.nodeType === 1 ? n : n.parentElement); const li = n && n.closest('li');
+    if (!li || !host.contains(li) || li === host) return false; }
+  document.execCommand(cmd, false, null); return true;
+}
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Tab' || e.ctrlKey || e.metaKey || e.altKey || !e.target.closest) return;
+  const host = e.target.closest('.rte[data-note], .gbody.editing, .eding'); if (!host) return;
+  if (listCmd(e.shiftKey ? 'outdent' : 'indent', host)) e.preventDefault();
+});
+
+/* ---------- combined pages: pick conditions, exams and focused histories into one page ---------- */
+const combos = {
+  get(){ try { const v = JSON.parse(notes.get('ed:combos') || 'null'); if (v && Array.isArray(v.list)) return v; } catch (e) {} return {cur: null, list: []}; },
+  put(v){ notes.set('ed:combos', v.list.length ? JSON.stringify(v) : ''); },
+  page(v, id){ v = v || this.get(); return v.list.find(p => p.id === id) || v.list.find(p => p.id === v.cur) || v.list[0] || null; },
+  make(v, name){ const p = {id: 'p' + Date.now().toString(36), name: name || 'My page ' + (v.list.length + 1), items: []}; v.list.push(p); v.cur = p.id; return p; },
+};
+function cbInfo(it){
+  if (it.t === 'cond') { const x = FXCP[it.id]; return x && {type: 'Condition', title: x.cp.t, sub: x.c.name + ' · history + exam', href: 'cond-' + it.id}; }
+  if (it.t === 'exam') { const ex = D.exams[it.id]; return ex && {type: 'Physical exam', title: ex.title, sub: 'All steps · guide pp. ' + ex.pg[0] + '–' + ex.pg[1], href: it.id}; }
+  if (it.t === 'fhx') { const c = FXC[it.id]; return c && {type: 'Focused history', title: c.name, sub: 'Every complaint + background history', href: 'fhx-' + it.id}; }
+  return null;
+}
+const CBSYN = {cardiac: 'cardiovascular cardio heart cvs', c6: 'cardiovascular cardio heart cvs', resp: 'lung chest pulmonary', c5: 'lung chest pulmonary', abdo: 'abdomen gi gastrointestinal', c13: 'abdomen gi gastrointestinal', pv: 'vascular arterial venous pvd', c8: 'vascular arterial venous pvd', neuro: 'neurology nervous', c31: 'neurology nervous', mse: 'psychiatric psych mental', c32: 'mental status mse', eye: 'eye vision ophtho', c40: 'eye vision ophtho', renal: 'kidney genitourinary', c10: 'kidney genitourinary', msk: '', gals: 'msk musculoskeletal'};
+const CBIDX = [
+  ...CONDS.map(x => ({t: 'cond', id: x.id, n: x.t, sub: 'Condition · ' + x.sys, hay: x.hay})),
+  ...Object.entries(D.exams).map(([id, ex]) => ({t: 'exam', id, n: ex.title, sub: 'Physical exam', hay: (ex.title + ' exam physical ' + (CBSYN[id] || '')).toLowerCase()})),
+  ...FXD.map(c => ({t: 'fhx', id: c.id, n: c.name + ' – focused history', sub: 'Focused history · all complaints', hay: (c.name + ' ' + c.title + ' focused history ' + (CBSYN[c.id] || '')).toLowerCase()})),
+];
+function cbResults(q, box){
+  q = q.trim().toLowerCase(); if (q.length < 2) { box.hidden = true; return; }
+  const ws = q.split(/\s+/), hits = CBIDX.filter(x => ws.every(w => x.hay.includes(w) || x.n.toLowerCase().includes(w)))
+    .sort((a, b) => (b.n.toLowerCase().startsWith(q) - a.n.toLowerCase().startsWith(q)) || ({exam: 0, fhx: 1, cond: 2}[a.t] - {exam: 0, fhx: 1, cond: 2}[b.t])).slice(0, 25);
+  box.innerHTML = hits.length ? hits.map(x => `<button type="button" data-cbadd="${x.t}:${x.id}" data-stay="1">${esc(x.n)}<small>${esc(x.sub)}</small></button>`).join('') : `<button type="button" disabled>No match</button>`;
+  box.hidden = false;
+}
+function cbBody(it, seen){
+  if (it.t === 'exam') { const ex = D.exams[it.id];
+    return (ex.notes && ex.notes.length ? `<details class="box notes"><summary>Setup & tips from the guide</summary><div class="inner">${list(ex.notes)}</div></details>` : '') + examStepsHtml(it.id, null); }
+  if (it.t === 'fhx') { const c = FXC[it.id];
+    return c.complaints.filter(cp => !cp.all && !(cp.core && seen.has(cp.id))).map(cp => { seen.add(cp.id); return fxSection(c, cp, cp.core ? {noCoreTag: false} : {}); }).join('') + fxBackground(c, false); }
+  const {c, cp} = FXCP[it.id], exam = CH2EXAM[c.id], ex = exam && D.exams[exam];
+  let h = `<div class="cbpart">Focused history</div>`;
+  c.complaints.filter(x => x.core && !seen.has(x.id)).forEach(x => { seen.add(x.id); h += fxSection(c, x); });
+  if (!cp.all) h += fxSection(c, cp, {isolate: false});
+  h += `<details class="fxs fxbgwrap" data-ch="${c.id}"><summary><h2>Background history for ${esc(c.name.toLowerCase())}</h2><span class="also">Past medical, surgical, family, social, medications</span></summary>${fxBackground(c, false).replace(/^<section[^>]*>[\s\S]*?<\/header>/, '').replace(/<\/section>$/, '')}</details>`;
+  h += `<div class="cbpart">Physical exam${ex ? ' · ' + esc(ex.title) : ''}</div>`;
+  h += ex ? examStepsHtml(exam, cp) : `<p class="tip">This chapter’s physical exam is in the guide: <a href="#g-${c.id}" data-goto="g-${c.id}">open the chapter →</a></p>`;
+  return h;
+}
+const cbShut = () => store.get('cb:shut') || {};
+function renderCombo(tok){
+  view = 'combo'; cur = null; setTop('combo');
+  const v = combos.get(), p = combos.page(v, (tok || '').slice(6));
+  if (p && v.cur !== p.id) { v.cur = p.id; store.set('cbcur', p.id); }
+  const main = $('#main'); delete main.dataset.hls;
+  let h = `<div class="eyebrow">My pages · your own combined reference</div><h1>${esc(p ? p.name : 'Combined pages')}</h1>`;
+  h += `<div class="cbbar">${v.list.length > 1 ? `<label class="syspick"><span>Page</span><select id="cbsel">${v.list.map(x => `<option value="${x.id}"${p && x.id === p.id ? ' selected' : ''}>${esc(x.name)}</option>`).join('')}</select></label>` : ''}
+    <button class="btn" data-cb="new">+ New page</button>${p ? `<button class="btn" data-cb="rename">Rename</button><button class="btn" data-cb="del">Delete page</button>` : ''}
+    ${p && p.items.length ? `<button class="btn" data-cb="shutall">Collapse all</button><button class="btn" data-cb="openall">Expand all</button><button class="btn" data-act="open">Open every exam step</button>` : ''}</div>`;
+  h += `<div class="condsearch sm cbadd"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="cbq" type="search" placeholder="Add a condition, physical exam or focused history…" autocomplete="off" aria-label="Add to this page"><div class="results" id="cbres" hidden></div></div>`;
+  if (!p || !p.items.length) h += `<div class="cbempty"><p style="margin-top:0"><b>Put the things you need side by side.</b> Search above to add conditions (their focused history and physical exam), whole physical exams, or a system’s focused history.</p><p style="margin-bottom:0">You can also tap <b>+ Add to my page</b> on any condition, exam or focused-history page. Use ↑ ↓ to reorder and ✕ to remove. Pages sync with your notes.</p></div>`;
+  else {
+    const seen = new Set(), shut = cbShut();
+    p.items.forEach((it, k) => { const info = cbInfo(it); if (!info) return; const key = p.id + ':' + it.t + ':' + it.id;
+      h += `<section class="cbit${shut[key] ? ' shut' : ''}" data-cbi="${k}" data-cbk="${esc(key)}"><header class="cbh"><button type="button" class="cbfold" data-cb="fold" aria-label="Collapse or expand" title="Collapse / expand">▾</button><div class="cbt"><span class="cbtype">${info.type}</span><h2>${esc(info.title)}</h2><span class="also">${esc(info.sub)}</span></div>
+        <div class="cbtools"><button type="button" data-cb="up" title="Move up" aria-label="Move up"${k ? '' : ' disabled'}>↑</button><button type="button" data-cb="down" title="Move down" aria-label="Move down"${k < p.items.length - 1 ? '' : ' disabled'}>↓</button><a href="#${info.href}" data-goto="${info.href}" title="Open the full page">Open</a><button type="button" data-cb="rm" title="Remove from this page" aria-label="Remove">✕</button></div></header>
+        <div class="cbbody">${cbBody(it, seen)}</div></section>`; });
+  }
+  main.innerHTML = h; syncBadge(); hl.paintAll(); markRail('combo-' + (p ? p.id : '')); window.scrollTo(0, 0);
+}
+function cbAdd(spec, btn){
+  const [t, id] = spec.split(':'); const v = combos.get(); let p = combos.page(v); if (!p) p = combos.make(v, 'My combined page');
+  const had = p.items.some(x => x.t === t && x.id === id);
+  if (!had) p.items.push({t, id});
+  v.cur = p.id; combos.put(v);
+  return {p, had};
+}
+function railCombo(){
+  const v = combos.get();
+  return `<h4>My pages</h4>` + (v.list.length ? v.list.map(p => `<a href="#combo-${p.id}" data-h="combo-${p.id}">${esc(p.name)}<span>${p.items.length}</span></a>`).join('') : `<p class="tip">No pages yet.</p>`)
+    + `<h4>Notes</h4><a href="#notes" data-h="notes">My notes <span id="ncount"></span></a>`
+    + `<p class="tip" style="margin-top:18px">Combine conditions, exams and focused histories into one page to revise or bring to a session.</p>`;
+}
+const cbAddBtn = spec => `<button class="btn" data-cbadd="${spec}" title="Add this to your combined page">+ Add to my page</button>`;
+document.addEventListener('click', e => {
+  const t = e.target, ad = t.closest('[data-cbadd]');
+  if (ad) { e.preventDefault(); const {p, had} = cbAdd(ad.dataset.cbadd);
+    if (ad.dataset.stay) { history.replaceState(null, '', '#combo-' + p.id); renderCombo('combo-' + p.id); const last = document.querySelector('.cbit:last-of-type'); if (!had && last) last.scrollIntoView({block: 'start'}); return; }
+    ad.outerHTML = `<span class="cbadded">${had ? 'Already on' : 'Added to'} <a href="#combo-${p.id}" data-goto="combo-${p.id}">${esc(p.name)} →</a></span>`; renderRail(railMode, true); markRail((location.hash || '').slice(1)); return; }
+  const cb = t.closest('[data-cb]'); if (!cb) return;
+  e.preventDefault();
+  const a = cb.dataset.cb, v = combos.get(), p = combos.page(v, (location.hash || '').slice(7)), sec = cb.closest('.cbit');
+  const y = scrollY, again = () => { combos.put(v); renderRail('combo', true); renderCombo('combo-' + (combos.page(v) ? combos.page(v).id : '')); };
+  if (a === 'new') { const n = prompt('Name for the new page', 'My page ' + (v.list.length + 1)); if (n == null) return; combos.make(v, n.trim() || undefined); again(); history.replaceState(null, '', '#combo-' + v.cur); return; }
+  if (!p) return;
+  if (a === 'rename') { const n = prompt('Rename this page', p.name); if (n && n.trim()) { p.name = n.trim().slice(0, 80); again(); window.scrollTo(0, y); } return; }
+  if (a === 'del') { if (!confirm('Delete “' + p.name + '”? The conditions and exams themselves stay in the guide.')) return; v.list = v.list.filter(x => x !== p); v.cur = v.list[0] ? v.list[0].id : null; again(); history.replaceState(null, '', '#combo' + (v.cur ? '-' + v.cur : '')); return; }
+  if (a === 'shutall' || a === 'openall') { const m = cbShut(); document.querySelectorAll('.cbit').forEach(s => { s.classList.toggle('shut', a === 'shutall'); if (a === 'shutall') m[s.dataset.cbk] = 1; else delete m[s.dataset.cbk]; }); store.set('cb:shut', m); return; }
+  if (!sec) return;
+  const k = +sec.dataset.cbi;
+  if (a === 'fold') { const m = cbShut(), on = !sec.classList.contains('shut'); sec.classList.toggle('shut', on); if (on) m[sec.dataset.cbk] = 1; else delete m[sec.dataset.cbk]; store.set('cb:shut', m); return; }
+  if (a === 'rm') { p.items.splice(k, 1); again(); window.scrollTo(0, y); return; }
+  if (a === 'up' || a === 'down') { const j = a === 'up' ? k - 1 : k + 1; if (j < 0 || j >= p.items.length) return; [p.items[k], p.items[j]] = [p.items[j], p.items[k]]; again();
+    const moved = document.querySelector(`.cbit[data-cbi="${j}"]`); if (moved) window.scrollTo(0, moved.getBoundingClientRect().top + scrollY - $('.top').offsetHeight - 10); return; }
+});
+document.addEventListener('input', e => { if (e.target.id === 'cbq') cbResults(e.target.value, $('#cbres')); });
+document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.id === 'cbq') { const b = $('#cbres').querySelector('[data-cbadd]'); if (b) b.click(); } });
+document.addEventListener('change', e => { if (e.target.id === 'cbsel') { const tk = 'combo-' + e.target.value; history.replaceState(null, '', '#' + tk); go(tk); } });
+document.addEventListener('click', e => { if (!e.target.closest('.cbadd')) { const r = $('#cbres'); if (r) r.hidden = true; } });
+
 /* ---------- events ---------- */
 document.addEventListener('click', e => {
   const t = e.target;
   if (t.closest('#hlbtn')){ if (hl.mode == null) { hl.set(hl.color); hl.panel(true); } else hl.panel($('#hlpanel').hidden); return; }
   const hc = t.closest('[data-hlc]');
-  if (hc){ hl.set(hc.dataset.hlc === 'erase' ? 'erase' : +hc.dataset.hlc); return; }
+  if (hc){ hl.set(/^(erase|b|L)$/.test(hc.dataset.hlc) ? hc.dataset.hlc : +hc.dataset.hlc); return; }
   const ha = t.closest('[data-hlact]');
   if (ha){
     if (ha.dataset.hlact === 'off') { hl.set(null); hl.panel(false); }
@@ -1869,7 +2165,7 @@ document.addEventListener('focusout', e => { const ed = edOf(e); if (ed){ clearT
 // keep formatting buttons from stealing focus (and the phone keyboard) from the note
 ['pointerdown','mousedown'].forEach(ev => document.addEventListener(ev, e => { if (e.target.closest && e.target.closest('.fmt button')) e.preventDefault(); }));
 // paste as plain text so web pages don't bring their own fonts and colours
-document.addEventListener('paste', e => { const ed = edOf(e) || (e.target.closest && e.target.closest('.gbody.editing')); if (!ed) return; e.preventDefault(); document.execCommand('insertText', false, (e.clipboardData || window.clipboardData).getData('text/plain')); });
+document.addEventListener('paste', e => { const ed = edOf(e) || (e.target.closest && e.target.closest('.gbody.editing, .eding')); if (!ed) return; e.preventDefault(); document.execCommand('insertText', false, (e.clipboardData || window.clipboardData).getData('text/plain')); });
 document.addEventListener('keydown', e => { const ed = edOf(e); if (ed && (e.ctrlKey || e.metaKey) && /^[biu]$/i.test(e.key)) setTimeout(() => fmtState(ed), 0); });
 document.addEventListener('selectionchange', () => {
   const ed = document.activeElement && document.activeElement.closest ? document.activeElement.closest('.rte[data-note]') : null;
@@ -1906,6 +2202,7 @@ $('#q').addEventListener('keydown', e => { if (e.key==='Enter'){ const b = $('#r
 $('#tabExam').addEventListener('click', () => { const l = store.get('lastExam') || 'approach'; history.replaceState(null,'','#'+l); go(l); });
 $('#tabHist').addEventListener('click', () => { const tk = histTab === 'fhx' ? 'fhx-' + (store.get('lastFhxCh') || 'c5') : histTab; history.replaceState(null,'','#'+tk); go(tk); });
 $('#tabCond').addEventListener('click', () => { history.replaceState(null,'','#cond'); go('cond'); });
+$('#tabMine').addEventListener('click', () => { const p = combos.page(); const tk = 'combo' + (p ? '-' + p.id : ''); history.replaceState(null,'','#'+tk); go(tk); });
 function closeDrawer(){ $('#rail').classList.remove('open'); $('#scrim').classList.remove('open'); }
 $('#menuBtn').addEventListener('click', () => { $('#rail').classList.add('open'); $('#scrim').classList.add('open'); });
 $('#scrim').addEventListener('click', closeDrawer);
@@ -1916,6 +2213,7 @@ const setTopH = () => document.documentElement.style.setProperty('--toph', $('.t
 setTopH(); window.addEventListener('resize', setTopH);
 renderRail('exam');
 hl.ui();
+edits.ui();
 updateCount();
 cloud.init();
 routeFromHash();
