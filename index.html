@@ -184,6 +184,10 @@ td.k{font-family:var(--f-mono);white-space:nowrap}
 .rte{min-height:120px;border:1px solid var(--line);border-radius:0 0 8px 8px;background:var(--note-bg);color:var(--ink);padding:9px 11px;font:14px/1.5 var(--f-body);outline:none;overflow-wrap:anywhere;cursor:text}
 .rte:focus{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
 .snote .rte{min-height:70px}
+details.snote>summary{cursor:pointer;list-style:none;display:inline-flex;gap:6px;align-items:center}
+details.snote>summary::-webkit-details-marker{display:none}
+details.snote>summary::before{content:"▸";font-size:11px}details.snote[open]>summary::before{content:"▾"}
+details.snote[open]>summary{margin-bottom:6px}
 .rte:empty::before{content:attr(data-ph);color:var(--muted);pointer-events:none}
 .rte ul,.rte ol,.nview ul,.nview ol{list-style:disc!important;padding-left:22px!important;margin:4px 0!important}
 .rte ol,.nview ol{list-style:decimal!important}
@@ -999,7 +1003,7 @@ function fmtTime(t){ try { return new Date(t).toLocaleString(undefined, {dateSty
 function today(){ try { return new Date().toLocaleDateString(undefined, {weekday:'short', day:'numeric', month:'short', year:'numeric'}); } catch(e){ return ''; } }
 function noteBox(k, title){
   const a = notes.all()[k];
-  return `<details class="note"${a ? ' open' : ''}><summary><span class="pen">✎ notes</span> ${esc(title)}${a ? '' : ' <span class="nhint">tap to add</span>'}</summary><div class="inner">
+  return `<details class="note"><summary><span class="pen">✎ notes</span> ${esc(title)} <span class="nhint">${a ? 'has notes · tap to open' : 'tap to add'}</span></summary><div class="inner">
     ${editor(k, 'What did your preceptor say? Tips, corrections, things to practise…')}
     <div class="nrow"><button class="btn" data-date="${k}">Add today’s date</button><span data-saved="${k}">${a?'Saved '+fmtTime(a.at):'Saves automatically as you type'}</span><span class="sync" data-sync hidden></span></div></div></details>`;
 }
@@ -1743,7 +1747,7 @@ function fillStep(el){
   if (s.more) h += `<details class="more"><summary>Notes</summary><div class="in">${list(s.more)}</div></details>`;
   if (s.gloss && s.gloss.length) h += `<details class="more"><summary>Terms (${s.gloss.length})</summary><div class="in">${list(s.gloss.map(g=>'• '+g))}</div></details>`;
   const sk = 'step:'+exId+':'+el.dataset.i, st = notes.all()[sk];
-  h += `<div class="snote"><div class="lab">My notes</div>${editor(sk, 'Preceptor tips for this step…')}<div class="nrow"><span data-saved="${sk}">${st?'Saved '+fmtTime(st.at):''}</span></div></div>`;
+  h += `<details class="snote"><summary class="lab">My notes${st ? ' <span class="nhint">· has notes</span>' : ''}</summary>${editor(sk, 'Preceptor tips for this step…')}<div class="nrow"><span data-saved="${sk}">${st?'Saved '+fmtTime(st.at):''}</span></div></details>`;
   h += `<div class="pg">Guide p. ${s.pg}</div>`;
   body.innerHTML = h; body.dataset.f = 1;
   body.dataset.hls = 'hl:s:' + exId + ':' + el.dataset.i; hl.paint(body);
