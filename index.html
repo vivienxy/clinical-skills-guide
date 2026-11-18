@@ -394,7 +394,7 @@ body.hl-erase mark.hl{cursor:pointer;outline:1px dashed currentColor;outline-off
 .step>summary:has(.cbsrc){grid-template-columns:auto auto minmax(0,1fr) auto auto}
 .step>summary:has(.cbsrc)>.cbsrc{grid-column:4;grid-row:1;margin-left:0}.step>summary:has(.cbsrc)>.chev{grid-column:5;grid-row:1}
 .step>summary:has(.cbsrc):has(.mvbox){grid-template-columns:auto auto minmax(0,1fr) auto auto auto}
-.step>summary:has(.cbsrc):has(.mvbox)>.cbsrc{grid-column:5}.step>summary:has(.cbsrc):has(.mvbox)>.chev{grid-column:6}
+.step>summary:has(.cbsrc):has(.mvbox)>.cbsrc{grid-column:4}.step>summary:has(.cbsrc):has(.mvbox)>.mvbox{grid-column:5}.step>summary:has(.cbsrc):has(.mvbox)>.chev{grid-column:6}
 @media (max-width:520px){.step>summary:has(.cbsrc)>.cbsrc,.step>summary:has(.cbsrc):has(.mvbox)>.cbsrc{grid-column:3;grid-row:2;justify-self:start;margin-top:2px}}
 .grip{display:inline-grid;place-items:center;width:34px;height:32px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--muted);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
 .grip:hover{color:var(--ink);border-color:var(--accent)}
@@ -1740,7 +1740,7 @@ function stepHtml(id, s, i, n, done){
   return `<details class="step${done?' done':''}" id="${id}-${i}" data-i="${i}" data-ex="${id}"><summary>
     <input type="checkbox" class="tick" aria-label="Mark done" ${done?'checked':''}>
     <span class="num">${n}</span>
-    <span class="name">${ph?`<span class="ph ${ph}" title="${PHASE_LABEL[ph]||''}"></span>`:''}<span class="sname" data-ek="sn:${id}:${i}">${esc(s.name)}</span>${tags?`<span class="tags">${tags}</span>`:''}${hasNote?'<span class="pen">✎</span>':''}${cbCtx?`<button type="button" class="cbx" data-cbhide="${id}:${i}" title="Remove this step from this page" aria-label="Remove this step from this page">✕</button>`:''}</span>
+    <span class="name">${ph?`<span class="ph ${ph}" title="${PHASE_LABEL[ph]||''}"></span>`:''}<span class="sname" data-ek="sn:${id}:${i}">${esc(s.name)}</span>${tags?`<span class="tags">${tags}</span>`:''}${hasNote?'<span class="pen">✎</span>':''}${cbCtx && cbEdit?`<button type="button" class="cbx" data-cbhide="${id}:${i}" title="Remove this step from this page" aria-label="Remove this step from this page">✕</button>`:''}</span>
     <span class="chev" aria-hidden="true"></span></summary><div class="body"></div></details>`;
 }
 function fillStep(el){
@@ -2039,10 +2039,11 @@ function renderCombo(tok){
   h += `<div class="cbbar">${v.list.length > 1 ? `<label class="syspick"><span>Page</span><select id="cbsel">${v.list.map(x => `<option value="${x.id}"${p && x.id === p.id ? ' selected' : ''}>${esc(x.name)}</option>`).join('')}</select></label>` : ''}
     <button class="btn" data-cb="new">+ New page</button>${p ? `<button class="btn" data-cb="rename">Rename</button><button class="btn" data-cb="del">Delete page</button>` : ''}
     ${p && p.items.some(x => x.t === 'exam' || x.t === 'cond' || x.t === 'step') ? `<div class="gview" role="group" aria-label="Physical exams"><span>Exams:</span><button type="button" data-cbmerge="0" aria-pressed="${!cbMerge}">Separate</button><button type="button" data-cbmerge="1" aria-pressed="${cbMerge}">Merge by phase</button></div>` : ''}
+    ${p && p.items.some(x => x.t === 'exam' || x.t === 'cond' || x.t === 'step') && !cbMerge ? `<button type="button" class="btn${cbEdit ? ' on' : ''}" data-cbrearr title="Show ✕ on each step so you can remove it">${cbEdit ? 'Done rearranging' : 'Rearrange'}</button>` : ''}
     ${hide.size ? `<button class="btn" data-cb="restore" title="Bring back the steps you removed from this page">Restore ${hide.size} removed step${hide.size > 1 ? 's' : ''}</button>` : ''}
     ${p && p.items.length ? `<button class="btn" data-cb="shutall">Collapse all</button><button class="btn" data-cb="openall">Expand all</button><button class="btn" data-act="open">Open every exam step</button>` : ''}</div>`;
   h += `<div class="condsearch sm cbadd"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="cbq" type="search" placeholder="Add a condition, exam, single step or focused history…" autocomplete="off" aria-label="Add to this page"><div class="results" id="cbres" hidden></div></div>`;
-  if (!p || !p.items.length) h += `<div class="cbempty"><p style="margin-top:0"><b>Put the things you need side by side.</b> Search above to add conditions (their focused history and physical exam), whole physical exams, single exam steps, or a system’s focused history. Tap ✕ on any step to remove it from the page.</p><p style="margin-bottom:0">You can also tap <b>+ Add to my page</b> on any condition, exam or focused-history page. Drag the ⠿ handle to reorder and tap ✕ to remove. Pages sync with your notes.</p></div>`;
+  if (!p || !p.items.length) h += `<div class="cbempty"><p style="margin-top:0"><b>Put the things you need side by side.</b> Search above to add conditions (their focused history and physical exam), whole physical exams, single exam steps, or a system’s focused history. Tap Rearrange, then ✕ on any step to remove it from the page.</p><p style="margin-bottom:0">You can also tap <b>+ Add to my page</b> on any condition, exam or focused-history page. Drag the ⠿ handle to reorder and tap ✕ to remove. Pages sync with your notes.</p></div>`;
   else {
     const seen = new Set(), shut = cbShut();
     p.items.forEach((it, k) => { const info = cbInfo(it); if (!info) return; const key = p.id + ':' + it.t + ':' + it.id;
@@ -2158,14 +2159,15 @@ function cbMergedHtml(p){
   if (!total) return '';
   let h = `<section class="cbit cbmerged"><header class="cbh"><div class="cbt"><span class="cbtype">Physical exam · merged</span><h2>All exams by phase</h2><span class="also">${total} steps from ${[...new Set(groups.flatMap(g => g.items.map(k => k.split(':')[0])))].map(x => esc(D.exams[x].title)).join(', ')}</span></div></header><div class="cbbody">`;
   h += `<div class="gview orderpick" role="group" aria-label="Order within each phase"><span>Order:</span><button type="button" data-cbord="item" aria-pressed="${!cbH2t}">By page order</button><button type="button" data-cbord="h2t" aria-pressed="${cbH2t}">Head to toe</button></div>`
-    + (cbH2t ? ` <button type="button" class="btn${cbEdit ? ' on' : ''}" data-cbrearr>${cbEdit ? 'Done rearranging' : 'Rearrange'}</button>${store.get('cbord:' + p.id) ? ` <button type="button" class="btn" data-cbordreset>Reset order</button>` : ''}` : '')
-    + (cbEdit && cbH2t ? `<p class="tip">Drag a step by its handle to move it, including into another phase. This order is saved for this page.</p>` : '');
+    + ` <button type="button" class="btn${cbEdit ? ' on' : ''}" data-cbrearr>${cbEdit ? 'Done rearranging' : 'Rearrange'}</button>` + (cbH2t && store.get('cbord:' + p.id) ? ` <button type="button" class="btn" data-cbordreset>Reset order</button>` : '')
+    + (cbEdit && !cbH2t ? `<p class="tip">Tap ✕ to remove a step from this page. Switch to Head to toe to drag steps into a new order.</p>` : '')
+    + (cbEdit && cbH2t ? `<p class="tip">Drag a step by its handle to move it, including into another phase. Tap ✕ to remove a step from this page. This order is saved for this page.</p>` : '');
   const ticks = {}; let n = 0;
   groups.forEach(g => { if (!g.items.length) return; const isExtra = g.k === 'extra';
     h += `<div class="sec sm"${isExtra && !showExtra ? ' hidden' : ''} data-extra="${isExtra ? 1 : 0}"><h3>${esc(g.name)}</h3><span class="n">${g.items.length}</span></div><div class="steps" data-gk="${g.k}"${isExtra && !showExtra ? ' hidden' : ''} data-extra="${isExtra ? 1 : 0}">`;
     g.items.forEach(key => { const [ex, si] = key.split(':'), i = +si; if (!ticks[ex]) ticks[ex] = store.get('t:' + ex) || {}; n++;
       let sh = stepHtml(ex, D.exams[ex].steps[i], i, n, !!ticks[ex][i]).replace('<span class="chev"', `<span class="cbsrc">${esc(D.exams[ex].title)}</span><span class="chev"`);
-      if (cbEdit && cbH2t) sh = sh.replace('<span class="cbsrc"', `<span class="mvbox"><span class="grip" data-grip="cbm" data-cbkey="${key}" title="Drag to reorder" aria-label="Drag to reorder" role="button">${GRIP}</span></span><span class="cbsrc"`);
+      if (cbEdit && cbH2t) sh = sh.replace('<span class="chev"', `<span class="mvbox"><span class="grip" data-grip="cbm" data-cbkey="${key}" title="Drag to reorder" aria-label="Drag to reorder" role="button">${GRIP}</span></span><span class="chev"`);
       h += sh; });
     h += `</div>`; });
   return h + `</div></section>`;
@@ -2214,9 +2216,15 @@ const drag = {
   move(e){ if (!this.st) return; e.preventDefault(); this.st.y = e.clientY; this.st.item.style.top = (e.clientY - this.st.off) + 'px'; this.place(); },
   place(){
     const {ph, y} = this.st, cs = this.cands(); if (!cs.length) return;
-    const before = cs.find(x => { const r = x.getBoundingClientRect(); return y < r.top + r.height / 2; });
-    if (before) { if (ph.nextElementSibling !== before) before.parentElement.insertBefore(ph, before); }
-    else { const last = cs[cs.length - 1]; if (last.nextElementSibling !== ph) last.after(ph); }
+    // pick the group (list) nearest the pointer, then the slot inside it, so the last slot of every group is reachable
+    const conts = [...new Set([...cs.map(x => x.parentElement), ph.parentElement])];
+    const dist = c => { const r = c.getBoundingClientRect(); return y < r.top ? r.top - y : y > r.bottom ? y - r.bottom : 0; };
+    const cont = conts.reduce((a, c) => dist(c) < dist(a) ? c : a, conts[0]);
+    const inC = cs.filter(x => x.parentElement === cont);
+    const before = inC.find(x => { const r = x.getBoundingClientRect(); return y < r.top + r.height / 2; });
+    if (before) { if (ph.nextElementSibling !== before) cont.insertBefore(ph, before); }
+    else if (inC.length) { const last = inC[inC.length - 1]; if (last.nextElementSibling !== ph) last.after(ph); }
+    else if (ph.parentElement !== cont) cont.appendChild(ph);
   },
   end(){
     const s = this.st; if (!s) return; this.st = null; cancelAnimationFrame(s.raf);
