@@ -1,0 +1,8 @@
+{
+  "name": "clinical-skills-pocket",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@vercel/functions": "^3.10.3"
+  }
+}
