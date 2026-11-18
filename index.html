@@ -215,6 +215,9 @@ body.editmode .uempty{min-height:1.2em;opacity:.6}body.editmode .uempty:not(.edi
 .edbar .btn{padding:6px 10px}
 .edbar .btn[disabled]{opacity:.45;cursor:default}
 /* combined pages */
+.cbx{border:1px solid var(--line);background:var(--bg);color:var(--muted);border-radius:6px;width:26px;height:26px;margin-left:8px;cursor:pointer;font-size:12px;vertical-align:middle;flex:none}
+.cbx:hover{color:#c0392b;border-color:#c0392b}
+.btn.sm{padding:3px 8px;font-size:12px;margin-left:8px}
 .cbsrc{font:500 11px var(--f-mono);color:var(--muted);background:var(--soft);border-radius:6px;padding:2px 6px;margin-left:auto;white-space:nowrap;align-self:center}
 .cbmerged{border-color:var(--accent)}
 .cbbar .gview span{font-size:13px;color:var(--muted);padding:0 4px 0 8px;align-self:center}
@@ -393,6 +396,12 @@ body.hl-erase mark.hl{cursor:pointer;outline:1px dashed currentColor;outline-off
 .step>summary:has(.cbsrc):has(.mvbox){grid-template-columns:auto auto minmax(0,1fr) auto auto auto}
 .step>summary:has(.cbsrc):has(.mvbox)>.cbsrc{grid-column:5}.step>summary:has(.cbsrc):has(.mvbox)>.chev{grid-column:6}
 @media (max-width:520px){.step>summary:has(.cbsrc)>.cbsrc,.step>summary:has(.cbsrc):has(.mvbox)>.cbsrc{grid-column:3;grid-row:2;justify-self:start;margin-top:2px}}
+.grip{display:inline-grid;place-items:center;width:34px;height:32px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--muted);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+.grip:hover{color:var(--ink);border-color:var(--accent)}
+.cbtools .grip{width:32px;height:32px;background:var(--bg)}
+body.isdragging,body.isdragging *{cursor:grabbing!important;user-select:none!important;-webkit-user-select:none!important}
+.dragging{box-shadow:0 12px 32px rgba(0,0,0,.25);opacity:.95;background:var(--panel)}
+.dragph{border:2px dashed var(--accent);border-radius:12px;background:color-mix(in srgb,var(--accent) 8%,transparent)}
 .mv{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:6px;width:34px;height:30px;font-size:16px;cursor:pointer}
 .mv:hover{border-color:var(--accent);color:var(--accent)}
 .btn.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
@@ -1499,9 +1508,10 @@ function h2tControls(exId){
   if (!examH2tOk(D.exams[exId])) return '';
   return `<div class="gview orderpick" role="group" aria-label="Order of exam steps"><span>Order:</span>${[['guide', 'As in the guide'], ['h2t', 'Head to toe']].map(([k, l]) => `<button type="button" data-corder="${k}" aria-pressed="${condOrder === k}">${l}</button>`).join('')}</div>`
     + (condOrder === 'h2t' ? ` <button type="button" class="btn${h2tEdit ? ' on' : ''}" data-h2tedit>${h2tEdit ? 'Done rearranging' : 'Rearrange'}</button>${store.get('h2t:' + exId) ? ` <button type="button" class="btn" data-h2treset="${exId}">Reset order</button>` : ''}` : '')
-    + (h2tEdit && condOrder === 'h2t' ? `<p class="tip">Use ↑ and ↓ to move a step. Moving past the top or bottom of a group moves it into the next group. Your order is saved for this exam everywhere it appears.</p>` : '');
+    + (h2tEdit && condOrder === 'h2t' ? `<p class="tip">Drag a step by its handle to move it, including into another group. Your order is saved for this exam everywhere it appears.</p>` : '');
 }
-const mvCtl = (exId, i) => `<span class="mvbox"><button type="button" class="mv" data-mv="-1" data-mvi="${i}" data-mvx="${exId}" aria-label="Move up">↑</button><button type="button" class="mv" data-mv="1" data-mvi="${i}" data-mvx="${exId}" aria-label="Move down">↓</button></span></summary>`;
+const GRIP = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>';
+const mvCtl = (exId, i) => `<span class="mvbox"><span class="grip" data-grip="h2t" data-mvx="${exId}" data-mvi="${i}" title="Drag to reorder" aria-label="Drag to reorder" role="button">${GRIP}</span></span></summary>`;
 function h2tMove(exId, i, dir){
   const groups = examH2tAll(exId).filter(g => g.items.length || true);
   const gi = groups.findIndex(g => g.items.includes(i)); if (gi < 0) return;
@@ -1554,10 +1564,11 @@ function condStepOk(exId, s, cp){
   const rules = (CONDEX[exId] || []).filter(([re]) => re.test(s.name));
   return !rules.length || rules.some(([, cre]) => cre.test(cp.t));
 }
-function examStepsHtml(exId, cp){
+function examStepsHtml(exId, cp, hide){
   const ex = D.exams[exId]; if (!ex) return '';
   const ticks = store.get('t:' + exId) || {};
-  const keep = ex.steps.map(s => condStepOk(exId, s, cp)), rest = keep.filter(k => !k).length;
+  const hid = i => !!(hide && hide.has(exId + ':' + i));
+  const keep = ex.steps.map((s, i) => !hid(i) && condStepOk(exId, s, cp)), rest = keep.filter((k, i) => !k && !hid(i)).length;
   let secs = [];
   if (condOrder === 'h2t' && examH2tOk(ex)) secs = examH2tSecs(ex, keep);
   else ex.steps.forEach((s, i) => { if (!keep[i]) return; if (!secs.length || secs[secs.length - 1].name !== s.sec) secs.push({name: s.sec, items: []}); secs[secs.length - 1].items.push(i); });
@@ -1565,7 +1576,7 @@ function examStepsHtml(exId, cp){
   if (rest) h += `<p class="tip">Showing the steps for ${esc(cp.t.toLowerCase())}. Steps for other conditions are folded away at the bottom.</p>`;
   secs.forEach(sec => {
     const isExtra = ex.steps[sec.items[0]].tags.includes('extra');
-    h += `<div class="sec sm"${isExtra && !showExtra ? ' hidden' : ''} data-extra="${isExtra ? 1 : 0}"><h3 data-ek="sec:${exId}:${esc(sec.name)}">${esc(sec.name)}</h3><span class="n">${sec.items.length}</span></div><div class="steps"${isExtra && !showExtra ? ' hidden' : ''} data-extra="${isExtra ? 1 : 0}">`;
+    h += `<div class="sec sm"${isExtra && !showExtra ? ' hidden' : ''} data-extra="${isExtra ? 1 : 0}"><h3 data-ek="sec:${exId}:${esc(sec.name)}">${esc(sec.name)}</h3><span class="n">${sec.items.length}</span></div><div class="steps" data-gk="${sec.k || ''}"${isExtra && !showExtra ? ' hidden' : ''} data-extra="${isExtra ? 1 : 0}">`;
     sec.items.forEach(i => { const s = ex.steps[i]; n++; let sh = stepHtml(exId, s, i, n, !!ticks[i]);
       if (h2tEdit && condOrder === 'h2t' && sec.k) sh = sh.replace('</summary>', mvCtl(exId, i));
       h += sh; });
@@ -1573,7 +1584,7 @@ function examStepsHtml(exId, cp){
   });
   if (rest) {
     h += `<details class="box condrest"><summary>Rest of the ${esc(ex.title.toLowerCase())} (${rest} step${rest > 1 ? 's' : ''} for other conditions)</summary><div class="inner"><div class="steps">`;
-    ex.steps.forEach((s, i) => { if (!keep[i]) h += stepHtml(exId, s, i, '·', !!ticks[i]); });
+    ex.steps.forEach((s, i) => { if (!keep[i] && !hid(i)) h += stepHtml(exId, s, i, '·', !!ticks[i]); });
     h += `</div></div></details>`;
   }
   return h;
@@ -1711,7 +1722,7 @@ function renderExam(id){
   let n = 0;
   secs.forEach((sec,k) => {
     const isExtra = ex.steps[sec.items[0]].tags.includes('extra');
-    h += `<div class="sec" id="s${k}" ${isExtra&&!showExtra?'hidden':''} data-extra="${isExtra?1:0}"><h2 data-ek="sec:${id}:${esc(sec.name)}">${esc(sec.name)}</h2><span class="n">${sec.items.length} step${sec.items.length>1?'s':''}</span></div><div class="steps" ${isExtra&&!showExtra?'hidden':''} data-extra="${isExtra?1:0}">`;
+    h += `<div class="sec" id="s${k}" ${isExtra&&!showExtra?'hidden':''} data-extra="${isExtra?1:0}"><h2 data-ek="sec:${id}:${esc(sec.name)}">${esc(sec.name)}</h2><span class="n">${sec.items.length} step${sec.items.length>1?'s':''}</span></div><div class="steps" data-gk="${sec.k || ''}" ${isExtra&&!showExtra?'hidden':''} data-extra="${isExtra?1:0}">`;
     sec.items.forEach(i => { n++; let sh = stepHtml(id, ex.steps[i], i, n, !!ticks[i]); if (h2tEdit && condOrder === 'h2t' && sec.k) sh = sh.replace('</summary>', mvCtl(id, i)); h += sh; });
     h += `</div>`;
   });
@@ -1729,7 +1740,7 @@ function stepHtml(id, s, i, n, done){
   return `<details class="step${done?' done':''}" id="${id}-${i}" data-i="${i}" data-ex="${id}"><summary>
     <input type="checkbox" class="tick" aria-label="Mark done" ${done?'checked':''}>
     <span class="num">${n}</span>
-    <span class="name">${ph?`<span class="ph ${ph}" title="${PHASE_LABEL[ph]||''}"></span>`:''}<span class="sname" data-ek="sn:${id}:${i}">${esc(s.name)}</span>${tags?`<span class="tags">${tags}</span>`:''}${hasNote?'<span class="pen">✎</span>':''}</span>
+    <span class="name">${ph?`<span class="ph ${ph}" title="${PHASE_LABEL[ph]||''}"></span>`:''}<span class="sname" data-ek="sn:${id}:${i}">${esc(s.name)}</span>${tags?`<span class="tags">${tags}</span>`:''}${hasNote?'<span class="pen">✎</span>':''}${cbCtx?`<button type="button" class="cbx" data-cbhide="${id}:${i}" title="Remove this step from this page" aria-label="Remove this step from this page">✕</button>`:''}</span>
     <span class="chev" aria-hidden="true"></span></summary><div class="body"></div></details>`;
 }
 function fillStep(el){
@@ -1748,7 +1759,7 @@ function fillStep(el){
   if (s.gloss && s.gloss.length) h += `<details class="more"><summary>Terms (${s.gloss.length})</summary><div class="in">${list(s.gloss.map(g=>'• '+g))}</div></details>`;
   const sk = 'step:'+exId+':'+el.dataset.i, st = notes.all()[sk];
   h += `<details class="snote"><summary class="lab">My notes${st ? ' <span class="nhint">· has notes</span>' : ''}</summary>${editor(sk, 'Preceptor tips for this step…')}<div class="nrow"><span data-saved="${sk}">${st?'Saved '+fmtTime(st.at):''}</span></div></details>`;
-  h += `<div class="pg">Guide p. ${s.pg}</div>`;
+  h += `<div class="pg">Guide p. ${s.pg}${view === 'combo' ? '' : ` <button type="button" class="btn sm" data-cbadd="step:${exId}:${el.dataset.i}" title="Add just this step to your combined page">+ Add step to my page</button>`}</div>`;
   body.innerHTML = h; body.dataset.f = 1;
   body.dataset.hls = 'hl:s:' + exId + ':' + el.dataset.i; hl.paint(body);
 }
@@ -1978,6 +1989,7 @@ const combos = {
 function cbInfo(it){
   if (it.t === 'cond') { const x = FXCP[it.id]; return x && {type: 'Condition', title: x.cp.t, sub: x.c.name + ' · history + exam', href: 'cond-' + it.id}; }
   if (it.t === 'exam') { const ex = D.exams[it.id]; return ex && {type: 'Physical exam', title: ex.title, sub: 'All steps · guide pp. ' + ex.pg[0] + '–' + ex.pg[1], href: it.id}; }
+  if (it.t === 'step') { const [ex, i] = it.id.split(':'), E = D.exams[ex], st = E && E.steps[+i]; return st && {type: 'Exam step', title: st.name, sub: E.title + ' · ' + st.sec, href: ex}; }
   if (it.t === 'drape') return {type: 'Physical exam', title: 'Draping guide', sub: 'Guide Ch 4 + each exam’s draping note', href: 'drape'};
   if (it.t === 'fhx') { const c = FXC[it.id]; return c && {type: 'Focused history', title: c.name, sub: 'Every complaint + background history', href: 'fhx-' + it.id}; }
   return null;
@@ -1987,20 +1999,23 @@ const CBIDX = [
   {t: 'drape', id: 'all', n: 'Draping guide', sub: 'Physical exam · guide Ch 4', hay: 'draping drape gown sheet exposure privacy'},
   ...CONDS.map(x => ({t: 'cond', id: x.id, n: x.t, sub: 'Condition · ' + x.sys, hay: x.hay})),
   ...Object.entries(D.exams).map(([id, ex]) => ({t: 'exam', id, n: ex.title, sub: 'Physical exam', hay: (ex.title + ' exam physical ' + (CBSYN[id] || '')).toLowerCase()})),
+  ...Object.entries(D.exams).flatMap(([id, ex]) => ex.steps.map((s, i) => ({t: 'step', id: id + ':' + i, n: s.name, sub: 'Step · ' + ex.title + ' · ' + s.sec, hay: (s.name + ' ' + ex.title + ' ' + s.sec + ' step ' + (CBSYN[id] || '')).toLowerCase()}))),
   ...FXD.map(c => ({t: 'fhx', id: c.id, n: c.name + ' – focused history', sub: 'Focused history · all complaints', hay: (c.name + ' ' + c.title + ' focused history ' + (CBSYN[c.id] || '')).toLowerCase()})),
 ];
 function cbResults(q, box){
   q = q.trim().toLowerCase(); if (q.length < 2) { box.hidden = true; return; }
   const ws = q.split(/\s+/), hits = CBIDX.filter(x => ws.every(w => x.hay.includes(w) || x.n.toLowerCase().includes(w)))
-    .sort((a, b) => (b.n.toLowerCase().startsWith(q) - a.n.toLowerCase().startsWith(q)) || ({exam: 0, fhx: 1, cond: 2}[a.t] - {exam: 0, fhx: 1, cond: 2}[b.t])).slice(0, 25);
+    .sort((a, b) => (b.n.toLowerCase().startsWith(q) - a.n.toLowerCase().startsWith(q)) || ({exam: 0, fhx: 1, cond: 2, drape: 3, step: 4}[a.t] - {exam: 0, fhx: 1, cond: 2, drape: 3, step: 4}[b.t])).slice(0, 40);
   box.innerHTML = hits.length ? hits.map(x => `<button type="button" data-cbadd="${x.t}:${x.id}" data-stay="1">${esc(x.n)}<small>${esc(x.sub)}</small></button>`).join('') : `<button type="button" disabled>No match</button>`;
   box.hidden = false;
 }
-function cbBody(it, seen){
+function cbBody(it, seen, hide){
   if (it.t === 'drape') return drapeBody();
+  if (it.t === 'step') { const [ex, i] = it.id.split(':'); if (cbMerge) return `<p class="tip">This step is in <a href="#" data-cbjump>All exams by phase</a> at the bottom.</p>`;
+    return `<div class="steps">${stepHtml(ex, D.exams[ex].steps[+i], +i, '•', !!(store.get('t:' + ex) || {})[i]).replace(/<button type="button" class="cbx"[^>]*>✕<\/button>/, '')}</div>`; }
   if (it.t === 'exam' && cbMerge) { const ex = D.exams[it.id]; return (ex.notes && ex.notes.length ? `<details class="box notes"><summary>Setup & tips from the guide</summary><div class="inner">${list(ex.notes)}</div></details>` : '') + `<p class="tip">This exam’s steps are in <a href="#" data-cbjump>All exams by phase</a> at the bottom.</p>`; }
   if (it.t === 'exam') { const ex = D.exams[it.id];
-    return (ex.notes && ex.notes.length ? `<details class="box notes"><summary>Setup & tips from the guide</summary><div class="inner">${list(ex.notes)}</div></details>` : '') + examStepsHtml(it.id, null); }
+    return (ex.notes && ex.notes.length ? `<details class="box notes"><summary>Setup & tips from the guide</summary><div class="inner">${list(ex.notes)}</div></details>` : '') + examStepsHtml(it.id, null, hide); }
   if (it.t === 'fhx') { const c = FXC[it.id];
     return c.complaints.filter(cp => !cp.all && !(cp.core && seen.has(cp.id))).map(cp => { seen.add(cp.id); return fxSection(c, cp, cp.core ? {noCoreTag: false} : {}); }).join('') + fxBackground(c, false); }
   const {c, cp} = FXCP[it.id], exam = CH2EXAM[c.id], ex = exam && D.exams[exam];
@@ -2009,34 +2024,38 @@ function cbBody(it, seen){
   if (!cp.all) h += fxSection(c, cp, {isolate: false});
   h += `<details class="fxs fxbgwrap" data-ch="${c.id}"><summary><h2>Background history for ${esc(c.name.toLowerCase())}</h2><span class="also">Past medical, surgical, family, social, medications</span></summary>${fxBackground(c, false).replace(/^<section[^>]*>[\s\S]*?<\/header>/, '').replace(/<\/section>$/, '')}</details>`;
   h += `<div class="cbpart">Physical exam${ex ? ' · ' + esc(ex.title) : ''}</div>`;
-  h += ex && cbMerge ? `<p class="tip">This condition’s exam steps are in <a href="#" data-cbjump>All exams by phase</a> at the bottom.</p>` : ex ? examStepsHtml(exam, cp) : `<p class="tip">This chapter’s physical exam is in the guide: <a href="#g-${c.id}" data-goto="g-${c.id}">open the chapter →</a></p>`;
+  h += ex && cbMerge ? `<p class="tip">This condition’s exam steps are in <a href="#" data-cbjump>All exams by phase</a> at the bottom.</p>` : ex ? examStepsHtml(exam, cp, hide) : `<p class="tip">This chapter’s physical exam is in the guide: <a href="#g-${c.id}" data-goto="g-${c.id}">open the chapter →</a></p>`;
   return h;
 }
 const cbShut = () => store.get('cb:shut') || {};
+let cbCtx = false;
 function renderCombo(tok){
-  view = 'combo'; cur = null; setTop('combo');
+  view = 'combo'; cur = null; setTop('combo'); cbCtx = true;
   const v = combos.get(), p = combos.page(v, (tok || '').slice(6));
   if (p && v.cur !== p.id) { v.cur = p.id; store.set('cbcur', p.id); }
   const main = $('#main'); delete main.dataset.hls;
+  const hide = new Set((p && p.hide) || []);
   let h = `<div class="eyebrow">My pages · your own combined reference</div><h1>${esc(p ? p.name : 'Combined pages')}</h1>`;
   h += `<div class="cbbar">${v.list.length > 1 ? `<label class="syspick"><span>Page</span><select id="cbsel">${v.list.map(x => `<option value="${x.id}"${p && x.id === p.id ? ' selected' : ''}>${esc(x.name)}</option>`).join('')}</select></label>` : ''}
     <button class="btn" data-cb="new">+ New page</button>${p ? `<button class="btn" data-cb="rename">Rename</button><button class="btn" data-cb="del">Delete page</button>` : ''}
-    ${p && p.items.some(x => x.t === 'exam' || x.t === 'cond') ? `<div class="gview" role="group" aria-label="Physical exams"><span>Exams:</span><button type="button" data-cbmerge="0" aria-pressed="${!cbMerge}">Separate</button><button type="button" data-cbmerge="1" aria-pressed="${cbMerge}">Merge by phase</button></div>` : ''}
+    ${p && p.items.some(x => x.t === 'exam' || x.t === 'cond' || x.t === 'step') ? `<div class="gview" role="group" aria-label="Physical exams"><span>Exams:</span><button type="button" data-cbmerge="0" aria-pressed="${!cbMerge}">Separate</button><button type="button" data-cbmerge="1" aria-pressed="${cbMerge}">Merge by phase</button></div>` : ''}
+    ${hide.size ? `<button class="btn" data-cb="restore" title="Bring back the steps you removed from this page">Restore ${hide.size} removed step${hide.size > 1 ? 's' : ''}</button>` : ''}
     ${p && p.items.length ? `<button class="btn" data-cb="shutall">Collapse all</button><button class="btn" data-cb="openall">Expand all</button><button class="btn" data-act="open">Open every exam step</button>` : ''}</div>`;
-  h += `<div class="condsearch sm cbadd"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="cbq" type="search" placeholder="Add a condition, physical exam or focused history…" autocomplete="off" aria-label="Add to this page"><div class="results" id="cbres" hidden></div></div>`;
-  if (!p || !p.items.length) h += `<div class="cbempty"><p style="margin-top:0"><b>Put the things you need side by side.</b> Search above to add conditions (their focused history and physical exam), whole physical exams, or a system’s focused history.</p><p style="margin-bottom:0">You can also tap <b>+ Add to my page</b> on any condition, exam or focused-history page. Use ↑ ↓ to reorder and ✕ to remove. Pages sync with your notes.</p></div>`;
+  h += `<div class="condsearch sm cbadd"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="cbq" type="search" placeholder="Add a condition, exam, single step or focused history…" autocomplete="off" aria-label="Add to this page"><div class="results" id="cbres" hidden></div></div>`;
+  if (!p || !p.items.length) h += `<div class="cbempty"><p style="margin-top:0"><b>Put the things you need side by side.</b> Search above to add conditions (their focused history and physical exam), whole physical exams, single exam steps, or a system’s focused history. Tap ✕ on any step to remove it from the page.</p><p style="margin-bottom:0">You can also tap <b>+ Add to my page</b> on any condition, exam or focused-history page. Drag the ⠿ handle to reorder and tap ✕ to remove. Pages sync with your notes.</p></div>`;
   else {
     const seen = new Set(), shut = cbShut();
     p.items.forEach((it, k) => { const info = cbInfo(it); if (!info) return; const key = p.id + ':' + it.t + ':' + it.id;
       h += `<section class="cbit${shut[key] ? ' shut' : ''}" data-cbi="${k}" data-cbk="${esc(key)}"><header class="cbh"><button type="button" class="cbfold" data-cb="fold" aria-label="Collapse or expand" title="Collapse / expand">▾</button><div class="cbt"><span class="cbtype">${info.type}</span><h2>${esc(info.title)}</h2><span class="also">${esc(info.sub)}</span></div>
-        <div class="cbtools"><button type="button" data-cb="up" title="Move up" aria-label="Move up"${k ? '' : ' disabled'}>↑</button><button type="button" data-cb="down" title="Move down" aria-label="Move down"${k < p.items.length - 1 ? '' : ' disabled'}>↓</button><a href="#${info.href}" data-goto="${info.href}" title="Open the full page">Open</a><button type="button" data-cb="rm" title="Remove from this page" aria-label="Remove">✕</button></div></header>
-        <div class="cbbody">${cbBody(it, seen)}</div></section>`; });
+        <div class="cbtools">${p.items.length > 1 ? `<span class="grip" data-grip="cbit" title="Drag to reorder" aria-label="Drag to reorder" role="button">${GRIP}</span>` : ''}<a href="#${info.href}" data-goto="${info.href}" title="Open the full page">Open</a><button type="button" data-cb="rm" title="Remove from this page" aria-label="Remove">✕</button></div></header>
+        <div class="cbbody">${cbBody(it, seen, hide)}</div></section>`; });
     if (cbMerge) h += cbMergedHtml(p);
   }
+  cbCtx = false;
   main.innerHTML = h; syncBadge(); hl.paintAll(); markRail('combo-' + (p ? p.id : '')); window.scrollTo(0, 0);
 }
 function cbAdd(spec, btn){
-  const [t, id] = spec.split(':'); const v = combos.get(); let p = combos.page(v); if (!p) p = combos.make(v, 'My combined page');
+  const [t, ...rr] = spec.split(':'), id = rr.join(':'); const v = combos.get(); let p = combos.page(v); if (!p) p = combos.make(v, 'My combined page');
   const had = p.items.some(x => x.t === t && x.id === id);
   if (!had) p.items.push({t, id});
   v.cur = p.id; combos.put(v);
@@ -2063,6 +2082,7 @@ document.addEventListener('click', e => {
   if (!p) return;
   if (a === 'rename') { const n = prompt('Rename this page', p.name); if (n && n.trim()) { p.name = n.trim().slice(0, 80); again(); window.scrollTo(0, y); } return; }
   if (a === 'del') { if (!confirm('Delete “' + p.name + '”? The conditions and exams themselves stay in the guide.')) return; v.list = v.list.filter(x => x !== p); v.cur = v.list[0] ? v.list[0].id : null; again(); history.replaceState(null, '', '#combo' + (v.cur ? '-' + v.cur : '')); return; }
+  if (a === 'restore') { p.hide = []; again(); window.scrollTo(0, y); return; }
   if (a === 'shutall' || a === 'openall') { const m = cbShut(); document.querySelectorAll('.cbit').forEach(s => { s.classList.toggle('shut', a === 'shutall'); if (a === 'shutall') m[s.dataset.cbk] = 1; else delete m[s.dataset.cbk]; }); store.set('cb:shut', m); return; }
   if (!sec) return;
   const k = +sec.dataset.cbi;
@@ -2110,13 +2130,15 @@ function renderDrape(){
 let cbMerge = !!store.get('cb:merge'), cbH2t = store.get('cb:h2t') !== false, cbEdit = false;
 const PH_ORDER = [...H2T_PHASES.map(x => x[0]), 'extra'];
 function cbMergeGroups(p){
-  const seen = new Set(), steps = [];
+  const seen = new Set(), steps = [], hid = new Set(p.hide || []);
   p.items.forEach((it, o) => {
     let exId = null, cp = null;
+    if (it.t === 'step') { const [ex, si] = it.id.split(':'), i = +si, key = ex + ':' + i, s = D.exams[ex] && D.exams[ex].steps[i];
+      if (s && !seen.has(key)) { seen.add(key); steps.push({ex, i, o, k: s.tags.includes('extra') ? 'extra' : h2tPhase(s), r: h2tRegion(s, ex)}); } return; }
     if (it.t === 'exam') exId = it.id;
     else if (it.t === 'cond' && FXCP[it.id]) { cp = FXCP[it.id].cp; exId = CH2EXAM[FXCP[it.id].c.id]; }
     const ex = exId && D.exams[exId]; if (!ex) return;
-    ex.steps.forEach((s, i) => { const key = exId + ':' + i; if (seen.has(key) || !condStepOk(exId, s, cp)) return; seen.add(key);
+    ex.steps.forEach((s, i) => { const key = exId + ':' + i; if (seen.has(key) || hid.has(key) || !condStepOk(exId, s, cp)) return; seen.add(key);
       steps.push({ex: exId, i, o, k: s.tags.includes('extra') ? 'extra' : h2tPhase(s), r: h2tRegion(s, exId)}); });
   });
   const groups = PH_ORDER.map(k => ({k, name: k === 'extra' ? 'Non-routine tests' : H2T_PHASES.find(x => x[0] === k)[1],
@@ -2137,13 +2159,13 @@ function cbMergedHtml(p){
   let h = `<section class="cbit cbmerged"><header class="cbh"><div class="cbt"><span class="cbtype">Physical exam · merged</span><h2>All exams by phase</h2><span class="also">${total} steps from ${[...new Set(groups.flatMap(g => g.items.map(k => k.split(':')[0])))].map(x => esc(D.exams[x].title)).join(', ')}</span></div></header><div class="cbbody">`;
   h += `<div class="gview orderpick" role="group" aria-label="Order within each phase"><span>Order:</span><button type="button" data-cbord="item" aria-pressed="${!cbH2t}">By page order</button><button type="button" data-cbord="h2t" aria-pressed="${cbH2t}">Head to toe</button></div>`
     + (cbH2t ? ` <button type="button" class="btn${cbEdit ? ' on' : ''}" data-cbrearr>${cbEdit ? 'Done rearranging' : 'Rearrange'}</button>${store.get('cbord:' + p.id) ? ` <button type="button" class="btn" data-cbordreset>Reset order</button>` : ''}` : '')
-    + (cbEdit && cbH2t ? `<p class="tip">Use ↑ and ↓ to move a step. Moving past the top or bottom of a phase moves it into the next phase. This order is saved for this page.</p>` : '');
+    + (cbEdit && cbH2t ? `<p class="tip">Drag a step by its handle to move it, including into another phase. This order is saved for this page.</p>` : '');
   const ticks = {}; let n = 0;
   groups.forEach(g => { if (!g.items.length) return; const isExtra = g.k === 'extra';
-    h += `<div class="sec sm"${isExtra && !showExtra ? ' hidden' : ''} data-extra="${isExtra ? 1 : 0}"><h3>${esc(g.name)}</h3><span class="n">${g.items.length}</span></div><div class="steps"${isExtra && !showExtra ? ' hidden' : ''} data-extra="${isExtra ? 1 : 0}">`;
+    h += `<div class="sec sm"${isExtra && !showExtra ? ' hidden' : ''} data-extra="${isExtra ? 1 : 0}"><h3>${esc(g.name)}</h3><span class="n">${g.items.length}</span></div><div class="steps" data-gk="${g.k}"${isExtra && !showExtra ? ' hidden' : ''} data-extra="${isExtra ? 1 : 0}">`;
     g.items.forEach(key => { const [ex, si] = key.split(':'), i = +si; if (!ticks[ex]) ticks[ex] = store.get('t:' + ex) || {}; n++;
       let sh = stepHtml(ex, D.exams[ex].steps[i], i, n, !!ticks[ex][i]).replace('<span class="chev"', `<span class="cbsrc">${esc(D.exams[ex].title)}</span><span class="chev"`);
-      if (cbEdit && cbH2t) sh = sh.replace('<span class="cbsrc"', `<span class="mvbox"><button type="button" class="mv" data-cbmv="-1" data-cbkey="${key}" aria-label="Move up">↑</button><button type="button" class="mv" data-cbmv="1" data-cbkey="${key}" aria-label="Move down">↓</button></span><span class="cbsrc"`);
+      if (cbEdit && cbH2t) sh = sh.replace('<span class="cbsrc"', `<span class="mvbox"><span class="grip" data-grip="cbm" data-cbkey="${key}" title="Drag to reorder" aria-label="Drag to reorder" role="button">${GRIP}</span></span><span class="cbsrc"`);
       h += sh; });
     h += `</div>`; });
   return h + `</div></section>`;
@@ -2158,6 +2180,9 @@ function cbMove(p, key, dir){
 document.addEventListener('click', e => {
   const t = e.target, p = () => combos.page(combos.get(), (location.hash || '').slice(7));
   const rer = () => { const y = scrollY; renderCombo('combo-' + (p() ? p().id : '')); window.scrollTo(0, y); };
+  const hb = t.closest('[data-cbhide]');
+  if (hb) { e.preventDefault(); e.stopPropagation(); const v = combos.get(), pg = combos.page(v, (location.hash || '').slice(7)); if (!pg) return;
+    pg.hide = [...new Set([...(pg.hide || []), hb.dataset.cbhide])]; combos.put(v); rer(); return; }
   if (t.closest('[data-cbmerge]')) { cbMerge = t.closest('[data-cbmerge]').dataset.cbmerge === '1'; store.set('cb:merge', cbMerge); rer(); return; }
   const ob = t.closest('[data-cbord]'); if (ob) { cbH2t = ob.dataset.cbord === 'h2t'; store.set('cb:h2t', cbH2t); rer(); return; }
   if (t.closest('[data-cbrearr]')) { cbEdit = !cbEdit; rer(); return; }
@@ -2166,6 +2191,58 @@ document.addEventListener('click', e => {
   if (mv) { e.preventDefault(); e.stopPropagation(); const pg = p(); if (!pg) return; const key = mv.dataset.cbkey, before = mv.getBoundingClientRect().top;
     cbMove(pg, key, +mv.dataset.cbmv); rer(); const again = document.querySelector(`[data-cbkey="${key}"]`); if (again) window.scrollBy(0, again.getBoundingClientRect().top - before); }
 }, true);
+/* ---------- drag to reorder (mouse and touch): exam steps in head-to-toe mode, merged steps, and My pages sections ---------- */
+const drag = {
+  st: null,
+  begin(e, grip){
+    const kind = grip.dataset.grip, item = grip.closest(kind === 'cbit' ? '.cbit' : '.step'); if (!item) return;
+    const scope = kind === 'cbm' ? item.closest('.cbmerged') : $('#main');
+    const r = item.getBoundingClientRect(), ph = document.createElement('div');
+    ph.className = 'dragph'; ph.style.height = r.height + 'px';
+    item.parentElement.insertBefore(ph, item);
+    Object.assign(item.style, {position: 'fixed', left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', zIndex: 60, pointerEvents: 'none'});
+    item.classList.add('dragging'); document.body.classList.add('isdragging');
+    this.st = {kind, item, ph, scope, grip, off: e.clientY - r.top, y: e.clientY, raf: 0};
+    try { grip.setPointerCapture(e.pointerId); } catch (x) {}
+    const tick = () => { if (!this.st) return; const y = this.st.y; if (y < 90) scrollBy(0, -14); else if (y > innerHeight - 70) scrollBy(0, 14); this.place(); this.st.raf = requestAnimationFrame(tick); };
+    this.st.raf = requestAnimationFrame(tick);
+  },
+  cands(){ const {kind, item, scope, grip} = this.st;
+    if (kind === 'cbit') return [...scope.querySelectorAll('.cbit[data-cbi]')].filter(x => x !== item);
+    const sel = kind === 'cbm' ? '.steps[data-gk] > .step' : `.steps[data-gk] > .step[data-ex="${grip.dataset.mvx}"]`;
+    return [...scope.querySelectorAll(sel)].filter(x => x !== item && !x.closest('[hidden]') && (kind === 'cbm' || !x.closest('.cbmerged'))); },
+  move(e){ if (!this.st) return; e.preventDefault(); this.st.y = e.clientY; this.st.item.style.top = (e.clientY - this.st.off) + 'px'; this.place(); },
+  place(){
+    const {ph, y} = this.st, cs = this.cands(); if (!cs.length) return;
+    const before = cs.find(x => { const r = x.getBoundingClientRect(); return y < r.top + r.height / 2; });
+    if (before) { if (ph.nextElementSibling !== before) before.parentElement.insertBefore(ph, before); }
+    else { const last = cs[cs.length - 1]; if (last.nextElementSibling !== ph) last.after(ph); }
+  },
+  end(){
+    const s = this.st; if (!s) return; this.st = null; cancelAnimationFrame(s.raf);
+    s.ph.replaceWith(s.item); s.item.removeAttribute('style'); s.item.classList.remove('dragging'); document.body.classList.remove('isdragging');
+    const y = scrollY;
+    if (s.kind === 'cbit') {
+      const v = combos.get(), p = combos.page(v, (location.hash || '').slice(7)); if (!p) return;
+      const order = [...document.querySelectorAll('.cbit[data-cbi]')].map(x => +x.dataset.cbi);
+      p.items = order.map(i => p.items[i]).filter(Boolean); combos.put(v); renderRail('combo', true); renderCombo('combo-' + p.id); window.scrollTo(0, y); return;
+    }
+    if (s.kind === 'cbm') {
+      const p = combos.page(combos.get(), (location.hash || '').slice(7)); if (!p) return;
+      store.set('cbord:' + p.id, {list: [...s.scope.querySelectorAll('.steps[data-gk]')].flatMap(c => [...c.querySelectorAll(':scope > .step')].map(x => [x.dataset.ex + ':' + x.dataset.i, c.dataset.gk]))});
+      renderCombo('combo-' + p.id); window.scrollTo(0, y); return;
+    }
+    const exId = s.grip.dataset.mvx, shown = new Set(), dom = {};
+    document.querySelectorAll('#main .steps[data-gk]').forEach(c => { if (c.closest('.cbmerged')) return; c.querySelectorAll(`:scope > .step[data-ex="${exId}"]`).forEach(x => { const i = +x.dataset.i; shown.add(i); (dom[c.dataset.gk] = dom[c.dataset.gk] || []).push(i); }); });
+    const list = examH2tAll(exId).flatMap(g => [...(dom[g.k] || []), ...g.items.filter(i => !shown.has(i))].map(i => [i, g.k]));
+    store.set('h2t:' + exId, {list}); go(location.hash.slice(1)); window.scrollTo(0, y);
+  }
+};
+document.addEventListener('pointerdown', e => { const g = e.target.closest && e.target.closest('[data-grip]'); if (!g || e.button > 0) return; e.preventDefault(); drag.begin(e, g); });
+document.addEventListener('pointermove', e => drag.move(e), {passive: false});
+document.addEventListener('pointerup', () => drag.end());
+document.addEventListener('pointercancel', () => drag.end());
+document.addEventListener('click', e => { if (e.target.closest && e.target.closest('[data-grip]')) { e.preventDefault(); e.stopPropagation(); } }, true);
 /* ---------- events ---------- */
 document.addEventListener('click', e => {
   const t = e.target;
